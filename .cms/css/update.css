@@ -1,0 +1,164 @@
+#update {
+    display: grid;
+    height: 100%;
+    overflow-y: auto;
+    grid-auto-rows: max-content;
+    row-gap: 1rem;
+}
+
+#update .dev-window.developers_only {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    #update {
+        padding: 1rem 0.4rem 1rem 0.4rem;
+        display: flex; /*Samsung Browser - padding-bottom*/
+        flex-direction: column; /*Samsung Browser - padding-bottom*/
+    }
+}
+@media (min-width: 1024px) {
+    #update {
+        padding: 1rem;
+    }
+}
+
+#update .backup-window {
+    display: grid;
+    grid-auto-rows: max-content;
+    row-gap: 1rem;
+    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+    border-radius: 0.3rem;
+    background-color: var(--update-backup-window-bg);
+}
+#update .backup-window .hidden {
+    display: none;
+}
+
+#update > .backup-window > div {
+    color: var(--update-backup-window-div);
+}
+#update .backup-window p {
+    font-size: 1rem;
+    color: var(--update-backup-window-font);
+    word-break: break-all;
+}
+#update .backup-window p a {
+    color: var(--update-backup-window-p-a);
+}
+
+.backup-window .buttons {
+    gap: 1rem;
+}
+@media (max-width: 1023px) {
+    #update .backup-window {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+    .backup-window .buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (min-width: 1024px) {
+    #update .backup-window {
+        padding: 1rem;
+    }
+    .backup-window .buttons {
+        justify-content: start;
+        display: flex;
+    }
+}
+
+#update .update-window {
+    display: grid;
+    grid-auto-rows: max-content;
+    row-gap: 1rem;
+    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+    border-radius: 0.3rem;
+    background-color: var(--update-update-window-bg);
+}
+#update > .update-window > div {
+    color: var(--update-update-window-div);
+}
+#update .update-window div p {
+    font-size: 1rem;
+    color: var(--update-update-window-font);
+}
+#update .update-window p a {
+    color: var(--update-update-window-p-a);
+}
+@media (max-width: 1023px) {
+    #update .update-window {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+@media (min-width: 1024px) {
+    #update .update-window {
+        padding: 1rem;
+    }
+}
+
+#update .dev-window {
+    display: grid;
+    grid-auto-rows: max-content;
+    row-gap: 1rem;
+    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+    border-radius: 0.3rem;
+    background-color: var(--update-dev-window-bg);
+}
+#update > .dev-window > div {
+    color: var(--update-dev-window-div);
+}
+#update .dev-window p {
+    font-size: 1rem;
+    color: var(--update-dev-window-font);
+}
+#update .dev-window p a {
+    color: var(--update-dev-window-p-a);
+}
+@media (max-width: 1023px) {
+    #update .dev-window {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+@media (min-width: 1024px) {
+    #update .dev-window {
+        padding: 1rem;
+    }
+}
+
+
+.update-window .buttons, .dev-window .buttons {
+    gap: 1rem;
+}
+@media (max-width: 1023px) {
+    .update-window .buttons, .dev-window .buttons {
+        display: grid;
+    }
+}
+@media (min-width: 1024px) {
+    .update-window .buttons, .dev-window .buttons {
+        display: flex;
+        justify-content: start;
+    }
+}
+
+
+.backup-window > div, .update-window > div, .dev-window > div {
+    display: grid;
+    row-gap: 1rem;
+}
+
+.backup-window > div.buttons button, .update-window > div.buttons button, .dev-window > div.buttons button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.44rem 0.74rem 0.37rem 0.74rem;
+    min-height: 35px;
+    border-radius: 0.24rem;
+    border: none;
+    font-size: 0.875rem;
+    color: var(--backup-form-button-font);
+    background-color: var(--backup-form-button);
+    cursor: pointer;
+}

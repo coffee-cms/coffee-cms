@@ -1,0 +1,125 @@
+#base {
+    display: grid;
+    gap: 1rem;
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+@media (max-width: 1023px) {
+#base {
+        grid-template-areas: 
+            "db-manual"
+            "db-settings";
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        padding: 1rem 0.4rem 1rem 0.4rem;
+        display: flex; /*Samsung Browser - padding-bottom*/
+        flex-direction: column; /*Samsung Browser - padding-bottom*/
+    }
+}
+
+@media (min-width: 1024px) {
+    #base {
+        grid-template-areas: "db-settings db-manual";
+        grid-template-columns: 17rem 1fr;
+        grid-template-rows: auto;
+        padding: 1rem;
+    }
+}
+
+#base .db-settings {
+    grid-area: db-settings;
+    background-color: var(--base-db-settings);
+    box-shadow: 0 2px 3px 0 #00000033;
+    border-radius: 0.3rem;
+}
+@media (max-width: 1023px) {
+    #base .db-settings {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+@media (min-width: 1024px) {
+    #base .db-settings {
+        padding: 1rem;
+    }
+}
+
+#base form {
+    display: grid;
+    row-gap: 1rem;
+}
+
+#base form > div {
+    position: relative;
+}
+#base .create {
+    font-size: 1rem;
+    color: var(--base-create);
+}
+#base form div > div:not(.password-eye) {
+    font-size: 1rem;
+    margin-bottom: 3px;
+    color: var(--base-form-div-div);
+}
+
+#base form input {
+    border-radius: 4px;
+    font-size: 0.875rem;
+    padding: 0 0.54rem;
+    min-height: 35px;
+    width: 100%;
+    color: var(--base-form-input-font);
+    background-color: var(--base-form-input);
+    border: 1px solid var(--base-form-input-border);
+}
+
+#base form .password-eye {
+    width: 23px;
+    height: 23px;
+    position: absolute;
+    bottom: 5px;
+    right: 4px;
+    z-index: 1;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: 0 0;
+    background-image: var(--eye-icon);
+}
+#base form .password-eye.showed {
+    background-position-y: 100%;
+}
+
+#base input[type="submit"] {
+    cursor: pointer;
+}
+
+#base .db-manual {
+    grid-area: db-manual;
+    display: grid;
+    grid-auto-rows: max-content;
+    gap: 1rem;
+    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+    border-radius: 5px 5px 5px 5px;
+    background-color: var(--base-db-manual);
+}
+#base .db-manual div {
+    color: var(--base-db-manual-div);
+}
+#base .db-manual p {
+    font-size: 1rem;
+    color: var(--base-db-manual-font);
+}
+#base .db-manual p a {
+    color: var(--base-db-manual-p-a);
+}
+@media (max-width: 1023px) {
+    #base .db-manual {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+@media (min-width: 1024px) {
+    #base .db-manual {
+        padding: 1rem;
+    }
+}

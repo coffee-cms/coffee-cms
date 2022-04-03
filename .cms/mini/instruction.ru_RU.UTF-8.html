@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Заготовки для шаблона Representative Dark</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="style.css">
+        <style>
+            body { grid-template-rows: 0rem auto 1fr auto; }
+            .copy { margin: 1rem auto 7rem auto; display: block; cursor: pointer; }
+            .help { max-width: 1280px; margin: auto; padding: 0 0.5rem; color: #4b86cc; }
+        </style>
+    </head>
+
+    <body>
+        <div>
+
+<main class="help" class="blog">
+    <p>Выберите нужный вам блок и нажмите кнопку Копировать под ним.</p>
+</main>
+
+<main id="banner" class="blog">
+<!-- Баннер -->
+<img class="banner" alt="Баннер" src="/mini/banner.jpg" width="1920" height="700">
+</main>
+            <button for="banner" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+<main id="article" class="blog">
+<h1>Заголовок записи</h1>
+    
+<p>Это облёгчённый шаблон создан для творчества. Он одновременно является примером и отправной точкой для Вашего проекта.</p>
+</main>
+<button for="article" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+<main id="lists" class="blog">
+<!-- Начало блока списка -->
+    <ul>
+        <li>Маркер</li>
+        <li>Маркер</li>
+        <li>Маркер</li>
+    </ul>
+        
+    <ol>
+        <li>Маркер</li>
+        <li>Маркер</li>
+        <li>Маркер</li>
+    </ol>
+<!-- Конец блока списка -->
+</main>
+<button for="lists" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+    
+<main id="cite" class="blog">
+<!-- Начало блока цитаты -->
+    <blockquote>
+        <p>За свою карьеру я пропустил более 9000 бросков, проиграл почти 300 игр. 26 раз мне доверяли сделать финальный победный бросок, и я промахивался. Я терпел поражения снова, и снова, и снова. И именно поэтому я добился успеха</p>
+        <p class="author">Майкл Джордан</p>
+    </blockquote>
+<!-- Конец блока цитаты -->
+</main>
+<button for="cite" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+<main id="code" class="blog">
+<!-- Начало блока кода -->
+<pre class="ignorgap"><code><p>Заголовок</p>&lt;?php
+$cms['modules']['test.mod.php'] = array(
+    'name' =&gt; 'Test',
+    'description' =&gt; 'Test module',
+    'url_title' =&gt; 'Module page',
+    'url_link' =&gt; 'https://coffee-cms.com/modules/test/',
+    'author' =&gt; 'Coffee CMS team',
+    'version' =&gt; '20.04',
+    'files' =&gt; array(
+        '.cms/mod/test.mod.php',
+    ),
+    'sort'    =&gt; 100,
+);</code></pre>
+<!-- Конец блока кода -->
+</main>
+<button for="code" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+    
+<main id="wpic1" class="blog">
+<!-- Начало блока широкой картинки -->
+    <p>Ниже пример картинки выходящей за ширину текста и описанием за счёт добавления класса wide тегу figure.</p>
+    
+    <figure class="wide">
+        <img alt="" src="/mini/test.png" width="800" height="600">
+        <figcaption>Описание изображения</figcaption>
+    </figure>
+<!-- Конец блока широкой картинки -->
+</main>
+<button for="wpic1" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+    
+<main id="pic1" class="blog">
+<!-- Начало блока картинки -->
+    <p>Ниже пример картинки по ширине текста</p>
+    
+    <img alt="" src="/mini/test.png" width="800" height="600">
+<!-- Конец блока картинки -->
+</main>
+<button for="pic1" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+    
+<main id="wpic2" class="blog">
+<!-- Начало блока широкой картинки -->
+    <p>Ниже пример картинки картинки выходящей за ширину текста за счёт добавления ей класса wide</p>
+    
+    <img class="wide" alt="" src="/mini/test.png" width="800" height="600">
+<!-- Конец блока широкой картинки -->
+</main>
+<button for="wpic2" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+        </div>
+
+        <script>
+            
+            function copy( id ) {
+                var div  = document.getElementById( id );
+                var html = div.innerHTML;
+                var ta   = document.getElementById( "copy" );
+                ta.setAttribute('style','');
+                ta.value = html;
+                ta.select();
+                var r = document.execCommand( "copy" );
+                var btn = document.querySelector( "button[for="+id+"]" );
+                if ( r ) {
+                    btn.textContent = "OK";
+                    setTimeout( function(){ btn.textContent = "Копировать"; }, 1000 );
+                } else {
+                    btn.textContent = "Ошибка";
+                    setTimeout( function(){ btn.textContent = "Копировать"; }, 1000 );
+                }
+                ta.setAttribute('style','display:none;');
+            }
+            
+        </script>
+
+    <div><textarea id="copy" style="display: none;"></textarea></div>
+    </body>
+</html>

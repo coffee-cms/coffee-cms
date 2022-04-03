@@ -1,0 +1,156 @@
+#sitemap {
+    display: grid;
+    height: 100%;
+    overflow-y: auto;
+    grid-auto-rows: max-content;
+    row-gap: 1rem;
+}
+#sitemap form {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (max-width: 1023px) {
+    #sitemap {
+        padding: 1rem 0.4rem 1rem 0.4rem;
+        display: flex; /*Samsung Browser - padding-bottom*/
+        flex-direction: column; /*Samsung Browser - padding-bottom*/
+    }
+    #sitemap form {
+        grid-template-columns: 1fr;
+        grid-template-areas: "xml-wrapper-hidden" "xml-wrapper-link" "xml-static-dynamic" "xml-static-cron";
+    }
+}
+@media (min-width: 1024px) {
+    #sitemap {
+        padding: 1rem;
+    }
+    #sitemap form {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "xml-wrapper-hidden xml-wrapper-link" "xml-static-dynamic xml-static-cron";
+    }
+}
+
+.xml-wrapper-hidden, .xml-wrapper-link, .xml-static-dynamic, .xml-static-cron {
+    display: grid;
+    grid-auto-rows: max-content;
+    row-gap: 0.7rem;
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.2);
+    border-radius: 0.3rem;
+    background: var(--xml-wrapper-areas);
+}
+.xml-wrapper-hidden div, .xml-wrapper-link div, .xml-static-dynamic div, .xml-static-cron div {
+    color: var(--xml-wrapper-areas-div);
+}
+
+@media (max-width: 1023px) {
+    .xml-wrapper-hidden, .xml-wrapper-link, .xml-static-dynamic, .xml-static-cron {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+@media (min-width: 1024px) {
+    .xml-wrapper-hidden, .xml-wrapper-link, .xml-static-dynamic, .xml-static-cron {
+        padding: 1rem;
+    }
+}
+
+#sitemap textarea {
+    line-height: 1.3em;
+    resize: vertical;
+    width: 100%;
+    background: var(--sitemap-textarea-bg);
+    border: 1px solid var(--sitemap-textarea-border);
+    border-radius: 4px;
+    font-family: var(--monospace);
+    font-size: 1rem;
+    color: var(--sitemap-textarea-font);
+    padding: 0 8px;
+    min-height: 30px;
+}
+
+#sitemap input[type="submit"] {
+    cursor: pointer;
+    width: max-content;
+}
+#sitemap form div > input {
+    border-radius: 4px;
+    font-size: 0.875rem;
+    padding: 0 0.54rem;
+    min-height: 35px;
+    width: 100%;
+    color: var(--sitemap-form-input-font);
+    background-color: var(--sitemap-form-input-bg);
+    border: 1px solid var(--sitemap-form-input-border);
+}
+
+#sitemap .xml-static-dynamic input[type="text"] {
+    color: var(--xml-static-dynamic-input-font);
+}
+.xml-static-dynamic label input[type="radio"] {
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 0.3rem;
+    border-radius: 50%;
+    width: 0.73rem;
+    height: 0.73rem;
+    background-color: var(--xml-static-dynamic-label-input);
+    transform: translate(0, 0);
+    appearance: none;
+}
+.xml-static-dynamic label input:checked {
+    background-color: var(--xml-static-dynamic-label-input-checked-bg);
+    border-color: var(--xml-static-dynamic-label-input-checked-border);
+    box-shadow: 0 0 0 0.25rem var(--xml-static-dynamic-label-input-checked-shadow);
+}
+
+.xml-static-dynamic label {
+    cursor: pointer;
+    line-height: 1.1em;
+    font-size: 1rem;
+    color: var(--xml-static-dynamic-label-font);
+    user-select: none;
+}
+
+.xml-static-cron p {
+    font-size: 1rem;
+    color: var(--xml-static-cron-font);
+}
+.xml-static-cron input[type="text"] {
+    max-width: 70px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    padding: 0 0.54rem;
+    min-height: 35px;
+    background-color: var(--sitemap-form-input-bg);
+    border: 1px solid var(--sitemap-form-input-border);
+    color: var(--sitemap-form-input-font);
+    text-align: center;
+}
+
+.sitemap-manual {
+    display: grid;
+    grid-auto-rows: max-content;
+    gap: 1rem;
+    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+    border-radius: 0.3rem;
+    background-color: var(--sitemap-manual);
+}
+.sitemap-manual div {
+    color: var(--sitemap-manual-div);
+}
+
+.sitemap-manual p {
+    font-size: 1rem;
+    color: var(--sitemap-manual-font);
+}
+
+@media (max-width: 1023px) {
+    .sitemap-manual {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+@media (min-width: 1024px) {
+    .sitemap-manual {
+        padding: 1rem;
+    }
+}
