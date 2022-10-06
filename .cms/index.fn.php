@@ -54,7 +54,7 @@ array (
 function cms_save_config() {
     global $cms;
     @$r = file_put_contents( $cms["config_file"], '<?php
-$cms["config"] = ' . var_export( $cms['config'], true) . ";\n", LOCK_EX );
+$cms["config"] = ' . var_export( $cms["config"], true) . ";\n", LOCK_EX );
     return $r;
 }
 
@@ -521,10 +521,24 @@ function cms_readfile( $file, $headers = true ) {
     }
 }
 
-function __( $string, $module = "admin.mod.php" ) {
+function __( $string, $module = "" ) {
     global $cms;
-    if ( ! isset( $cms["config"] ) ) return $string;
-    // Load lang file
+    if ( ! isset( $cms["config"] ) ) {
+        error_log( 'Not set $cms["config"]' );
+        return $string;
+    }
+
+    // Определяем вызвавший файл
+    if ( $module === "" ) {
+        $backtrace = debug_backtrace();
+        $module = pathinfo( $backtrace[0]["file"], PATHINFO_BASENAME );
+        // Для шаблона admin
+        if ( $module === "html.php" ) {
+            $module = "admin.mod.php";
+        }
+    }
+
+    // Загрузка файла перевода
     if ( ! isset( $cms["lang"][$module][ $cms["config"]["locale"] ] ) ) {
         $file = $cms["cms_dir"] . "/lang/" . $cms["config"]["locale"] . "/" . $module;
         if ( file_exists( $file ) ) {
@@ -533,21 +547,34 @@ function __( $string, $module = "admin.mod.php" ) {
             $cms["lang"][$module][ $cms["config"]["locale"] ] = array();
         }
     }
+
     // Translate
     if ( isset( $cms["lang"][$module][ $cms["config"]["locale"] ][$string] ) ) {
         return $cms["lang"][$module][ $cms["config"]["locale"] ][$string];
     } else {
+        // Чтобы узнать какие переводы отсутствуют, нужно включить отладку в confog.php
+        //     $cms["config"]["debug"] = true;
+        // Результаты буду в файле .cms/debug.log.php
+        // Если известна локаль модуля и она не совпадает с текущей локалью цмс
+        // То должен быть перевод
+        if ( ! empty( $cms["config"]["debug"] ) && isset( $cms["modules"][$module]["locale"] ) && $cms["config"]["locale"] !== $cms["modules"][$module]["locale"] ) {
+            if ( empty( $cms["debug"]["translate"][$string] ) ) {
+                $cms["debug"]["translate"][$string] = "Нет перевода для [{$module}] \"{$string}\" на {$cms["config"]["locale"]}";
+            }
+        }
         return $string;
     }
 }
 
-function cms_translit( $string ) {
+function cms_translit( $string, $trim_dash = true ) {
     global $cms;
     $tr1 = strtr( $string, $cms["tr"] );
     $tr2 = strtr( $tr1, array( " " => "-" ) );
     $tr3 = preg_replace( "/[^-A-Za-z0-9_]+/u", "", $tr2 );
-    $tr4 = trim( $tr3, "-_" );
-    return $tr4;
+    if ( $trim_dash ) {
+        $tr3 = trim( $tr3, "-_" );
+    }
+    return $tr3;
 }
 
 function cms_translit_file( $string ) {
@@ -556,11 +583,6 @@ function cms_translit_file( $string ) {
     $tr2 = strtr( $tr1, array( " " => "_" ) );
     $tr3 = preg_replace( "/[^-A-Za-z0-9_]+/u", "", $tr2 );
     return $tr3;
-}
-
-function cms_asort( &$array ) {
-    if ( ! is_array( $array ) ) return false;
-    return uasort( $array, "cms_uasort" );
 }
 
 function cms_uasort( $a, $b ) {
@@ -572,6 +594,11 @@ function cms_uasort( $a, $b ) {
     } else {
         return 1;
     }
+}
+
+function cms_asort( &$array ) {
+    if ( ! is_array( $array ) ) return false;
+    return uasort( $array, "cms_uasort" );
 }
 
 function recurse_rm( $src ) /* bool */ {
@@ -596,4 +623,37 @@ function recurse_rm( $src ) /* bool */ {
 
 function is_email( $str ) {
     return preg_match( "/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,9})(\]?)$/", $str );
+}
+
+// Returns a file size limit in bytes based on the PHP upload_max_filesize
+// and post_max_size
+function file_upload_max_size() {
+    $max_size = -1;
+  
+    if ( $max_size < 0 ) {
+        // Start with post_max_size.
+        $post_max_size = parse_size( ini_get( "post_max_size" ) );
+        if ( $post_max_size > 0 ) {
+            $max_size = $post_max_size;
+        }
+    
+        // If upload_max_size is less, then reduce. Except if upload_max_size is
+        // zero, which indicates no limit.
+        $upload_max = parse_size( ini_get( "upload_max_filesize" ) );
+        if ( $upload_max > 0 && $upload_max < $max_size ) {
+            $max_size = $upload_max;
+        }
+    }
+    return $max_size;
+}
+  
+function parse_size( $size ) {
+    $unit = preg_replace( "/[^bkmgtpezy]/i", "", $size ); // Remove the non-unit characters from the size.
+    $size = preg_replace( "/[^0-9\.]/", "", $size ); // Remove the non-numeric characters from the size.
+    if ( $unit ) {
+        // Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
+        return round( $size * pow( 1024, stripos( "bkmgtpezy", $unit[0] ) ) );
+    } else {
+        return round( $size );
+    }
 }

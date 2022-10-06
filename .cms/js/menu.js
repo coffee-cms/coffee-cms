@@ -8,27 +8,34 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     function select3( selects ) {
         selects.forEach( function( select ) {
             select.querySelector( "input" ).addEventListener( "keyup", function( e ) {
-                if ( this.value.length > 1 ) {
-                    api2( { fn: "get_search_pages_list", search: this.value }, function( r ) {
-                        if ( r.html ) {
-                            select.querySelector( ".list-search" ).innerHTML = r.html;
-                            select.querySelectorAll( ".list-search li" ).forEach( function( li ) {
-                                li.addEventListener( "click", select3_li );
-                            } );
-                        }
-                    } );
-                }
+                api( { fn: "get_search_pages_list", search: this.value }, function( r ) {
+                    if ( r.html ) {
+                        select.querySelector( ".list-search" ).innerHTML = r.html;
+                        select.querySelectorAll( ".list-search li" ).forEach( function( li ) {
+                            li.addEventListener( "click", select3_li );
+                        } );
+                    }
+                } );
+            } );
+            // prevent close dropdown when click on input
+            select.querySelector( "input" ).addEventListener( "click", function( e ) {
+                e.stopPropagation();
             } );
             // show/hide dropdown list
             select.querySelector( ".field-select" ).addEventListener( "click", function ( event ) {
-                event.currentTarget.nextElementSibling.classList.toggle( "open" );
-                select.querySelector( "input" ).focus();
+                event.stopPropagation();
+                let list = event.currentTarget.nextElementSibling;
+                list.classList.toggle( "open" );
+                if ( list.classList.contains( "open" ) ) {
+                    let input = select.querySelector( "input" );
+                    input.focus();
+                    input.dispatchEvent( new Event( "keyup" ) );
+                }
             } );
-            // click on <li>
-            select.querySelector( "li" ).addEventListener( "click", select3_li );
         } );
     }
 
+    // click selected item
     function select3_li( e ) {
         let id    = this.getAttribute( "data-id" );
         let url   = this.getAttribute( "data-url" );
@@ -53,7 +60,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         input_title.click();
     }
 
-    api2( { fn: "get_menu_items" }, set_menu_items );
+    api( { fn: "get_menu_items" }, set_menu_items );
 
     function set_menu_items( r ) {
 
@@ -61,20 +68,47 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
         // set parents for each menu item
         document.querySelectorAll( "#menu [data-parent]" ).forEach( function( el ) {
-            let parent = el.getAttribute( "data-parent" );
-            let self   = el.closest( "[data-item]" ).getAttribute( "data-item" );
-            el.innerHTML = el.innerHTML + r.parents;
+            el.nextElementSibling.insertAdjacentHTML( "beforeend", r.parents );
+            let pid = el.getAttribute( "data-parent" );
+            let parent = el.nextElementSibling.querySelector( `[value="${pid}"]` ).innerText.trim();
+            el.innerText = parent;
             // remove self
-            self = el.querySelector( `[value="${self}"]` );
+            let self   = el.closest( "[data-item]" ).getAttribute( "data-item" );
+            self = el.nextElementSibling.querySelector( `[value="${self}"]` );
             if ( self ) {
                 self.remove();
             }
-            el.value = parent;
         } );
 
         // selects
         let selects = document.querySelectorAll( "#menu .select-grid" );
         select3( selects );
+
+        // Select
+        document.querySelectorAll( "#menu .area-select-grid .field-select-menu, #menu .parent-select-grid .field-select" ).forEach( function( select ) {
+            select.addEventListener( "click", function( e ) {
+                e.stopPropagation();
+                select.nextElementSibling.classList.toggle( "open" );
+            } );
+        } );
+        // Option for menu
+        document.querySelectorAll( "#menu .area-select-grid .field-options option" ).forEach( function( option ) {
+            option.addEventListener( "click", function( e ) {
+                let input = this.closest( ".area-select-grid" ).querySelector( ".field-select-menu" );
+                input.innerText = this.innerText;
+                input.setAttribute( "data-menu-area", this.getAttribute( "value" ) );
+                //e.stopPropagation(); убираем чтобы закрылось автоматически
+            } );
+        } );
+        // Option for item
+        document.querySelectorAll( "#menu .parent-select-grid .field-options option" ).forEach( function( option ) {
+            option.addEventListener( "click", function( e ) {
+                let input = this.closest( ".parent-select-grid" ).querySelector( ".field-select" );
+                input.innerText = this.innerText.trim();
+                input.setAttribute( "data-parent", this.getAttribute( "value" ) );
+                //e.stopPropagation(); убираем чтобы закрылось автоматически
+            } );
+        } );
 
         // Toggle Menu Properties
         document.querySelectorAll( "#menu .menu-buttons .prop" ).forEach( function ( button ) {
@@ -90,9 +124,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 let item = this.closest( "[data-item]" );
                 let mid  = item.getAttribute( "data-item" );
 
-                let area = item.querySelector( "[name='area']" );
+                let area = item.querySelector( "[data-menu-area]" );
                 if ( area ) {
-                    area = area.value;
+                    area = area.getAttribute( "data-menu-area" );
                 }
 
                 let tag_title = item.querySelector( "[name='tag_title']" );
@@ -110,9 +144,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     id = id.getAttribute( "data-id" );
                 }
 
-                let pid = item.querySelector( "[name='pid']" );
+                let pid = item.querySelector( "[data-parent]" );
                 if ( pid ) {
-                    pid = pid.value;
+                    pid = pid.getAttribute( "data-parent" );
                 }
 
                 let target = item.querySelector( "[name='targetblank']" );
@@ -133,7 +167,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     area:      area,
                     target:    target
                 }
-                api2( data, function( r ) {
+                api( data, function( r ) {
                     if ( r.ok == "false" ) {
                         notify( r.info_text, r.info_class, r.info_time );
                     }
@@ -153,12 +187,12 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         // Delete Menu or Item
         document.querySelectorAll( "#menu .menu-buttons .del" ).forEach( function( button ) {
             button.addEventListener( "click", function( e ) {
-                if ( ! confirm( __( "Delete?", "menu.mod.php" ) ) ) return;
+                if ( ! confirm( __( "Удалить?", "menu.mod.php" ) ) ) return;
                 let data = {
                     fn: "del_menu_item",
                     mid: this.closest( "[data-item]" ).getAttribute( "data-item" )
                 };
-                api2( data, function( r ) {
+                api( data, function( r ) {
                     if ( r.info_text ) {
                         notify( r.info_text, r.info_class, r.info_time );
                         if ( r.info_class == "info-success" ) {
@@ -176,13 +210,29 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
     }
 
+    // collapse select dropdown
+    document.body.addEventListener( "click", function( e ) {
+        document.querySelectorAll( "#menu .select-grid .field-options" ).forEach( function( el ) {
+            el.classList.remove( "open" );
+        } );
+    } );
+
+    // Select
+    // Закрытие выпадающих списков при кликах вне их, а так же по ним
+    document.body.addEventListener( "click", function( e ) {
+        document.querySelectorAll( "#menu .field-options" ).forEach( function( list ) {
+            list.classList.remove( "open" );
+        } );
+    } );
+
     function modMenuCreate( e ) {
         let pid = this.closest( "[data-item]" ).getAttribute( "data-item" );
-        api2( { fn : "create_menu_item", pid : pid }, function( r ) {
+        api( { fn : "create_menu_item", pid : pid }, function( r ) {
             if ( r.info_text ) {
                 notify( r.info_text, r.info_class, r.info_time );
                 if ( r.info_class == "info-success" ) {
                     set_menu_items( r );
+                    document.querySelector( `#menu [data-item="${r.mid}"] .prop` ).click();
                 }
             }
         } );
@@ -193,7 +243,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     
     // update page used in menu
     document.body.addEventListener( "update_menu", function( e ) {
-        api2( { fn: "get_menu_items" }, set_menu_items );
+        api( { fn: "get_menu_items" }, set_menu_items );
     } );
 
 } );

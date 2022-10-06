@@ -1,17 +1,17 @@
 <?php
 
 $cms["modules"]["admin.mod.php"] = array(
-    "name"        => __( "Admin" ),
-    "description" => __( "Responsible for the items Authorization, PHP Info, Admin, Modules." ),
-    "version"     => "22.04",
+    "name"        => __( "Админка" ),
+    "description" => __( "Отвечает за пункты Авторизация, PHP Инфо, Админка, Модули." ),
+    "version"     => "",
+    "locale"      => "ru_RU.UTF-8",
     "files"       => array(
         ".cms/mod/admin.mod.php",
         ".cms/js/admin.js",
         ".cms/css/admin.css",
-        ".cms/lang/ru_RU.UTF-8/admin.mod.php",
+        ".cms/lang/en_US.UTF-8/admin.mod.php",
         ".cms/lang/uk_UA.UTF-8/admin.mod.php",
     ),
-    "sort"        => 20,
 );
 
 // PHP_VERSION_ID available in PHP 5.2.7 and above
@@ -26,6 +26,14 @@ if ( ! empty( $cms["config"]["admin.mod.php"]["disabled"] ) ) {
     return;
 
 } else {
+    /*
+    if ( ! empty( $cms["config"]["debug"] ) ) {
+        $translate_log = $cms["cms_dir"] . "/translate.log";
+        if ( file_exists( $translate_log ) ) {
+            unlink( $translate_log );
+        }
+    }
+    */
 
     // Find and switch lang
     if ( empty( $cms["config"]["locale"] ) || ! empty( $_GET["locale"] ) ) {
@@ -85,10 +93,11 @@ if ( ! empty( $cms["config"]["admin.mod.php"]["disabled"] ) ) {
 
     $cms["urls"]["^{$cms['config']['admin.mod.php']['cron_url']}$"] = "cron";
 
-
+    // Authorized admin and not authorized admin
     cms_add_function( "admin",         "cms_admin_admin", 9999 );
     cms_add_function( "admin_header",  "cms_admin_admin_header" );
     cms_add_function( "api",           "cms_admin_api" );
+
 }
 
 function cms_admin_admin_header() {
@@ -108,9 +117,9 @@ function cms_admin_menu() {
     global $cms;
 
     $default_sort = array(
-        "Content"    => 10,
-        "Navigation" => 20,
-        "Settings"   => 30,
+        "Контент"    => 10,
+        "Навигация" => 20,
+        "Настройки"   => 30,
     );
     
     if ( ! empty( $cms["config"]["admin_sections"] ) ) {
@@ -160,23 +169,26 @@ function cms_admin_admin() {
     $cms["template"] = "admin";
     $cms["status"] = "200";
     $cms["stages"]["write"]["disabled"] = true;
-    
+
+    // Not required code if not authorized
     if ( ! is_admin() ) return;
     
     // Save settings
     if ( ! empty( $_POST["change_admin_login"] ) ) {
-        $login = trim( $_POST["admin_login"] );
-        $password = trim( $_POST["admin_password"] );
-        $cms["config"]["admin.mod.php"]["admin_login"] = $login;
-        if ( ! empty( $password ) ) {
-            $cms["config"]["admin.mod.php"]["admin_password"] = $password;
+        $login     = trim( $_POST["admin_login"] );
+        $password  = trim( $_POST["admin_password"] );
+        $admin_url = strtolower( cms_translit( trim( $_POST["admin_url"] ), false ) );
+        if ( substr( $admin_url, 0, 1 ) !== "/" ) {
+            $admin_url = "/" . $admin_url;
         }
+        $cms["config"]["admin.mod.php"]["admin_login"] = $login;
+        $cms["config"]["admin.mod.php"]["admin_password"] = $password;
+        $cms["config"]["admin.mod.php"]["admin_url"] = $admin_url;
         cms_save_config();
         header( "Location: {$cms['config']['admin.mod.php']['admin_url']}" );
         exit;
     }
 
-    $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 777 777"><rect width="777" height="777" style="fill:none"></rect><path d="M426.79,388.5,592.1,223.19a27.15,27.15,0,0,0,0-38.29h0a27.15,27.15,0,0,0-38.29,0L388.5,350.21,223.19,184.9a27.15,27.15,0,0,0-38.29,0h0a27.15,27.15,0,0,0,0,38.29L350.21,388.5,184.9,553.81a27.08,27.08,0,0,0,38.29,38.29L388.5,426.79,553.81,592.1a27.08,27.08,0,0,0,38.29-38.29Z" style="fill:#fff"></path></svg>';
     $rows = "";
     foreach ( $cms["config"]["logged"] as $login => $attr ) {
         if ( $login === $_COOKIE["sess"] ) {
@@ -185,8 +197,8 @@ function cms_admin_admin() {
             $current = "";
         }
         $rows .= "
-<div data-logged {$current}>
-    <div class=del-sess data-login='{$login}'>{$svg}</div>
+<div {$current}>
+    <div class=del-sess data-login='{$login}'></div>
     <div>{$attr['date']}</div>
     <div>{$attr['ip']}</div>
     <div>{$attr['user_agent']}</div>
@@ -195,6 +207,9 @@ function cms_admin_admin() {
 
     $logouts = "";
     if ( ! empty( $cms["config"]["logouted"] ) ) {
+        // Перебираем закрытые сессии в прямом порядки
+        // и очередную добавляем в начало списка,
+        // чтобы получить обратный порядок отображения.
         foreach ( $cms["config"]["logouted"] as $attr ) {
             $logouts = "
 <div>
@@ -208,13 +223,16 @@ function cms_admin_admin() {
     }
     
     // Display settings
-    $tr_login   = __( "Login or Email" );
-    $tr_passw   = __( "Password" );
-    $tr_set     = __( "Set" );
-    $tr_current = __( "Current logins" );
-    $tr_history = __( "Logins history" );
+    $tr_login     = __( "Логин или эл.почта" );
+    $tr_passw     = __( "Пароль" );
+    $tr_set       = __( "Установить" );
+    $tr_current   = __( "Текущие входы" );
+    $tr_history   = __( "История входов" );
+    $tr_admin_url = __( "URL админки" );
     $form = "
 <form method=post>
+    <div class=admin-url>{$tr_admin_url}</div>
+    <input name=admin_url type=text value='{$cms['config']['admin.mod.php']['admin_url']}' autocomplete=off size=16>
     <div class=login-title>{$tr_login}</div>
     <input name=admin_login type=text value='{$cms['config']['admin.mod.php']['admin_login']}' autocomplete=off size=16>
     <div class=passwd-title>{$tr_passw}</div>
@@ -223,7 +241,7 @@ function cms_admin_admin() {
         <div class=password-eye></div>
     </div>
     <div></div>
-    <input type=submit value='{$tr_set}' name=change_admin_login>
+    <button value=save name=change_admin_login>{$tr_set}</button>
 </form>
 
 <div class=current-sess>
@@ -239,10 +257,10 @@ function cms_admin_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["admin.mod.php"]["menu"]["auth"] ) ) {
         $cms["config"]["admin.mod.php"]["menu"]["auth"] = array(
-            "title"    => "Auth",
+            "title"    => "Авторизация",
             "sort"     => 10,
             "class"    => "",
-            "section"  => "Settings",
+            "section"  => "Настройки",
             "hide"     => false,
         );
         cms_save_config();
@@ -250,6 +268,7 @@ function cms_admin_admin() {
     $cms["admin_pages"]["auth"] = $form;
 
    
+    
     // PHP Info
 
     ob_start();
@@ -259,22 +278,37 @@ function cms_admin_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["admin.mod.php"]["menu"]["phpinfo"] ) ) {
         $cms["config"]["admin.mod.php"]["menu"]["phpinfo"] = array(
-            "title"    => "PHP Info",
+            "title"    => "PHP Инфо",
             "sort"     => 30,
             "class"    => "",
-            "section"  => "Settings",
+            "section"  => "Настройки",
             "hide"     => false,
         );
         cms_save_config();
     }
     $cms["admin_pages"]["phpinfo"] = $page;
 
-    $tr_on  = __( "Turn on" );
-    $tr_off = __( "Turn off" );
-    $tr_del = __( "Delete" );
+    $tr_on  = __( "Включить" );
+    $tr_off = __( "Выключить" );
+    $tr_del = __( "Удалить" );
+    $tr_upl = __( "Установить модуль" );
+
+
 
     // Modules List
-    $admin_menu = "<div class=modules-grid>";
+    $admin_menu = "
+    <div class=header>
+        <input id=module-upload type=file name='myfile[]' multiple class=files>
+        <label for=module-upload>{$tr_upl}</label>
+    </div>
+    <div class=modules-grid>";
+
+    // Сортировка модулей
+    function modules_sort( $a, $b ) {
+        return ( $a["name"] < $b["name"] ) ? -1 : 1;
+    }
+    uasort( $cms["modules"], "modules_sort" );
+
     foreach( $cms["modules"] as $mod => $mod_cfg ) {
         if ( ! empty( $cms["config"][$mod]["disabled"] ) ) {
             $status = "disabled";
@@ -282,6 +316,10 @@ function cms_admin_admin() {
         } else {
             $status = "enabled";
             $tr_sw  = $tr_off;
+        }
+        // Скрыть версию у модуля обновлений
+        if ( $mod === "update.mod.php" ) {
+            $mod_cfg['version'] = "";
         }
         $admin_menu .= "
 <div class={$status} data-module={$mod}>
@@ -297,10 +335,10 @@ function cms_admin_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["admin.mod.php"]["menu"]["modules"] ) ) {
         $cms["config"]["admin.mod.php"]["menu"]["modules"] = array(
-            "title"    => "Modules",
+            "title"    => "Модули",
             "sort"     => 50,
             "class"    => "",
-            "section"  => "Settings",
+            "section"  => "Настройки",
             "hide"     => false,
         );
         cms_save_config();
@@ -313,10 +351,10 @@ function cms_admin_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["admin.mod.php"]["menu"]["admin_menu"] ) ) {
         $cms["config"]["admin.mod.php"]["menu"]["admin_menu"] = array(
-            "title"    => "Admin",
+            "title"    => "Админка",
             "sort"     => 40,
             "class"    => "",
-            "section"  => "Settings",
+            "section"  => "Настройки",
             "hide"     => false,
         );
         cms_save_config();
@@ -324,14 +362,14 @@ function cms_admin_admin() {
     
     cms_admin_menu();
 
-    $tr_add_container = __( "Add Container" );
-    $tr_show          = __( "Show" );
-    $tr_hide          = __( "Hide" );
-    $tr_save          = __( "Save" );
-    $tr_del_container = __( "Delete" );
-    $tr_reset         = __( "Reset" );
+    $tr_add_section   = __( "Добавить секцию" );
+    $tr_show          = __( "Показать" );
+    $tr_hide          = __( "Скрыть" );
+    $tr_save          = __( "Сохранить" );
+    $tr_del_section   = __( "Удалить" );
+    $tr_reset         = __( "Сброс" );
 
-    // Admin Containers
+    // Admin Sections
     $admin_menu = "
 <div class=main-main>
     <div class=am-grid>";
@@ -346,15 +384,15 @@ function cms_admin_admin() {
         $admin_menu .= "
 <div>
     
-    <div class={$status} data-am-type=section data-am-item={$section_name}>
+    <div class={$status} data-am-type=section data-am-item='{$section_name}'>
         <input name=title type=text value='{$section['title']}'>
         <input name=sort type=text value='{$section['sort']}'>
         <a data-am-save>{$tr_save}</a>
-        <a data-am-delete>{$tr_del_container}</a>
+        <a data-am-delete>{$tr_del_section}</a>
         <a data-am-sw>{$tr_sw}</a> 
     </div>
 
-    <div class=items-grid data-am-childs={$section_name}>";
+    <div class=items-grid data-am-childs='{$section_name}'>";
 
         // Admin Items
         if ( ! empty( $cms["admin_sections"][$section_name]["items"] ) )
@@ -370,21 +408,25 @@ function cms_admin_admin() {
             $title = __( $item["title"], $item["module"] );
 
             $options = "";
+            $tr_section_name = $section_name;
             foreach( $cms["admin_sections"] as $section_name2 => $section2 ) {
-                if ( $section_name === $section_name2 ) {
-                    $selected = "selected";
-                } else {
-                    $selected = "";
-                }
                 $tr_s_title = __( $section2["title"] );
-                $options .= "<option value={$section_name2} {$selected}>{$tr_s_title}</option>";
+                if ( $section_name2 === $section_name ) {
+                    $tr_section_name = $tr_s_title;
+                }
+                $options .= "<option value='{$section_name2}'>{$tr_s_title}</option>";
             }
 
             $admin_menu .= "
 <div class={$status} data-am-type=item data-am-module={$item['module']} data-am-item={$iname}>
     <div class=item-name>{$title}</div>
     <input name=sort type=text value='{$item['sort']}'>
-    <select name=section>{$options}</select>
+    <div class=section-select-grid>
+        <div class=field-select data-section='{$section_name}'>{$tr_section_name}</div>
+        <div class=field-options>
+            {$options}
+        </div>
+    </div>
     <a data-am-save>{$tr_save}</a>
     <a data-am-save data-am-reset>{$tr_reset}</a>
     <a data-am-sw>{$tr_sw}</a> 
@@ -401,7 +443,7 @@ function cms_admin_admin() {
     </div> <!-- class=am-grid -->
 </div> <!-- class=main-main -->
 <div class=main-footer>
-    <a class=add-section>{$tr_add_container}</a>
+    <a class=add-section>{$tr_add_section}</a>
 </div>";
 
     $cms["admin_pages"]["admin_menu"] = $admin_menu;
@@ -436,15 +478,16 @@ function cms_admin_api() {
             }
             cms_save_config();
             if ( is_email( $cms["config"]["admin.mod.php"]["admin_login"] ) ) {
-                $subject = __( "Install finished" );
-                $body  = "<h2>" . __( "Congratulations!" ) . "</h2>";
-                $body .= "<p>"  . __( "Install finished" ) . ".</p>";
-                $body .= "<h4>" . __( "Credentials for login" ) . "</h4>";
-                $body .= "<p>"  . __( "Login URL" ) . ": <a href='{$link}'>{$link}</a></p>";
-                $body .= "<p>"  . __( "Login" ) . ": {$_POST['login']}</p>";
-                $body .= "<p>"  . __( "Password" ) . ": {$_POST['password']}</p>";
-                $body .= "<p></p>";
-                $body .= "<p>"  . __( "Please login and setup database" ) . ".</p><p></p>";
+                $subject = __( "Установка завершена" );
+                $body  = "<p>" . __( "Поздравляем!" ) . "</p>";
+                $body .= "<p>"  . __( "Установка завершена" ) . ".</p>";
+                $body .= "<p>&nbsp;</p>";
+                $body .= "<p>" . __( "Данные для входа на сайт" ) . "</p>";
+                $body .= "<p>"  . __( "Адрес  админки" ) . ": <a href='{$link}'>{$link}</a></p>";
+                $body .= "<p>"  . __( "Логин" ) . ": {$_POST['login']}</p>";
+                $body .= "<p>"  . __( "Пароль" ) . ": {$_POST['password']}</p>";
+                $body .= "<p>&nbsp;</p>";
+                $body .= "<p>"  . __( "Зайдите на сайт и настройте подключение к базе данных" ) . ".</p>";
                 cms_email( array(
                     "type" => "text/html",
                     "from_email" => "noreply@" . $cms["url"]["host"],
@@ -486,13 +529,13 @@ function cms_admin_api() {
 
             if ( cms_save_config() ) {
                 if ( PHP_VERSION_ID < 70300 ) {
-                    setcookie( "sess", $sess, 365 * 24 * 60 * 60 );
+                    setcookie( "sess", $sess, time() + 365 * 24 * 60 * 60 );
                 } else {
                     setcookie( "sess", $sess, array( "SameSite" => "Lax", "expires" => time() + 365 * 24 * 60 * 60 ) );
                 }
             } else {
                 exit( json_encode( array(
-                    "info_text"  => __( "Can't write" ) . " .cms/config.php",
+                    "info_text"  => __( "Не могу записать" ) . " .cms/config.php",
                     "info_class" => "info-error",
                     "info_time"  => 5000,
                 ) ) );
@@ -504,7 +547,7 @@ function cms_admin_api() {
         } else {
             $cms["config"]["locale"] = $_POST["locale"];
             exit( json_encode( array(
-                "info_text"  => __( "Access denied" ),
+                "info_text"  => __( "Доступ запрещен" ),
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
@@ -514,22 +557,6 @@ function cms_admin_api() {
     // Cookie, Logout, Admin, Modules
     if ( ! empty( $_POST["fn"] ) && is_admin() ) {
         switch ( $_POST["fn"] ) {
-
-            /*
-            case "cookie_expires":
-                $expiry = time() + 31 * 24 * 60 * 60;
-                if ( PHP_VERSION_ID < 70300 ) {
-                    setcookie( "sess", $_COOKIE["sess"], $expiry );
-                } else {
-                    setcookie( "sess", $_COOKIE["sess"], array( "SameSite" => "Lax", "expires" => $expiry ) );
-                }
-                exit( json_encode( array(
-                    "info_text"  => "OK",
-                    "info_class" => "info-success",
-                    "info_time"  => 5000,
-                ) ) );
-            break;
-            */
 
             case "logout":
                 $cms["status"] = "200";
@@ -553,13 +580,15 @@ function cms_admin_api() {
                 if ( ! isset($cms["config"]["logouted"]) ) {
                     $cms["config"]["logouted"] = array();
                 }
+                // Добавляем закрытую сессию в конец массива в историю
                 array_push( $cms["config"]["logouted"], $cms["config"]["logged"][$login] );
+                // Оставим только последние 10 выходов в истории
                 $cms["config"]["logouted"] = array_slice( $cms["config"]["logouted"], -10 );
                 unset( $cms["config"]["logged"][$login] );
                 cms_save_config();
 
                 exit( json_encode( array(
-                    "info_text"  => __( "Logout completed" ),
+                    "info_text"  => __( "Выход выполнен" ),
                     "info_class" => "info-success",
                     "info_time"  => 5000,
                     "result"     => $result,
@@ -606,17 +635,17 @@ function cms_admin_api() {
 
             case "admin_menu_add_section":
                 $n = 1;
-                while ( isset( $cms["config"]["admin_sections"]["Container".$n] ) ) {
+                while ( isset( $cms["config"]["admin_sections"]["Section".$n] ) ) {
                     $n++;
                 }
-                $cms["config"]["admin_sections"]["Container".$n] = array(
-                    "title" => "Container_".$n,
+                $cms["config"]["admin_sections"]["Section".$n] = array(
+                    "title" => __( "Новая секция" ),
                     "sort"  => ( count( $cms["config"]["admin_sections"] ) + 1 ) * 10,
                     "hide"  => false,
                 );
                 cms_save_config();
                 exit( json_encode( array(
-                    "info_text"  => __( "OK" ),
+                    "info_text"  => __( "Добавлена секция" ),
                     "info_class" => "info-success",
                     "info_time"  => 3000,
                 ) ) );
@@ -627,7 +656,7 @@ function cms_admin_api() {
                 unset( $cms["config"]["admin_sections"][ $_POST["item"] ]);
                 cms_save_config();
                 exit( json_encode( array(
-                    "info_text"  => __( "OK" ),
+                    "info_text"  => __( "Удалено" ),
                     "info_class" => "info-success",
                     "info_time"  => 1000,
                 ) ) );
@@ -636,7 +665,7 @@ function cms_admin_api() {
             case "module_disable":
                 if ( $_POST["module"] == "admin.mod.php" || $_POST["module"] == "template.mod.php" ) {
                     exit( json_encode( array(
-                        "info_text"  => __( "It is not a switchable module" ),
+                        "info_text"  => __( "Это не отключаемый модуль" ),
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
@@ -653,7 +682,7 @@ function cms_admin_api() {
             break;
 
             case "module_del":
-                $text = __( "Delete following files:" );
+                $text = __( "Удалите следующие файлы:" );
                 foreach( $cms["modules"][$_POST["module"]]["files"] as $file ) {
                     $text .= "<br>{$file}";
                 }
@@ -662,6 +691,67 @@ function cms_admin_api() {
                     "info_class" => "info-error",
                     "info_time"  => 60000,
                 ) ) );
+            break;
+
+            case "install_module":
+                $success = true;
+                $text = "dev.coffee-cms.ru";
+                if ( $cms["url"]["host"] !== $text )
+                foreach ( $_FILES["myfile"]["name"] as $n => $name ) {
+                    if ( $_FILES["myfile"]["error"][$n] ) {
+                        $success = false;
+                        $text = str_replace( "xxx", $name, __( "Ошибка загрузки xxx" ) );
+                        break;
+                    } else {
+                        // Unpack Module
+                        // Object Oriented Style for future compability with PHP 8
+                        $zip = new ZipArchive;
+                        if ( $zip->open( $_FILES["myfile"]["tmp_name"][$n] ) === TRUE ) {
+                            $zip->extractTo( $cms["site_dir"] );
+                            $zip->close();
+                            // Load module
+                            $name = preg_replace( "/\..+/", "", $name );
+                            $fname = "{$cms['cms_dir']}/mod/{$name}.mod.php";
+                            if ( file_exists( $fname ) ) {
+                                include_once( $fname );
+                                cms_do_stage( "create_tables" );
+                            }
+
+                            // Выполнить запросы в БД, находящиеся в файле $name.update.sql
+                            $update_sql = "{$cms["cms_dir"]}/mod/{$name}.update.sql";
+                            $q = "";
+                            if ( file_exists( $update_sql ) ) {
+                                $q = file_get_contents( $update_sql );
+                            }
+                            if ( $q ) {
+                                cms_base_connect();
+                                if ( $cms["base"] ) {
+                                    $res = mysqli_multi_query( $cms["base"], $q );
+                                }
+                            }
+
+                            $text = __( "Успешная установка" );
+                        } else {
+                            $success = false;
+                            $text = str_replace( "xxx", $name, __( "Не могу распаковать xxx" ) );
+                            break;
+                        }
+                    }
+                }
+
+                if ( $success ) {
+                    exit( json_encode( array(
+                        "info_text"  => $text,
+                        "info_class" => "info-success",
+                        "info_time"  => 5000,
+                    ) ) );
+                } else {
+                    exit( json_encode( array(
+                        "info_text"  => $text,
+                        "info_class" => "info-error",
+                        "info_time"  => 10000,
+                    ) ) );
+                }
             break;
         }
         

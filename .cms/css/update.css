@@ -23,28 +23,29 @@
     }
 }
 
+#update > div {
+    background-image: var(--noise);
+}
+
 #update .backup-window {
     display: grid;
     grid-auto-rows: max-content;
     row-gap: 1rem;
     box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
     border-radius: 0.3rem;
-    background-color: var(--update-backup-window-bg);
+    background-color: var(--windows);
 }
 #update .backup-window .hidden {
     display: none;
 }
 
 #update > .backup-window > div {
-    color: var(--update-backup-window-div);
+    color: var(--windows-font);
 }
 #update .backup-window p {
     font-size: 1rem;
-    color: var(--update-backup-window-font);
+    color: var(--link);
     word-break: break-all;
-}
-#update .backup-window p a {
-    color: var(--update-backup-window-p-a);
 }
 
 .backup-window .buttons {
@@ -75,14 +76,14 @@
     row-gap: 1rem;
     box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
     border-radius: 0.3rem;
-    background-color: var(--update-update-window-bg);
+    background-color: var(--windows);
 }
 #update > .update-window > div {
-    color: var(--update-update-window-div);
+    color: var(--windows-font);
 }
 #update .update-window div p {
     font-size: 1rem;
-    color: var(--update-update-window-font);
+    color: var(--text);
 }
 #update .update-window p a {
     color: var(--update-update-window-p-a);
@@ -104,17 +105,17 @@
     row-gap: 1rem;
     box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
     border-radius: 0.3rem;
-    background-color: var(--update-dev-window-bg);
+    background-color: var(--windows);
 }
 #update > .dev-window > div {
-    color: var(--update-dev-window-div);
+    color: var(--windows-font);
 }
 #update .dev-window p {
     font-size: 1rem;
-    color: var(--update-dev-window-font);
+    color: var(--text);
 }
 #update .dev-window p a {
-    color: var(--update-dev-window-p-a);
+    color: var(--link);
 }
 @media (max-width: 1023px) {
     #update .dev-window {
@@ -149,16 +150,3 @@
     row-gap: 1rem;
 }
 
-.backup-window > div.buttons button, .update-window > div.buttons button, .dev-window > div.buttons button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.44rem 0.74rem 0.37rem 0.74rem;
-    min-height: 35px;
-    border-radius: 0.24rem;
-    border: none;
-    font-size: 0.875rem;
-    color: var(--backup-form-button-font);
-    background-color: var(--backup-form-button);
-    cursor: pointer;
-}

@@ -60,10 +60,11 @@
 	
 <?php
     if ( $cms['status'] === '404' ) {
-        if ( !empty( $cms['page']['text'] ) && is_admin() ) {
-            echo $cms['page']['text'];
+        if ( ! empty( $cms['page']['text'] ) && is_admin() ) {
+            $f = __DIR__ . '/' . $cms["template_prefix"] . $cms['page']['tpl'] . $cms["template_suffix"];
+            if ( file_exists( $f ) ) { include( $f ); }
         } else {
-            $f404 = __DIR__.'/404.'.$cms['config']['locale'].'.php';
+            $f404 = __DIR__ . '/404.' . $cms['config']['locale'] . $cms["template_suffix"];
 			if ( file_exists( $f404 ) ) {
 				include( $f404 );
 			} else {
@@ -71,7 +72,7 @@
 			}
         }
     } else {
-		$f = __DIR__.'/html-'.$cms['page']['tpl'].'.php';
+		$f = __DIR__ . '/' . $cms["template_prefix"] . $cms['page']['tpl'] . $cms["template_suffix"];
         if ( file_exists( $f ) ) { include( $f ); }
     }
 ?>
@@ -80,7 +81,7 @@
 		<div class="minmax-footer">
 			<div class="left-footer">
 			    <?php echo menu( "footer" ); ?>
-			    <div class="copyright">Powered by <a target="_blank" href="https://coffee-cms.com/">Coffee CMS</a></div>
+			    <div class="copyright">Powered by <a target="_blank" href="https://coffee-cms.ru/">Coffee CMS</a></div>
 			</div>
 			<div class="right-footer">
 			    <div><!--Your Code ;)--></div>
@@ -95,7 +96,7 @@
     
     <script>
 		document.addEventListener( "DOMContentLoaded", function( event ) {
-			let toggle_btns = document.querySelectorAll( ".button-mobimenu-container, .bg-reset, .mobile-menu-content li" );
+			let toggle_btns = document.querySelectorAll( ".button-mobimenu-container, .bg-reset, aside li" );
 			toggle_btns.forEach( function( toggle_btn ) {
 				toggle_btn.addEventListener( "click", function() {
             		document.body.classList.toggle( "mobile-menu-open" );

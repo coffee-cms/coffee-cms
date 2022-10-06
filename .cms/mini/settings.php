@@ -1,12 +1,32 @@
 <?php
 
+$default_tpl = "page";
+
 $name = $cms["config"]["template.mod.php"]["template"];
 
 // Translate
 $cms["lang"][$name]["ru_RU.UTF-8"] = array(
-    "Header"   => "Верхнее",
-    "Footer"   => "Нижнее",
-    "Side"     => "Боковое",
+    "Header"    => "Верхнее",
+    "Footer"    => "Нижнее",
+    "Side"      => "Боковое",
+    "Title"     => "Заголовок",
+    "Paragraph" => "Параграф",
+    "Blog"      => "Блог",
+    "Frontpage" => "Главная",
+    "Page"      => "Страница",
+    "Post"      => "Запись блога",
+);
+
+$cms["lang"][$name]["uk_UA.UTF-8"] = array(
+    "Header"    => "Верхнє",
+    "Footer"    => "Нижнє",
+    "Side"      => "Бічнє",
+    "Title"     => "Заголовок",
+    "Paragraph" => "Параграф",
+    "Blog"      => "Блог",
+    "Frontpage" => "Головна",
+    "Page"      => "Сторінка",
+    "Post"      => "Запис блогу",
 );
 
 // Areas
@@ -20,20 +40,18 @@ $cms["templates"][$name]["files"] = array(
     ".cms/{$name}/style.css",
     ".cms/{$name}/html.php",
     ".cms/{$name}/html-page.php",
+    ".cms/{$name}/html-post.php",
+    ".cms/{$name}/html-blog.php",
+    ".cms/{$name}/html-frontpage.php",
+    ".cms/{$name}/teaser.php",
     ".cms/{$name}/404.en_US.UTF-8.php",
     ".cms/{$name}/404.ru_RU.UTF-8.php",
     ".cms/{$name}/404.uk_UA.UTF-8.php",
+    ".cms/{$name}/instruction.ru_RU.UTF-8.html",
 );
 
-$cms["lang"][$name]["ru_RU.UTF-8"] = array(
-    "Title" => "Заголовок",
-    "Paragraph" => "Параграф",
-);
 
-$cms["lang"][$name]["uk_UA.UTF-8"] = array(
-    "Title" => "Заголовок",
-    "Paragraph" => "Параграф",
-);
+
 
 $title = __( "Title",   $name );
 $text  = __( "Paragraph",   $name );
@@ -44,12 +62,35 @@ $cms["templates"][$name]["page_templates"]["page"] = <<<EOP
 <p>{$text}</p>
 EOP;
 
+$cms["templates"][$name]["page_templates"]["post"] = <<<EOP
+<h1>{$title}</h1>
+
+<!--preview-start-->
+
+<p>{$text}</p>
+
+<p>{$text}</p>
+
+<!--preview-end-->
+
+<p>{$text}</p>
+
+<p>{$text}</p>
+
+<p>{$text}</p>
+
+<p>{$text}</p>
+EOP;
+
 cms_add_function( "clear_cache", "template_mini_clear_cache" );
 
+// Clear Blog pages
 if ( ! function_exists( "template_mini_clear_cache" ) ) {
     function template_mini_clear_cache() {
         global $cms;
 
+        if ( ! $cms["base"] ) { return ""; } // fix php 8.0
+        
         $q = "SELECT * FROM pages WHERE tpl = 'blog'";
         if ( $res1 = mysqli_query( $cms["base"], $q ) ) {
             

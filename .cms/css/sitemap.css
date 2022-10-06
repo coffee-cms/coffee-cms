@@ -18,7 +18,11 @@
     }
     #sitemap form {
         grid-template-columns: 1fr;
-        grid-template-areas: "xml-wrapper-hidden" "xml-wrapper-link" "xml-static-dynamic" "xml-static-cron";
+        grid-template-areas: 
+            "xml-wrapper-hidden" 
+            "xml-wrapper-link" 
+            "xml-static-dynamic" 
+            "xml-static-cron";
     }
 }
 @media (min-width: 1024px) {
@@ -27,7 +31,9 @@
     }
     #sitemap form {
         grid-template-columns: 1fr 1fr;
-        grid-template-areas: "xml-wrapper-hidden xml-wrapper-link" "xml-static-dynamic xml-static-cron";
+        grid-template-areas: 
+            "xml-wrapper-hidden xml-wrapper-link" 
+            "xml-static-dynamic xml-static-cron";
     }
 }
 
@@ -35,12 +41,13 @@
     display: grid;
     grid-auto-rows: max-content;
     row-gap: 0.7rem;
-    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 2px 3px 0 #00000033;
     border-radius: 0.3rem;
-    background: var(--xml-wrapper-areas);
+    background-color: var(--windows);
+    background-image: var(--noise);
 }
-.xml-wrapper-hidden div, .xml-wrapper-link div, .xml-static-dynamic div, .xml-static-cron div {
-    color: var(--xml-wrapper-areas-div);
+.xml-wrapper-hidden div, .xml-wrapper-link div, .xml-static-dynamic div, .xml-static-cron div, .sitemap-manual div {
+    color: var(--windows-font);
 }
 
 @media (max-width: 1023px) {
@@ -58,12 +65,12 @@
     line-height: 1.3em;
     resize: vertical;
     width: 100%;
-    background: var(--sitemap-textarea-bg);
-    border: 1px solid var(--sitemap-textarea-border);
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
     border-radius: 4px;
     font-family: var(--monospace);
     font-size: 1rem;
-    color: var(--sitemap-textarea-font);
+    color: var(--input-font);
     padding: 0 8px;
     min-height: 30px;
 }
@@ -78,13 +85,17 @@
     padding: 0 0.54rem;
     min-height: 35px;
     width: 100%;
-    color: var(--sitemap-form-input-font);
-    background-color: var(--sitemap-form-input-bg);
-    border: 1px solid var(--sitemap-form-input-border);
+    color: var(--input-font);
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
+}
+
+#sitemap form div > button {
+    width: fit-content;
 }
 
 #sitemap .xml-static-dynamic input[type="text"] {
-    color: var(--xml-static-dynamic-input-font);
+    color: var(--input-font);
 }
 .xml-static-dynamic label input[type="radio"] {
     cursor: pointer;
@@ -93,27 +104,27 @@
     border-radius: 50%;
     width: 0.73rem;
     height: 0.73rem;
-    background-color: var(--xml-static-dynamic-label-input);
+    background-color: var(--bg-4);
     transform: translate(0, 0);
     appearance: none;
 }
 .xml-static-dynamic label input:checked {
-    background-color: var(--xml-static-dynamic-label-input-checked-bg);
-    border-color: var(--xml-static-dynamic-label-input-checked-border);
-    box-shadow: 0 0 0 0.25rem var(--xml-static-dynamic-label-input-checked-shadow);
+    background-color: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 0 0.25rem var(--focus-orange);
 }
 
 .xml-static-dynamic label {
     cursor: pointer;
     line-height: 1.1em;
     font-size: 1rem;
-    color: var(--xml-static-dynamic-label-font);
+    color: var(--link);
     user-select: none;
 }
 
 .xml-static-cron p {
     font-size: 1rem;
-    color: var(--xml-static-cron-font);
+    color: var(--text);
 }
 .xml-static-cron input[type="text"] {
     max-width: 70px;
@@ -121,9 +132,9 @@
     font-size: 0.875rem;
     padding: 0 0.54rem;
     min-height: 35px;
-    background-color: var(--sitemap-form-input-bg);
-    border: 1px solid var(--sitemap-form-input-border);
-    color: var(--sitemap-form-input-font);
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
+    color: var(--input-font);
     text-align: center;
 }
 
@@ -133,15 +144,13 @@
     gap: 1rem;
     box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
     border-radius: 0.3rem;
-    background-color: var(--sitemap-manual);
-}
-.sitemap-manual div {
-    color: var(--sitemap-manual-div);
+    background-color: var(--windows);
+    background-image: var(--noise);
 }
 
 .sitemap-manual p {
     font-size: 1rem;
-    color: var(--sitemap-manual-font);
+    color: var(--text);
 }
 
 @media (max-width: 1023px) {

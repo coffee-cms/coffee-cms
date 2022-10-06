@@ -10,7 +10,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         button.addEventListener( "click", function( e ) {
             let file = this.innerText;
             // get file from server
-            api2( { fn: "get_template_file", file: file }, function( r ) {
+            api( { fn: "get_template_file", file: file }, function( r ) {
                 if ( r.ok == "true" ) {
                     document.querySelector( ".template-editor-title" ).innerText = file;
                     document.querySelector( ".template-editor > textarea" ).value = r.file;
@@ -29,94 +29,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                         ".css" : "text/css"
                     }
 
-                    // Connect Editor
-                    let txtarea = document.querySelector( ".template-editor > textarea" );
-                    window.cmt = CodeMirror.fromTextArea( txtarea, {
-                        mode: aext[ext],
-                        styleActiveLine:   true,
-                        lineNumbers:       true,
-                        lineWrapping:      true,
-                        autoCloseBrackets: true,
-                        smartIndent:       true,
-                        matchBrackets:     true,
-                        theme:             theme,
-                        autoCloseTags: {
-                            whenClosing: true,
-                            whenOpening: true,
-                            indentTags:  [ "div", "ul", "ol", "script", "style" ],
-                        },
-                        phrases: {
-                            "Search:":                              _( "Search:" ),
-                            "(Use /re/ syntax for regexp search)" : _( "(Use /re/ syntax for regexp search)" ),
-                            "Replace all:":                         _( "Replace all:" ),
-                            "With:":                                _( "With:" ),
-                            "Replace:":                             _( "Replace:" ),
-                            "Replace?":                             _( "Replace?" ),
-                            "Yes":                                  _( "Yes" ),
-                            "No":                                   _( "No" ),
-                            "All":                                  _( "All" ),
-                            "Stop":                                 _( "Stop" ),
-                        },
-                        extraKeys: { "Ctrl-Space": "autocomplete" }
-                    } );
-                    if ( cmt.showHint ) {
-                        cmt.on( "keydown", function( editor, event ) {
-                            if ( event.ctrlKey == true ) { return } // Ctrl+S call Hint
-                            let isAlphaKey = /^[a-zA-Z]$/.test( event.key );
-                            if ( cmt.state.completionActive && isAlphaKey ) {
-                                return;
-                            }
-
-                            // Prevent autocompletion in string literals or comments
-                            let cursor = cmt.getCursor();
-                            let token = cmt.getTokenAt( cursor );
-                            if ( token.type === "string" || token.type === "comment" ) {
-                                return;
-                            }
-                            
-                            let lineBeforeCursor = cmt.doc.getLine( cursor.line );
-                            if ( typeof lineBeforeCursor !== "string" ) {
-                                return;
-                            }
-                            lineBeforeCursor = lineBeforeCursor.substring( 0, cursor.ch );
-
-                            // disable autoclose tag before text
-                            let charAfterCursor  = cmt.doc.getLine( cursor.line );
-                            charAfterCursor = charAfterCursor.substring( cursor.ch, cursor.ch + 1 );
-                            cmt.options.autoCloseTags.dontCloseTags = null;
-                            if ( charAfterCursor.match( /\S/ ) && charAfterCursor != "<" ) {
-                                if ( lineBeforeCursor.match( /<[^>]+$/ ) ) {
-                                    let tag = lineBeforeCursor.match( /<(\w+)\b[^>]*$/ );
-                                    if ( tag ) {
-                                        tag = tag[1];
-                                        cmt.options.autoCloseTags.dontCloseTags = [tag];
-                                    }
-                                }
-                            }
-                            
-                            let m = CodeMirror.innerMode( cmt.getMode(), token.state );
-                            let innerMode = m.mode.name;
-                            let shouldAutocomplete;
-                            if ( innerMode === "html" || innerMode === "xml" ) {
-                                shouldAutocomplete = event.key === "<" ||
-                                    event.key === "/" && token.type === "tag" ||
-                                    isAlphaKey && token.type === "tag" ||
-                                    isAlphaKey && token.type === "attribute" ||
-                                    token.string === "=" && token.state.htmlState && token.state.htmlState.tagName;
-                            } else if ( innerMode === "css" ) {
-                                shouldAutocomplete = isAlphaKey ||
-                                    event.key === ":" ||
-                                    event.key === " " && /:\s+$/.test( lineBeforeCursor );
-                            } else if ( innerMode === "javascript" ) {
-                                shouldAutocomplete = isAlphaKey || event.key === ".";
-                            } else if ( innerMode === "clike" && cmt.options.mode === "php" ) {
-                                shouldAutocomplete = token.type === "keyword" || token.type === "variable";
-                            }
-                            if ( shouldAutocomplete ) {
-                                cmt.showHint( { completeSingle: false } );
-                            }
-                        } );
-                    }
+                    // Подключаем редактор Codemirror функцией расположенной в admin.js
+                    codemirror_connect( "#template .template-editor > textarea", "cmt", aext[ext] );
 
                     // track changes
                     document.querySelector( ".close-template-button" ).setAttribute( "data-changed", "false" );
@@ -127,7 +41,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     // set cursor to editor
                     cmt.focus();
 
-                    // Save Page Ctrl+S
+                    // Save Teplate Ctrl+S
                     document.querySelector( "body" ).addEventListener( "keydown", CtrlS );
                 }
             } );
@@ -141,7 +55,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             // detach
             if ( window.cmt !== undefined ) {
                 if ( this.getAttribute( "data-changed" ) === "true" ) {
-                    if ( confirm( _( "Save changes?" ) ) ) {
+                    if ( confirm( _( "Сохранить изменения?" ) ) ) {
                         document.querySelector( ".save-template-button" ).setAttribute( "data-close", "true" );
                         document.querySelector( ".save-template-button" ).click();
                         return;
@@ -166,7 +80,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 file: document.querySelector( ".template-editor-title" ).innerText,
                 content: document.querySelector( ".template-editor > textarea" ).value
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                     document.querySelector( ".close-template-button" ).setAttribute( "data-changed", "false" );
@@ -201,6 +115,60 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             let n = get_cookie( "theme" );
             window.cmt.setOption( "theme", admin_styles[n][1] );
         }
+    } );
+
+    // Install template (upload template)
+    let input = document.querySelector( "#template-upload" );
+    input.addEventListener( "change", async function( e ) {
+        const formData = new FormData();
+        formData.append( "fn", "install_template" );
+        for ( let i = 0; i < input.files.length; i++ ) {
+            formData.append( "myfile[]", input.files[i] );
+        }
+        try {
+            const response = await fetch( cms.api, { method: "POST", body: formData } );
+            const r        = await response.json();
+            input.value = ""; // chrome fix
+            if ( r.info_text ) {
+                notify( r.info_text, r.info_class, r.info_time );
+                setTimeout( function() {
+                    window.location.reload( true );
+                }, r.info_time );
+            }
+        } catch ( error ) {
+            console.error( "Error:", error );
+        }
+    } );
+
+    // prevent hide cursor when window resize
+    window.addEventListener( "resize", function() {
+        if ( window.cmt ) {
+            let cursor = window.cmt.getCursor();
+            window.cmt.scrollIntoView( { line:cursor.line, ch:cursor.ch } );
+        }
+    } );
+
+    // Select
+    document.querySelectorAll( "#template .field-select" ).forEach( function( select ) {
+        select.addEventListener( "click", function( e ) {
+            e.stopPropagation();
+            select.nextElementSibling.classList.toggle( "open" );
+        } );
+    } );
+    // Option
+    document.querySelectorAll( "#template .field-options option" ).forEach( function( option ) {
+        option.addEventListener( "click", function( e ) {
+            let input = this.closest( ".template-select-grid" ).querySelector( ".field-select" );
+            input.innerText = this.innerText;
+            document.querySelector( "#template input[name='template']" ).value = this.innerText;
+        } );
+    } );
+    // Select
+    // Закрытие выпадающих списков при кликах вне их, а так же по ним
+    document.body.addEventListener( "click", function( e ) {
+        document.querySelectorAll( "#template .field-options" ).forEach( function( list ) {
+            list.classList.remove( "open" );
+        } );
     } );
 
 } );

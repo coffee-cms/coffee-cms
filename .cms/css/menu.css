@@ -26,13 +26,18 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background-color: var(--menu-item-grid-div-last-edited-before);
+    background-color: var(--green-3);
 }
 
 #menu .menu-grid {
 	display: grid;
 	row-gap: 1rem;
 	color: var(--windows-font);
+}
+
+#menu .menu-grid > div {
+	box-shadow: 0 0 3px 0 #00000096;
+	border-radius: 0.3rem;
 }
 
 #menu .menu {
@@ -43,8 +48,7 @@
 	grid-template-columns: 1fr auto;
 	column-gap: 0.5rem;
 	row-gap: 0.5rem;
-	background: var(--menu-menu-bg);
-	box-shadow: 0 2px 3px 0 #00000033;
+	background-color: var(--windows);
 	border-radius: 0.3rem;
 	position: relative;
 	padding: 0.7rem;
@@ -93,41 +97,34 @@
 
 #menu .menu input[name=title] {
 	grid-area: title;
-	font-size: 0.94rem;
     line-height: 27px;
-	color: var(--menu-menu-input-title);
+	background-color: var(--menu-input-bg);
+	border: 2px solid var(--menu-input-border);
 }
 #menu .menu input[name=sort] {
 	grid-area: sort;
 	width: 4rem;
 	text-align: center;
 	font-size: 0.9rem;
+	background-color: var(--menu-input-bg);
+	border: 2px solid var(--menu-input-border);
 }
 #menu .menu .area-title {
 	grid-area: area-title;
 	font-size: 1rem;
     line-height: 27px;
-	color: var(--menu-item-menu-prop-div);
-}
-#menu .menu select[name=area] {
-	grid-area: select;
-	font-size: 0.9rem;
-    appearance: none;
-    background-repeat: no-repeat;
-    background-position: right 0.37rem center;
-    background-size: 16px 12px;
-    background-image: var(--select-icon);
 }
 
 #menu .menu .classes-title {
 	grid-area: classes-title;
 	font-size: 1rem;
     line-height: 27px;
-	color: var(--menu-menu-classes-title);
 }
 #menu .menu input[name=classes] {
 	grid-area: classes;
 	font-size: 0.9rem;
+	background-color: var(--menu-input-bg);
+	border: 2px solid var(--menu-input-border);
 }
 
 
@@ -136,15 +133,17 @@
 		justify-self: right;
 	}
 }
-#menu input, #menu select {
+#menu input[type="text"] {
 	padding: 0 0.54rem;
     border-radius: 4px;
     min-height: 30px;
 	font-size: 0.94rem;
     height: 100%;
-    background-color: var(--menu-input-select);
-    border: 1px solid var(--menu-input-select-border);
-    color: var(--menu-input-select-font);
+    background-color: var(--bg-4);
+    border: 1px solid var(--bg-4);
+    color: var(--text);
+	width: 100%;
+	max-width: 100%;
 }
 
 #menu .menu-buttons {
@@ -162,15 +161,15 @@
 #menu .menu-buttons div {
     cursor: pointer;
     user-select: none;
-    color: var(--menu-menu-buttons-div);
+    color: var(--buttons-font);
 	width: max-content;
 }
 #menu .menu-buttons div:active {
-	color: var(--menu-menu-buttons-div-hover);
+	color: var(--buttons-hover);
 }
 @media (min-width: 1024px) {
 	#menu .menu-buttons div:hover {
-		color: var(--menu-menu-buttons-div-hover);
+		color: var(--buttons-hover);
 	}
 }
 
@@ -181,9 +180,15 @@
     row-gap: 0.3rem;
     padding: 0.8rem 0 0.5rem 0.5rem;
     margin-top: -5px;
-    background: var(--menu-items-grid);
+    background-color: var(--windows);
+    border-radius: 0 0 0 0.3rem;
+}
+#menu .menu-grid > div > .items-grid {
     border-radius: 0 0 0.3rem 0.3rem;
-    box-shadow: 0 2px 3px 0 #0000004d;
+}
+
+.items-grid .items-grid {
+    box-shadow: inset 0 0 0 1px var(--windows-hover);
 }
 
 #menu .item {
@@ -192,16 +197,16 @@
 		"title"
 		"buttons";
 	row-gap: 0.5rem;
-	background: var(--menu-item-bg);
-	box-shadow: 0 2px 3px 0 #00000033;
-	border-radius: 0.3rem;
+	background-color: var(--bg-3);
+    background-image: var(--noise);
+	border-radius: 0.3rem 0 0  0.3rem;
 	position: relative;
 	padding: 0.7rem;
 }
 
 @media (min-width: 1024px) {
 	#menu .item:hover {
-		background: var(--menu-item-hover-open);
+		background-color: var(--open-menu);
 	}
 }
 #menu .item.open {
@@ -209,7 +214,7 @@
 		"title"
 		"buttons"
 		"menu-prop";
-	background: var(--menu-item-hover-open);
+	background-color: var(--open-menu);
 }
 
 #menu .item .menu-buttons {
@@ -228,7 +233,7 @@
 #menu .item .menu-prop > div {
 	font-size: 1rem;
 	line-height: 27px;
-	color: var(--menu-item-menu-prop-div);
+	color: var(--names);
 }
 @media (min-width: 1024px) {
 	#menu .item .menu-buttons div {
@@ -329,13 +334,6 @@
 #menu .item input[name=pid] {
 	grid-area: pid;
 }
-#menu .item select[name=pid] {
-	appearance: none;
-    background-repeat: no-repeat;
-    background-position: right 0.37rem center;
-    background-size: 16px 12px;
-    background-image: var(--select-icon);
-}
 
 #menu .item .title {
 	grid-area: title-name;
@@ -367,10 +365,15 @@
 }
 #menu .item .target-blank {
 	grid-area: target-blank;
+	display: grid;
+	grid-template-columns: 1fr 30px;
+	column-gap: 0.5rem;
 	position: relative;
 }
 #menu .item input[name=url] {
 	width: 100%;
+	grid-column: 1/-1;
+	grid-row: 1/2;
 }
 #menu .item input[name=url][disabled] {
 	color: var(--menu-input-select-font-disabled);
@@ -391,37 +394,20 @@
 	}
 }
 
-#menu .item .menu-prop .target-blank input[type="checkbox"] {
-	position: absolute;
-	transform: translateY(-50%);
-	top: 50%;
-	right: 4px;
-	display: flex;
-	width: 1.4rem;
-	height: 1.4rem;
-	border-radius: 0.25rem;
-	background-color: var(--bg-4);
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
-	border: 2px solid var(--menu-item-menu-prop-target-blank-input-checkbox);
-	appearance: none;
-	font-size: unset;
-	min-height: unset;
-	padding: unset;
-	color: unset;
-}
-#menu .item .menu-prop .target-blank input[type="checkbox"]:checked {
-	background-color: var(--menu-item-menu-prop-target-blank-input-checked);
-	background-image: var(--check-icon);
+#menu .target-blank input[type="checkbox"] {
+	grid-row: 1/2;
+	grid-column: 2/3;
+	align-self: center;
+	justify-self: center;
+	border: 2px solid var(--orange);
 }
 
 
 /*dropdown*/
-#menu .item .field-select {
-	background: var(--menu-item-field-select-bg);
-	border: 1px solid var(--menu-item-field-select-border);
-	color: var(--menu-item-field-select-font);
+#menu .select-grid .field-select {
+	background-color: var(--bg-4);
+	border: 1px solid var(--bg-4);
+	color: var(--text);
 	text-align: left;
 	line-height: 1.8em;
 	height: 1.875rem;
@@ -435,19 +421,19 @@
 	cursor: pointer;
 	user-select: none;
 }
-#menu .item .field-select {
+#menu .select-grid .field-select {
 	background-image: var(--select-icon);
 }
-#menu .item .field-options {
+#menu .select-grid .field-options {
 	position: relative;
 }
-#menu .item .select-dropdown {
+#menu .select-grid .select-dropdown {
 	display: grid;
 	position: absolute;
 	left: 0;
 	right: 0;
 	top: -1px;
-	background: var(--menu-item-select-dropdown);
+	background-color: var(--bg-3);
 	border: 1px solid var(--menu-item-field-border);
 	color: var(--menu-item-select-dropdown-font);
 	border-radius: 0.25rem;
@@ -455,15 +441,15 @@
 	overflow: hidden;
 	box-shadow: 0 2px 3px 0 #00000033;
 }
-#menu .item .field-search {
+#menu .select-grid .field-search {
 	display: grid;
 	padding: 0.37rem;
 	border-bottom: 1px solid var(--menu-item-field-border);
 }
-#menu .item .field-search input {
+#menu .select-grid .field-search input {
 	width: 100%;
-	background: var(--menu-item-field-search-input-bg);
-	color: var(--menu-item-field-font);
+	background-color: var(--menu-item-field-search-input-bg);
+	color: var(--text);
 	border: 1px solid var(--menu-item-field-border);
 	font-size: 0.94rem;
 	background-repeat: no-repeat;
@@ -471,17 +457,17 @@
 	padding: 0.25rem 2rem 0.25rem 0.25rem;
 	background-size: 17px 14px;
 }
-#menu .item .field-search input {
+#menu .select-grid .field-search input {
 	background-image: var(--search-icon);
 }
-#menu .item .field-search input:focus {
+#menu .select-grid .field-search input:focus {
 	border: 1px solid var(--menu-item-field-search-input-focus);
 	transition: all .700s ease 0s;
 }
-#menu .item ul.list-search, #menu .item .field-search {
+#menu .select-grid ul.list-search, #menu .item .field-search {
     background-color: var(--bg-3);
 }
-#menu .item ul.list-search {
+#menu .select-grid ul.list-search {
 	display: grid;
 	margin: 0;
 	padding: 0;
@@ -489,7 +475,7 @@
 	max-height: 17rem;
 	overscroll-behavior: contain;
 }
-#menu .item .list-search li {
+#menu .select-grid .list-search li {
 	display: block;
 	list-style-type: none;
 	padding: 0.4rem 0.44rem;
@@ -497,15 +483,15 @@
 	font-size: 0.94rem;
 	text-align: left;
 }
-#menu .item .list-search li:hover {
-	background: var(--menu-item-list-search-li-hover-active);
+#menu .select-grid .list-search li:hover {
+	background-color: var(--menu-item-list-search-li-hover-active);
 }
-#menu .item .list-search li.active {
-	background: var(--menu-item-list-search-li-hover-active);
+#menu .select-grid .list-search li.active {
+	background-color: var(--menu-item-list-search-li-hover-active);
 }
-#menu .item .list-search li.searcher-hidden { display: none; }
-#menu .item .field-options { overflow: hidden; }
-#menu .item .field-options.open { overflow: initial; }
+#menu .select-grid .list-search li.searcher-hidden { display: none; }
+#menu .select-grid .field-options { overflow: hidden; }
+#menu .select-grid .field-options.open { overflow: initial; }
 
 #menu .main-footer {
     padding: 1rem;
@@ -526,13 +512,78 @@
     display: block;
     width: max-content;
     padding: 0.4rem 0.7rem 0.5rem 0.7rem;
-    background-color: var(--menu-add-section);
+    background-color: var(--bg-4);
     text-decoration: none;
     font-size: 0.9rem;
-    color: var(--menu-add-section-font);
+    color: var(--windows-font);
     border-radius: 0.3rem;
     cursor: pointer;
 }
-#menu .main-footer .create:hover {
-    background-color: var(--menu-add-section-hover);
+
+
+/* Select */
+.menu-prop .area-select-grid, #menu .item .menu-prop .parent-select-grid {
+    text-align: left;
+    position: relative;
+}
+
+.menu-prop .field-select, .menu-prop .field-select-menu {
+	height: 100%;
+	cursor: pointer;
+    color: var(--text);
+	background-color: var(--menu-input-bg);
+	border: 2px solid var(--menu-input-border);
+    background-image: var(--select-icon);
+	border-radius: 4px;
+    user-select: none;
+    background-repeat: no-repeat;
+    background-position: right .37rem center;
+    background-size: 16px 12px;
+    padding: 0 0.57rem 0 0.44rem;
+	line-height: 26px;
+	font-size: 1rem;
+}
+
+.menu-prop .field-select, .menu-prop .field-select {
+	height: 100%;
+	cursor: pointer;
+    color: var(--text);
+	background-color: var(--bg-4);
+	border: 1px solid var(--bg-4);
+    background-image: var(--select-icon);
+	border-radius: 4px;
+    user-select: none;
+    background-repeat: no-repeat;
+    background-position: right .37rem center;
+    background-size: 16px 12px;
+    padding: 0 0.57rem 0 0.44rem;
+	white-space: nowrap;
+    overflow: hidden;
+}
+.menu-prop .area-select-grid .field-options, .menu-prop .parent-select-grid .field-options {
+    display: grid;
+    position: absolute;
+    height: 0;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 3px 0 #00000033;
+    max-height: 17rem;
+    z-index: 7;
+}
+.menu-prop .area-select-grid .field-options.open, .menu-prop .parent-select-grid .field-options.open {
+    background-color: var(--bg-3);
+    border: 2px solid var(--bg-4);
+    color: var(--text);
+	margin-top: 2px;
+    overflow: auto;
+    height: auto;
+}
+.menu-prop .area-select-grid .field-options option, .menu-prop .parent-select-grid .field-options option {
+    padding: 0.4rem 0.44rem;
+    cursor: pointer;
+    font-size: 0.94rem;
+}
+.menu-prop .area-select-grid .field-options option:hover, .menu-prop .parent-select-grid .field-options option:hover {
+    background-color: var(--bg-2);
 }

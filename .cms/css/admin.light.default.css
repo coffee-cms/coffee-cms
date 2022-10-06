@@ -2,25 +2,38 @@ html.light {
     color-scheme: light;  /*Scroll*/
     /*Colors*/
     /*Backgrounds Universal*/
+    --bg-2: #f8f2f2;
     --bg-3: #e9e0dd;
     --bg-4: #fffbfb;
 
-    --windows: #e1d6d2;
+    /*Border Mediateka*/
+    --w-1: #ffffff;
+    --br-3: #fbf0ed;
+    --br-active: #a79080;
+    --file-input: #1e1d1d;
+    --file-border: #383433;
+    --font-bg: #e9e0dd;
+    --ext: #8f572f;
+    /*End*/
+
+    /*Colors*/
+    --white: #ffffff;
+    --orange: #ff4e00;
+    --green-3: #71b300;
+
+    --focus-orange: #ff4d0021;
+    --saved-bg: #ddffab;
+    /*End*/
+
+    --windows: #f7efee;
+    --windows-hover: #fbf5f5;
     --windows-font: #604c44;
-    --manual: #e9e0dd;
-    --manual-div: #604c44;
-    --manual-font: #333333;
-    --manual-font-p-a: #9b4d4d;
 
     --input-bg: var(--bg-4);
-    --input-bg-border: var(--bg-4);
-    --input-bg-font: #333333;
-
-    --select-bg: var(--bg-4);
-    --select-bg-border: var(--bg-4);
-    --select-bg-font: #333333;
-
-    --saved-bg: #ddffab;
+    --input-border: #c9bfbc;
+    --input-font: var(--text);
+    --button-bg: var(--bg-4);
+    --button-border: var(--bg-4);
     /*End*/
 
     /*Modules Universal Properties*/
@@ -35,34 +48,9 @@ html.light {
     --names: #4f3b58;
     --text: #333333;
     /*End*/
-
-    /*Admin*/
-    --bg-login: #fffbfb;
-
-    /*Admin-Lang*/
-    --login-windows: #e1d6d2;
-    --lang-selector: var(--login-windows);
-    --lang-selector-select: #fffbfb;
-    --lang-selector-select-font: var(--text);
-
-    /*Admin-Login*/
-    --login-and-password: var(--login-windows);
-    --login-and-password-input: #fffbfb;
-    --login-and-password-input-border: var(--login-windows);
-    --login-and-password-input-font: var(--text);
-
-    /*Admin-Login-Support*/
-    --support-box-font: var(--text);
-    --support-box-a-hover: #a11010;
-    --support-box-bg: var(--login-windows);
     
     /*Admin-Header*/
-    --header: #e1d6d2;
-    --icon-coffee: #564c44;
-    --logo: #d7cac7;
-    --name: #333333;
-    --header-menu: #444444;
-    --header-menu-hover: #c33b00;
+    --header-menu-hover: #9b2e00;
     --menu-icon-span: #c33b00;
 
     /*Admin-Info-Notice*/
@@ -72,260 +60,53 @@ html.light {
     --info-fonts-error: #ffffff;
 
     /*Admin-Aside*/
-    --aside: var(--bg-3);
-    --aside-section-line: var(--bg-4);
     --aside-section-div: #8f786f;
     --aside-section-a: #382218;
-    --aside-section-a-hover: var(--bg-4);
-    --aside-section-a-active: var(--bg-4);
+    --aside-section-a-hover: #fffbfb91;
+    --aside-section-a-active: #fffbfb91;
     --aside-section-a-red: #ff8585;
-
-    /*Admin-Main*/
-    --main: var(--bg-4);
     
     /*Admin-Modul-Auth*/
-    --auth-form: var(--windows);
-
     --setup-auth: #b5978e;
-    --auth-form-login-password-title: var(--windows-font);
-
-    --auth-form-input: var(--input-bg);
-    --auth-form-input-border: var(--input-bg-border);
-    --auth-form-input-font: var(--input-bg-font);
-
-    --auth-table-title: var(--windows-font);
-    --sess-table-div: #f1eae7;
     --sess-table-font: #52473d;
     --sess-table-current: #008917;
-    --auth-del-sess: #d7cac7;
-    --auth-del-sess-hover: #d82525;
-
-    /*Start*/
-    --start-div: var(--manual);
-    --start-div-div: var(--manual-div);
-    --start-div-p: var(--manual-font);
-    --start-div-p-a: var(--manual-font-p-a);
+    --auth-del-sess-hover: var(--bg-4);
 
     /*Milk*/
     --mobile-menu-open-milk: #18101071;
 
-
     /*Template*/
-    --template-form: var(--windows);
-    --template-form-div: #764b39;
-
-    --template-form-select: var(--select-bg);
-    --template-form-select-font: var(--select-bg-font);
-    --template-form-select-border: var(--select-bg-border);
-
-    --template-form-input: var(--input-bg);
-    --template-form-input-font: var(--input-bg-font);
-    --template-form-input-border: var(--input-bg-border);
-
-    --template-template-manual: var(--manual);
-    --template-template-manual-div: var(--manual-div);
-    --template-template-manual-font: var(--manual-font);
-    --template-template-manual-p-a: var(--manual-font-p-a);
-
-    --template-template-files: var(--windows);
-    --template-files-title: #764b39;
     --template-files-file: #563d40;
     --template-files-file-hover: #9b4d4d;
 
-    /*Counters*/
-    --counters-form-div: var(--windows-font);
-
     /*Admin Menu*/
-    --admin-menu-section: var(--windows);
-    --admin-menu-hidden-before: orangered;
 
-    --admin-menu-items-grid: #fff7f3;
-    --admin-menu-item: var(--bg-3);
-    --admin-menu-item-name: var(--aside-section-a);
-
-    --admin-menu-buttons: var(--buttons-font);
-    --admin-menu-buttons-hover: var(--buttons-hover);
-
-    --admin-menu-add-section: var(--bg-3);
-    --admin-menu-add-section-font: var(--text);
-    --admin-menu-add-section-hover: #e1d6d2;
-
-    --admin-menu-input-select: var(--bg-4);
-    --admin-menu-input-select-border: var(--bg-4);
-    --admin-menu-input-select-font: var(--text);
-
-    /*Base*/
-    --base-db-settings: var(--windows);
-
-    --base-form-div-div: var(--windows-font);
-    --base-create: #764b39;
-
-    --base-form-input: var(--bg-4);
-    --base-form-input-border: var(--bg-4);
-    --base-form-input-font: var(--text);
-    
-    --base-db-manual: var(--manual);
-    --base-db-manual-div: var(--manual-div);
-    --base-db-manual-font: var(--manual-font);
-    --base-db-manual-p-a: var(--manual-font-p-a);
-
-    --base-manual: var(--manual);
-    --base-manual-div: var(--manual-div);
-    --base-manual-font: var(--manual-font);
-    --base-manual-p-a: var(--manual-font-p-a);
-
-    --counters-textarea: var(--bg-4);
-    --counters-textarea-border: #aba4a1;
-    --counters-textarea-font: var(--text);
-
-    --counters-input: var(--bg-4);
-    --counters-input-border: var(--bg-4);
-    --counters-input-font: var(--text);
-
-    /*Backup*/
-    --update-backup-window-bg: var(--windows);
-    --update-backup-window-div: var(--windows-font);
-    --update-backup-window-font: #b7062f;
-    --update-backup-window-p-a: #9b4d4d;
-
-    --update-update-window-bg: var(--windows);
-    --update-update-window-div: var(--windows-font);
-    --update-update-window-font: var(--text);
-    --update-update-window-p-a: #9b4d4d;
-
-    --update-dev-window-bg: var(--windows);
-    --update-dev-window-div: var(--windows-font);
-    --update-dev-window-font: var(--text);
-    --update-dev-window-p-a: #9b4d4d;
-
-    --backup-form-button-font: var(--text);
-    --backup-form-button: var(--bg-4);
 
     /*PHP Info*/
     --phpinfo-font: #563939;
-    --phpinfo-td-th-border: var(--bg-4);
-    --phpinfo-e-bg: #e9e0dd;
     --phpinfo-h-bg: #d7cac7;
-    --phpinfo-v-bg: #e1d6d2;
     --phpinfo-v-i-font: #b39393;
     --phpinfo-hr-bg: #615858;
-    --phpinfo-tr-hover-td-bg: #dacecb;
 
     /*Pages*/
-    --page-search: var(--bg-3);
-    --page-search-border: var(--bg-3);
-    --page-search-font: #222222;
-
-    --add-page-btn: var(--bg-3);
-    --add-page-btn-hover: #efe4e0;
+    --page-search: #f7efee;
+    
+    --add-page-btn-hover: var(--bg-4);
     --add-page-btn-svg-b-plus: #9b8b84;
     --saved: #157800;
     --error: #e20000;
 
-    --del-pages-btn-hover-active: var(--bg-3);
     --del-pages-btn-svg: #9b8b84;
 
-    --pages-grid-div: var(--bg-3);
-    --pages-grid-div-hover: #e1d6d2;
     --pages-grid-div-open: #e1d6d2;
     --pages-grid-div-open-shadow: #b9a097;
-
-    --pages-grid-div-last-edited-before: #46ad00;
-
-    --page-buttons-div: var(--buttons-font);
-    --page-buttons-div-hover: var(--buttons-hover);
-    --page-buttons-div-open: var(--buttons-open);
-    --page-buttons-div-open-saved: var(--saved);
-
-    --a-page-name: var(--link);
-    --a-page-name-hover: var(--link-hover);
-
-    --page-prop-div: var(--names);
-
-    --page-prop-input-textarea-select: var(--bg-4);
-    --page-prop-input-textarea-select-border: var(--bg-4);
-    --page-prop-input-textarea-select-font: var(--text);
-
-    --pages-grid-div-input: var(--bg-3);
-    --pages-grid-div-input-border: var(--bg-4);
 
     --page-date: #8d5f4b;
     --page-date-planned: #cf390c;
 
-    --pages-grid-div-input-checked: #ff4e00;
-    --pages-grid-div-input-checked-border: #ff4e00;
-    --pages-grid-div-input-checked-focus: #e8754312;
-
-    --pages-main-footer-pager-div-bg:  var(--bg-3);
-    --pages-main-footer-pager-div-font: #222222;
     --main-footer-pager-div-hover: #bb381a;
     --main-footer-pager-div-active-font: #bb381a;
     --pages-main-footer-pager-div-bg-active: #d5bfaeeb;
-
-    --pages-counters-input: var(--bg-3);
-    --pages-counters-input-border: var(--bg-3);
-    --pages-counters-input-font: var(--text);
-    --pages-counters-span: var(--text);
-
-
-    --page-editor-bg: #d7cac7;
-    --page-editor-grid: var(--bg-3);
-
-    --open-mediateka: #b109c5;
-    --open-mediateka-hover: #c400da;
-
-
-
-
-    --page-editor-header-a: var(--link);
-    --page-editor-header-a-hover: var(--link-hover);
-
-    --uni-editor: #604c44; /*Uni*/
-    --uni-editor-hover: #93614e; /*Uni*/
-
-    --page-editor-buttons-a: var(--uni-editor);
-    --page-editor-buttons-a-hover: var(--uni-editor-hover);
-
-    --codemirror-replace: var(--uni-editor);
-    --codemirror-replace-hover: var(--uni-editor-hover);
-
-
-
-    --file-block: #d1c5c2;
-    --file-block-border: #fbf0ed;
-    --file-block-border-hover: #897873;
-    --file-block-border-active-file: #a79080;
-
-    --file-block-input: #d1c5c2;
-    --file-block-input-border: #897873;
-
-    --file-block-input-checked: #ff4e00;
-    --file-block-input-checked-border: #ff4e00;
-
-    --file-block-media-name: var(--text);
-
-    --file-block-ext: #383433;
-    --file-block-ext-font: #e9c3a6;
-
-    --uni-mediateka: #191919; /*Uni*/
-    --mediateka-buttons-inputfile-label: #d1c5c2;
-    --mediateka-buttons-inputfile-label-font: #333333;
-    --mediateka-buttons-inputfile-label-focus-hover: #fffbfb;
-
-    --link-file: #d1c5c2;
-    --link-file-font: #333333;
-    --link-file-a: #1600cf;
-
-    --link-file-copy-btn: #e9e0dd;
-    --link-file-copy-btn-font: #4a453f;
-    --link-file-copy-btn-hover: #ffe8e1;
-
-    --del-uploaded-files-disabled: #d3d3d3;
-    --del-uploaded-files-disabled-font: #767d85;
-    --del-uploaded-files: #ab3400;
-    --del-uploaded-files-hover: #f14800;
-    --del-uploaded-files-font: #eaeaea;
-
 
     --lbox-window: #000000dd;
 
@@ -336,52 +117,16 @@ html.light {
     /*Pages Codemirror*/
     --codemirror-bg: white;
     --codemirror-text: black;
-
     --codemirror-numbeslines: #897067;
     --codemirror-numbes-bg: #343232;
 
-
-    /*Sitemap*/
-    --xml-wrapper-areas: var(--windows);
-    --xml-wrapper-areas-div: var(--windows-font);
-
-    --sitemap-textarea-bg: var(--bg-4);
-    --sitemap-textarea-border: #bfbab8;
-    --sitemap-textarea-font: var(--text);
-
-    --sitemap-form-input-font: var(--text);
-    --sitemap-form-input-bg: var(--bg-4);
-    --sitemap-form-input-border: var(--bg-4);
-
-    --xml-static-cron-font: var(--text);
-    --xml-static-dynamic-input-font: var(--text);
-
-    --xml-static-dynamic-label-input-checked-bg: #836457;
-    --xml-static-dynamic-label-input-checked-border: #ff4e00;
-    --xml-static-dynamic-label-input-checked-shadow: #a7450040;
-    --xml-static-dynamic-label-input: var(--bg-4);
-
-    --xml-static-dynamic-label-font: #763315;
-
-    --sitemap-manual: var(--manual);
-    --sitemap-manual-div: var(--manual-div);
-    --sitemap-manual-font: var(--manual-font);
-
     /*Menu*/
-    --menu-menu-bg: var(--windows);
-    --menu-item-grid-div-last-edited-before: #71b300;
+    --open-menu: #e1d6d2;
     --menu-menu-open-prop: var(--buttons-open);
-    --menu-menu-input-title: var(--text);
-    --menu-menu-classes-title: var(--names);
 
-    --menu-add-section: var(--bg-3);
-    --menu-add-section-font: var(--text);
-    --menu-add-section-hover: #e1d6d2;
+    --menu-input-bg: var(--w-1);
+    --menu-input-border: var(--bg-3);
 
-    --menu-item-hover-open: var(--windows);
-
-    --menu-items-grid: #fff7f3;
-    --menu-item-bg: var(--bg-3);
     --menu-item-bg-hover-open: var(--windows);
 
     --menu-item-a: var(--link);
@@ -389,59 +134,35 @@ html.light {
     --menu-item-a-none-link: var(--link-none);
 
     --menu-item-open-prop: var(--buttons-open);
-    --menu-item-menu-prop-div: var(--names);
 
     --menu-menu-buttons-div: var(--buttons-font);
     --menu-menu-buttons-div-hover: var(--buttons-hover);
 
-    --menu-item-menu-prop-target-blank-input-checkbox: #ff4e00;
-    --menu-item-menu-prop-target-blank-input-checked: #ff4e00;
-
-    --menu-input-select: var(--bg-4);
-    --menu-input-select-border: var(--bg-4);
-    --menu-input-select-font: var(--text);
-
     --menu-input-select-font-disabled: #746c6a;
 
-    --menu-item-field-select-bg: var(--bg-4);
-    --menu-item-field-select-border: var(--bg-4);
-    --menu-item-field-select-font: var(--text);
-
-    --menu-item-select-dropdown: var(--bg-3);
     --menu-item-select-dropdown-font: #333333;
     --menu-item-field-search-input-bg: var(--bg-4);
     --menu-item-field-border: #c7b8b5;
-    --menu-item-field-font: var(--text);
     --menu-item-field-search-input-focus: #786050;
     --menu-item-list-search-li-hover-active: var(--bg-4);
 
     
     /*Modules*/
-    --modules-grid-div-enabled: var(--bg-3);
-    --modules-grid-div-enabled-hover: #e1d6d2;
-
     --modules-grid-div-disabled: #f3f3f3;
     --modules-grid-div-disabled-hover: #f3f3f3;
-
-    --enabled-module-name: var(--windows-font);
-    --disabled-module-name: #a39595;
-
-    --module-version: var(--text);
-
-    --enabled-module-description: #8b513c;
+    --disabled-module: #a39595;
     --disabled-module-description: #a39595;
-
-    --module-del-btn: #604c44;
-
-    --enabled-module-sw-btn: #a71033;
     --disabled-module-sw-btn: #3400d5;
 
+    /*Individual*/
+    --category-parents: #918383;
 
+    /*Icons*/
     --search-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 489.68 489.68'%3E%3Cdefs%3E%3Cstyle%3E.a-search%7Bfill:%239b8b84;%7D%3C/style%3E%3C/defs%3E%3Cpath class='a-search' d='M0,196.4C0,304.9,88,392.83,196.5,392.8A196.53,196.53,0,0,0,320.1,349l135,135A20.44,20.44,0,0,0,484,455.1l-135-135c68.29-84.31,55.3-208-29-276.3A196.42,196.42,0,0,0,196.4,0C88,0,0,87.9,0,196.4Zm40.8,0A155.6,155.6,0,1,1,196.4,352h0A155.66,155.66,0,0,1,40.8,196.4Z'/%3E%3C/svg%3E");
 
     --select-icon: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23b9a097' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 
-    --pages-pin-off: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 16.46'%3E%3Cdefs%3E%3Cstyle%3E.a%7Bfill:%23ebe4e2;%7D.b%7Bfill:none;stroke:%23b9a097;stroke-miterlimit:10;stroke-width:2px;%7D%3C/style%3E%3C/defs%3E%3Cpolygon class='a' points='1 0 1 14.72 7 11.22 13 14.72 13 0 1 0'/%3E%3Cpolyline class='b' points='1 0 1 14.72 7 11.22 13 14.72 13 0'/%3E%3C/svg%3E");
+    --pages-pin-off: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 16.46'%3E%3Cdefs%3E%3Cstyle%3E.a%7Bfill:none;%7D.b%7Bfill:none;stroke:%23b9a097;stroke-miterlimit:10;stroke-width:2px;%7D%3C/style%3E%3C/defs%3E%3Cpolygon class='a' points='1 0 1 14.72 7 11.22 13 14.72 13 0 1 0'/%3E%3Cpolyline class='b' points='1 0 1 14.72 7 11.22 13 14.72 13 0'/%3E%3C/svg%3E");
 
     --pages-pin-on: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 16.46'%3E%3Cdefs%3E%3Cstyle%3E.a%7Bfill:%23b9a097;%7D%3C/style%3E%3C/defs%3E%3Cpolygon class='a' points='14 16.46 7 12.38 0 16.46 0 0 14 0 14 16.46'/%3E%3C/svg%3E");
 
@@ -451,8 +172,11 @@ html.light {
 
     --inter-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 31.5 31.5'%3E%3Cdefs%3E%3Cstyle%3E.a,.b%7Bfill:none;%7D.a%7Bstroke:%23d09074;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px;%7D%3C/style%3E%3C/defs%3E%3Cpath class='a' d='M404.15,357.31l6-6-6-6' transform='translate(-386.5 -335.5)'/%3E%3Cline class='a' x1='7.75' y1='15.75' x2='22.75' y2='15.75'/%3E%3Ccircle class='a' cx='15.75' cy='15.75' r='14'/%3E%3Crect class='b' width='31.5' height='31.5'/%3E%3C/svg%3E");
 
-    --icon-close: url("data:image/svg+xml,%3Csvg version='1.1' viewBox='0 0 37.819 37.819' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle%3E.a-clear%7Bfill:none;stroke-linecap:round;stroke-width:5;stroke:%239b8b84%7D%3C/style%3E%3Cg transform='translate(-32.072 -86.124)'%3E%3Cpath class='a-clear' d='m32.34 86.392 37.284 37.284'/%3E%3Cpath class='a-clear' d='m69.624 86.392-37.284 37.284'/%3E%3C/g%3E%3C/svg%3E");
+    --icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 37.47 37.61'%3E%3Cdefs%3E%3Cstyle%3E.a,.b%7Bfill:none;stroke:%239b8b84;stroke-linecap:round;stroke-width:5px;%7D.b%7Bstroke-linejoin:round;%7D%3C/style%3E%3C/defs%3E%3Cpath class='a' d='M4.17,18.91H35.22' transform='translate(-0.25 -0.1)'/%3E%3Cpolyline class='b' points='18.81 35.12 2.5 18.81 18.81 2.5'/%3E%3C/svg%3E");
+
+    --icon-clear: url("data:image/svg+xml,%0A%3Csvg version='1.1' viewBox='0 0 37.819 37.819' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle%3E.a-clear%7Bfill:none;stroke-linecap:round;stroke-width:5;stroke:%239b8b84%7D%3C/style%3E%3Cg transform='translate(-32.072 -86.124)'%3E%3Cpath class='a-clear' d='m32.34 86.392 37.284 37.284'/%3E%3Cpath class='a-clear' d='m69.624 86.392-37.284 37.284'/%3E%3C/g%3E%3C/svg%3E");
 
     --icon-save: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 769.83 769.83'%3E%3Cdefs%3E%3Cstyle%3E.a%7Bfill:none;stroke:%239b8b84;stroke-miterlimit:10;stroke-width:55px;%7D%3C/style%3E%3C/defs%3E%3Ccircle class='a' cx='384.91' cy='384.91' r='102.48'/%3E%3Cpath class='a' d='M750.91,258.62V687.83a63.08,63.08,0,0,1-63.08,63.08H89.17a63.08,63.08,0,0,1-63.08-63.08h0V89.17A63.08,63.08,0,0,1,89.17,26.09H518.38A98.74,98.74,0,0,1,588.17,55L722,188.83A98.74,98.74,0,0,1,750.91,258.62Z' transform='translate(-3.59 -3.59)'/%3E%3Cpath class='a' d='M464.15,26.09V129.44A46.11,46.11,0,0,1,418,175.55H187.48a46.11,46.11,0,0,1-46.11-46.11V26.09' transform='translate(-3.59 -3.59)'/%3E%3C/svg%3E");
-}
 
+    --noise: url(../img/noise-light.png);
+}

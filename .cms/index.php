@@ -89,3 +89,15 @@ while ( ! empty( $cms["stage"] ) ) {
     cms_do_stage( $cms["stage"] );
     $cms["stage"] = $cms["stages"][ $cms["stage"] ]["next"];
 }
+
+// Сброс накопленной отладочной информации в файл
+if ( ! empty( $cms["debug"] ) ) {
+    $debug_file = $cms["cms_dir"] . "/debug.log.php";
+    if ( file_exists( $debug_file ) ) {
+        $new_debug = $cms["debug"];
+        include( $debug_file );
+        $cms["debug"] = array_merge( $cms["debug"], $new_debug );
+    }
+    file_put_contents( $debug_file, '<?php
+$cms["debug"] = ' . var_export( $cms["debug"], true) . ";\n", LOCK_EX );
+}

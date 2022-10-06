@@ -1,35 +1,43 @@
 <?php
 
 $cms["modules"]["template.mod.php"] = array(
-    "name"        => __( "Template", "template.mod.php" ),
-    "description" => __( "Module for switch templates and configure template settings", "template.mod.php" ),
-    "version"     => "22.04",
+    "name"        => __( "Шаблоны" ),
+    "description" => __( "Переключение шаблонов и управление их настройками" ),
+    "version"     => "",
+    "locale"      => "ru_RU.UTF-8",
     "files"       => array(
         ".cms/mod/template.mod.php",
         ".cms/css/template.css",
         ".cms/js/template.js",
-        ".cms/lang/ru_RU.UTF-8/template.mod.php",
+        ".cms/lang/en_US.UTF-8/template.mod.php",
         ".cms/lang/uk_UA.UTF-8/template.mod.php",
     ),
-    "sort"        => 20,
 );
 
 // Return if module disabled
-if ( !empty( $cms["config"]["template.mod.php"]["disabled"] ) ) {
+if ( ! empty( $cms["config"]["template.mod.php"]["disabled"] ) ) {
 
     return;
 
 } else {
 
+    $cms["template_prefix"] = "html-";
+    $cms["template_suffix"] = ".php";
+    $cms["template_main_file"] = "html";
+
     // Install
-    if (empty($cms["config"]["template.mod.php"]["template"])) {
+    if ( empty( $cms["config"]["template.mod.php"]["template"] ) ) {
         $cms["config"]["template.mod.php"]["template"] = "mini";
     }
-    if (empty($cms["config"]["template.mod.php"]["scripts"])) {
+    if ( empty( $cms["config"]["template.mod.php"]["scripts"] ) ) {
         $cms["config"]["template.mod.php"]["scripts"] = "";
     }
 
     $cms["template"] = $cms["config"]["template.mod.php"]["template"];
+
+    if ( empty( $cms["config"]["template.mod.php"]["disable_write_to_disk"] ) ) {
+        $cms["config"]["template.mod.php"]["disable_write_to_disk"] = "off";
+    }
 
     if ( is_admin() ) {
         cms_add_function( "admin", "cms_template_admin" );
@@ -55,6 +63,7 @@ function cms_template_admin() {
     // Save settings
     if ( ! empty( $_POST["save_template"] ) ) {
         $cms["config"]["template.mod.php"]["template"] = $_POST["template"];
+        $cms["config"]["template.mod.php"]["disable_write_to_disk"] = $_POST["disable_write_to_disk"];
         cms_save_config();
         cms_clear_cache();
         header( "Location: {$cms['config']['admin.mod.php']['admin_url']}" );
@@ -71,10 +80,10 @@ function cms_template_admin() {
     // Create menu item
     if ( empty( $cms["config"]["template.mod.php"]["menu"]["template"] ) ) {
         $cms["config"]["template.mod.php"]["menu"]["template"] = array(
-            "title"    => "Template",
+            "title"    => "Шаблоны",
             "sort"     => 70,
             "class"    => "",
-            "section"  => "Settings",
+            "section"  => "Настройки",
         );
         cms_save_config();
     }
@@ -84,7 +93,7 @@ function cms_template_admin() {
         $template = preg_replace( "/.*\/([^\/]+)\/html\.php/", "$1", $index );
         if ( ! preg_match( "/^admin/", $template ) ) {
             if ( $template === $cms["config"]["template.mod.php"]["template"] ) {
-                $selected = "selected";
+                $selected = ""; //"selected";
             } else {
                 $selected = "";
             }
@@ -93,33 +102,59 @@ function cms_template_admin() {
     }
 
     cms_template_load_settings();
-    $template_files_title = "<div class=title>" . __( "Editable files for this template", "template.mod.php" ) . "</div>";
+    $template_files_title = "<div class=title>" . __( "Редактируемые файлы этого шаблона" ) . "</div>";
     $template_files = "";
     foreach( $cms["templates"][ $cms["config"]["template.mod.php"]["template"] ]["files"] as $file ) {
         $template_files .= "<div class=file>{$file}</div>";
     }
     if ( empty( $template_files ) ) {
-        $template_files = "<div class=no-files>" . __( "No files for edit", "template.mod.php" ) . "</div>";
+        $template_files = "<div class=no-files>" . __( "Нет файлов для редактирования" ) . "</div>";
     }
     
-    $tr_title   = __( "Help", "template.mod.php" );
-    $tr_p1      = __( "You can create your own theme or choose from existing ones.", "template.mod.php" );
-    $tr_current = __( "Current Template", "template.mod.php" );
-    $tr_save    = __( "Save", "template.mod.php" );
+    $tr_title   = __( "Справка" );
+    $tr_p1      = __( "Вы можете создать свою тему или выбрать из существующих." );
+    $tr_current = __( "Текущий шаблон" );
+    $tr_save    = __( "Сохранить" );
+    $tr_upl     = __( "Установить шаблон" );
+    $tr_blanks  = __( "Заготовки" );
+    $tr_disable_write_to_disk  = __( "Отключить кэш" );
+    $help_file = "/{$cms['config']['template.mod.php']['template']}/instruction.{$cms['config']['locale']}.html";
+    if ( file_exists( $cms["cms_dir"] . $help_file ) ) {
+        $help = "<p><a target=_blank href='{$help_file}'>{$tr_blanks}</a></p>";
+    } else {
+        $help = "";
+    }
+    if ( $cms["config"]["template.mod.php"]["disable_write_to_disk"] === "on" ) {
+        $disable_write_to_disk = "checked";
+    } else {
+        $disable_write_to_disk = "";
+    }
     // Display settings
     $page = "
 <div class=settings>
-    <form method=post>
-        <div>{$tr_current}</div>
-        <select name=template autocomplete=off>
-            {$options}
-        </select>
-        <input type=submit name=save_template value='{$tr_save}'>
-    </form>
+    <input id=template-upload type=file name='myfile[]' multiple class=files>
+    <label for=template-upload>{$tr_upl}</label>
+    <div class=template>
+        <form method=post>
+            <div>{$tr_current}</div>
+            <input name=template autocomplete=off type=hidden value='{$cms["config"]["template.mod.php"]["template"]}'>
+
+            <div class=template-select-grid>
+                <div class=field-select>{$cms["config"]["template.mod.php"]["template"]}</div>
+                <div class=field-options>
+                    {$options}
+                </div>
+            </div>
+
+            <label><input type=checkbox name=disable_write_to_disk {$disable_write_to_disk}> {$tr_disable_write_to_disk}</label>
+            <button name=save_template value=save>{$tr_save}</button>
+        </form>
+    </div>
     <div class=template-manual>
         <div>{$tr_title}</div>
+        {$help}
         <p>{$tr_p1}</p>
-        <p><a href='https://coffee-cms.com/' target=_blank>https://coffee-cms.com/</a></p>
+        <p><a href='https://coffee-cms.ru/shablony' target=_blank>https://coffee-cms.ru/shablony</a></p>
     </div>
     <div class=template-files>
         {$template_files_title}
@@ -145,22 +180,22 @@ function cms_template_admin() {
     // Create menu item
     if ( empty( $cms["config"]["template.mod.php"]["menu"]["counters"] ) ) {
         $cms["config"]["template.mod.php"]["menu"]["counters"] = array(
-            "title"    => "Counters",
+            "title"    => "Счетчики",
             "sort"     => 80,
             "class"    => "",
-            "section"  => "Settings",
+            "section"  => "Настройки",
         );
         cms_save_config();
     }
 
-    $tr_title = __( "Scripts and styles in footer", "template.mod.php" );
+    $tr_title = __( "Скрипты и стили в подвале сайта" );
     $content  = htmlspecialchars( $cms["config"]["template.mod.php"]["scripts"] );
-    $tr_save  = __( "Save", "template.mod.php" );
+    $tr_save  = __( "Сохранить" );
     $page = "
 <form method=post>
     <div>{$tr_title}</div>
     <textarea name=scripts rows=15>{$content}</textarea>
-    <input type=submit name=save_template_scripts value='{$tr_save}'>
+    <button name=save_template_scripts value=save>{$tr_save}</button>
 </form>";
     $cms["admin_pages"]["counters"] = $page;
 
@@ -185,6 +220,15 @@ function cms_template_api() {
         
         switch ( $_POST["fn"] ) {
 
+            case "clear_cache":
+                cms_clear_cache();
+                exit( json_encode( array(
+                    "info_text"  => __( "Кэш очищен" ),
+                    "info_class" => "info-success",
+                    "info_time"  => 5000,
+                ) ) );
+            break;
+
             case "get_template_file":
                 $file = file_get_contents( $cms["site_dir"] . "/" . $_POST["file"] );
                 if ( $file !== false ) {
@@ -202,11 +246,11 @@ function cms_template_api() {
                 $file = file_put_contents( $cms["site_dir"] . "/" . $_POST["file"], $_POST["content"] );
                 if ( $file !== false ) {
                     $ok    = "true";
-                    $msg   = __( "Saved", "template.mod.php" );
+                    $msg   = __( "Сохранено" );
                     $class = "info-success";
                 } else {
                     $ok    = "false";
-                    $msg   = __( "Save error", "template.mod.php" );
+                    $msg   = __( "Ошибка сохранения" );
                     $class = "info-error";
                 }
                 cms_clear_cache();
@@ -216,6 +260,46 @@ function cms_template_api() {
                     "info_class" => $class,
                     "info_time"  => 5000,
                 ) ) );
+            break;
+
+            case "install_template":
+                $success = true;
+                //$text = "dev.coffee-cms.ru";
+                //if ( $cms["url"]["host"] !== $text )
+                foreach ( $_FILES["myfile"]["name"] as $n => $name ) {
+                    if ( $_FILES["myfile"]["error"][$n] ) {
+                        $success = false;
+                        $text = str_replace( "xxx", $name, __( "Ошибка загрузки xxx" ) );
+                        break;
+                    } else {
+                        // Unpack Template
+                        // Object Oriented Style for future compability with PHP 8
+                        $zip = new ZipArchive;
+                        if ( $zip->open( $_FILES["myfile"]["tmp_name"][$n] ) === TRUE ) {
+                            $zip->extractTo( $cms["site_dir"] );
+                            $zip->close();
+                            $text = __( "Успешная установка" );
+                        } else {
+                            $success = false;
+                            $text = str_replace( "xxx", $name, __( "Не могу распаковать xxx" ) );
+                            break;
+                        }
+                    }
+                }
+
+                if ( $success ) {
+                    exit( json_encode( array(
+                        "info_text"  => $text,
+                        "info_class" => "info-success",
+                        "info_time"  => 5000,
+                    ) ) );
+                } else {
+                    exit( json_encode( array(
+                        "info_text"  => $text,
+                        "info_class" => "info-error",
+                        "info_time"  => 10000,
+                    ) ) );
+                }
             break;
 
         }
@@ -234,7 +318,7 @@ function cms_template_template() {
         $cms["status"]         = "200";
     } else {
         ob_start();
-        include( "{$cms['cms_dir']}/{$cms['template']}/html.php" );
+        include( $cms['cms_dir'] . "/" . $cms['template'] . "/" . $cms["template_main_file"] . $cms["template_suffix"] );
         $cms["output"] = ob_get_clean();
     }
 }
@@ -276,6 +360,10 @@ function cms_template_write() {
     if ( $cms["status"] === "404" ) {
         return;
     }
+
+    if ( $cms["config"]["template.mod.php"]["disable_write_to_disk"] === "on" ) {
+        return;
+    }
     
     // write to disk
     umask( 0 );
@@ -289,7 +377,7 @@ function cms_template_write() {
         foreach ( $dirs as $path ) {
             $dir .= "/" . $path;
             if ( ! file_exists( $dir ) ) {
-                mkdir( $dir, 0777, false );
+                @mkdir( $dir, 0777, false ); // fix "file already exists
             } elseif( is_file( $dir ) ) {
                 unlink( $dir );
                 mkdir( $dir, 0777, false );
@@ -356,7 +444,7 @@ function cms_clear_cache() {
                 if ( is_file( $file ) ) unlink( $file );
                 // Add dirs to remove queue
                 $dir = $page["url"];
-                while ( $dir != "/" ) {
+                while ( $dir && $dir != "/" && $dir != "\\" ) {
                     $dirs[] = $cms["site_dir"] .  $dir;
                     $dir    = dirname( $dir );
                 }

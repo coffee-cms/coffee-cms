@@ -22,9 +22,8 @@ body {
     height: 100%;
     font-family: var(--sans-serif);
     font-size: 1.04rem;
-}
-body.login {
-    background-color: var(--bg-login);
+    background-color: var(--bg-3);
+    background-image: var(--noise);
 }
 @media (max-width: 1023px) {
     body {
@@ -46,7 +45,7 @@ body.login {
     body.logged {
         grid-template-columns: 14rem 1fr;
         grid-template-areas:
-            "header header"
+            "aside header"
             "aside main";
     }
 }
@@ -55,28 +54,18 @@ header {
     grid-area: header;
     display: grid;
     z-index: 777;
-    background-color: var(--header);
 }
 
 @media (max-width: 1023px) {
-    body.login header {
-        grid-template-columns: 8.7rem auto;
-    }
-
     body.logged header {
         grid-template-columns: 3rem 1fr;
         gap: 0.3rem;
     }
-}
-@media (min-width: 1024px) {
-    header {
-        grid-template-columns: 14rem 1fr;
+    body.mobile-menu-open header {
+        background-color: var(--bg-3);
     }
 }
 
-header .logo div {
-    color: var(--name);
-}
 
 @media (max-width: 1023px) {
     header .burger {
@@ -89,11 +78,8 @@ header .logo div {
     .menu-icon {
         width: 1.7rem;
         height: 0.75rem;
-        position: absolute;
-        left: 50%;
-        top: 50%;
+        position: relative;
         z-index:7;
-        transform: translate(-50%, -50%);
     }
     .menu-icon span {
         display: block;
@@ -119,62 +105,16 @@ header .logo div {
         top: 5px;
         transform: rotate(-45deg);
     }
-
-    body.login header .logo {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-    
-    body.login header .logo div {
-        display: flex;
-        align-items: center;
-    }
-    
-    body.login header .logo div svg {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-
-    .logged header .logo {
-        display: none;
-    }
-
-    header svg .icon-coffee {
-        fill: var(--icon-coffee);
-    }
 }
 @media (min-width: 1024px) {
     header .burger {
         display: none;
     }
-    header .logo {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-    .logged header .logo {
-        background-color: var(--logo);
-    }
-    
-    header .logo div {
-        display: flex;
-        align-items: center;
-    }
-    
-    header .logo div svg {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-
-    header svg .icon-coffee {
-        fill: var(--icon-coffee);
-    }
 }
 
 header .menu {
     display: flex;
-    justify-content: flex-end;
+    justify-content: right;
 }
 
 header .menu > * {
@@ -185,7 +125,7 @@ header .menu > * {
     text-decoration: none;
     user-select: none;
     padding: 0 0.7rem 0 0.7rem;
-    color: var(--header-menu);
+    color: var(--link);
 }
 
 @media (max-width: 1023px) {
@@ -229,29 +169,60 @@ header .menu > * {
     gap: 1rem;
 }
 
+/* Select */
 .lang-selector {
     padding: 0.5rem;
-    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+    box-shadow: 0 2px 3px 0 #00000033;
     border-radius: 0.3rem;
-    background-color: var(--lang-selector);
+    background-color: var(--bg-4);
 }
-.lang-selector select {
-    background-color: var(--lang-selector-select);
-    border: 0;
+
+.login .lang-select-grid {
+    text-align: left;
+    position: relative;
+    user-select: none;
+    cursor: pointer;
+}
+.login .field-select  {
+	background-color: var(--bg-3);
     font-size: 0.875rem;
-    color: var(--lang-selector-select-font);
-    border-radius: 0.3rem;
+    color: var(--windows-font);
+    border-radius: 0.2rem;
     padding: 0 0.54rem;
-    line-height: 2em;
-    min-height: 30px;
-    width: 100%;
+    line-height: 2;
     height: 100%;
-    appearance: none;
     background-repeat: no-repeat;
     background-position: right 0.37rem center;
     background-size: 16px 12px;
     background-image: var(--select-icon);
 }
+.login .lang-select-grid .field-options {
+    display: grid;
+    position: absolute;
+    height: 0;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 3px 0 #00000033;
+    max-height: 17rem;
+    z-index: 777;
+}
+.login .lang-select-grid .field-options.open {
+    background-color: var(--bg-3);
+    border: 1px solid var(--bg-4);
+    color: var(--text);
+    overflow: auto;
+    height: auto;
+}
+.login .lang-select-grid .field-options option {
+    padding: 0.4rem 0.44rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.login .lang-select-grid .field-options option:hover {
+    background-color: var(--bg-2);
+}
+
 
 .setup-auth {
     display: flex;
@@ -263,7 +234,7 @@ header .menu > * {
 .login-and-password {
     display: grid;
     padding: 10px 10px 10px 10px;
-    background-color: var(--login-and-password);
+    background-color: var(--bg-4);
     box-shadow: 0 2px 3px 0 #00000033;
     border-radius: 0.25rem;
 }
@@ -275,10 +246,10 @@ header .menu > * {
 }
 .login-and-password .login input, .login-and-password .password input {
     width: 100%;
-    background-color: var(--login-and-password-input);
+    background-color: var(--bg-3);
     border: none;
     font-size: 1rem;
-    color: var(--login-and-password-input-font);
+    color: var(--windows-font);
     padding: 0 8px;
     line-height: 2;
     min-height: 34px;
@@ -287,13 +258,15 @@ header .menu > * {
 
 .login-and-password .login input { 
     border-radius: 0.25rem 0.25rem 0 0;
-    border-bottom: 1px solid var(--login-and-password-input-border);
+    border-bottom: 1px solid var(--bg-4);
 }
 .login-and-password .password input {
     border-radius: 0 0 0.25rem 0.25rem;
-    border-top: 1px solid var(--login-and-password-input-border);
+    border-top: 1px solid var(--bg-4);
 }
-
+.login-and-password .login input:autofill, .login-and-password .password input:autofill {
+    background-image: none;
+}
 
 .login-and-password .password div {
     position: absolute; 
@@ -317,21 +290,17 @@ header .menu > * {
 .support-box a {
     font-size: 0.9rem;
     padding: 0.3rem 0.8rem;
-    color: var(--support-box-font);
-    background-color: var(--support-box-bg);
+    color: var(--windows-font);
+    background-color: var(--bg-4);
     box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
     border-radius: 0.3rem;
     text-decoration: none;
-}
-.support-box a:hover {
-    color: var(--support-box-a-hover);
 }
 /* Auth. End */
 
 aside {
     overflow-y: auto;
     scrollbar-width: none; /* FireFox */
-    background-color: var(--aside);
 }
 @media (max-width: 1023px) {
     aside {
@@ -345,6 +314,8 @@ aside {
         transition: transform 0.25s ease;
         z-index: 700;
         padding: 3rem 0 3rem 0;
+        background-color: var(--bg-3);
+        background-image: var(--noise);
     }
 
     .mobile-menu-open aside {
@@ -354,7 +325,7 @@ aside {
 @media (min-width: 1024px) {
     aside {
         grid-area: aside;
-        padding: 0 0 1.9rem 0;
+        padding: 1.9rem 0 1.9rem 0;
     }
 }
 
@@ -365,10 +336,6 @@ aside::-webkit-scrollbar {
 
 aside section {
     padding:9px 0 10px 0;
-}
-aside section:not(:last-child) {
-    border-bottom: 1px solid;
-    border-color: var(--aside-section-line);
 }
 aside section div {
     padding: 5px 5px 5px 20px;
@@ -381,6 +348,11 @@ aside section a {
     display: block; 
     font-size: 0.94rem;
     color: var(--aside-section-a);
+}
+@media (min-width: 1024px) {
+    aside section a {
+        border-radius: 0 0.3rem 0.3rem 0;
+    }
 }
 aside section a:hover {
     background-color: var(--aside-section-a-hover);
@@ -396,7 +368,6 @@ aside section a.red {
 main {
     grid-area: main;
     overflow: hidden;
-    background-color: var(--main);
 }
 
 body > main > section:not(:target) {
@@ -423,7 +394,7 @@ body > main > section:not(:target) {
     gap: 1rem;
     box-shadow: 0 2px 3px 0 #00000033;
     border-radius: 0.3rem;
-    background-color: var(--start-div);
+    background-color: var(--windows);
 }
 @media (max-width: 1023px) {
     #start > div {
@@ -436,16 +407,13 @@ body > main > section:not(:target) {
     }
 }
 #start div > div {
-    color: var(--start-div-div);
+    color: var(--windows-font);
 }
 #start div > p {
-    color: var(--start-div-p);
+    color: var(--text);
 }
-#start div > p > a {
-    color: var(--start-div-p-a);
-    cursor: pointer;
-    display: inline;
-    border-bottom: 1px dotted;
+#start div > p a {
+    color: var(--link);
 }
 /* End */
 
@@ -469,17 +437,18 @@ body > main > section:not(:target) {
 }
 #auth form {
     display: grid;
-    background-color: var(--auth-form);
+    background-color: var(--windows);
+    background-image: var(--noise);
     border-radius: 0.3rem;
     box-shadow: 0 2px 3px 0 #00000033;
 }
-@media (max-width: 1023px) {
+@media (max-width: 1300px) {
     #auth form {
         row-gap: 10px;
         padding: 1rem 0.7rem 1.4rem 0.7rem;
     }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1301px) {
     #auth form {
         grid-auto-columns: max-content;
         grid-auto-flow: column;
@@ -499,9 +468,9 @@ body > main > section:not(:target) {
     padding: 0 0.54rem;
     min-height: 35px;
     width: 100%;
-    color: var(--auth-form-input-font);
-    background-color: var(--auth-form-input);
-    border: 1px solid var(--auth-form-input-border);
+    color: var(--input-font);
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
 }
 
 
@@ -510,14 +479,14 @@ body > main > section:not(:target) {
 }
 
 
-#auth form .login-title, #auth form .passwd-title { 
-    color: var(--auth-form-login-password-title);
+#auth form .admin-url, #auth form .login-title, #auth form .passwd-title { 
+    color: var(--windows-font);
 }
 @media (min-width: 1024px) {
-    #auth form .login-title { line-height: 32px; }
-}
-@media (min-width: 1024px) {
-    #auth form .passwd-title { line-height: 32px; }
+    #auth form .admin-url, #auth form .login-title, #auth form .passwd-title { 
+        display: grid;
+        align-items: center;
+    }
 }
 #auth form .password-eye {
     position: absolute;
@@ -544,7 +513,7 @@ body > main > section:not(:target) {
 }
 #auth .table-title {
     padding: 0 0.5rem 0.5rem 0.7rem;
-    color: var(--auth-table-title);
+    color: var(--windows-font);
 }
 .sess-table {
     display: grid;
@@ -552,7 +521,8 @@ body > main > section:not(:target) {
 }
 .sess-table > div {
     color: var(--sess-table-font);
-    background-color: var(--sess-table-div);
+    background-color: var(--windows);
+    background-image: var(--noise);
     border-radius: 0.3rem;
 }
 @media (max-width: 1023px) {
@@ -574,13 +544,16 @@ body > main > section:not(:target) {
     color: var(--sess-table-current);
 }
 #auth .del-sess {
-    width: 1.7rem;
-    height: 1.7rem;
+    width: 1.6rem;
+    height: 1.6rem;
     justify-self: center;
-    background-color: var(--auth-del-sess);
     cursor: pointer;
-    border-radius: 50%;
+    border-radius: 4px;
     float: right;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 44%;
+    background-image: var(--icon-clear);
 }
 #auth .del-sess:hover {
     background-color: var(--auth-del-sess-hover);
@@ -609,19 +582,19 @@ body > main > section:not(:target) {
 #phpinfo .center {text-align: center;}
 @media (min-width: 1024px) {#phpinfo .center table:first-child {margin-top: 0;}}
 #phpinfo .center table {margin: 1rem auto; text-align: left;}
-#phpinfo td, th {border: 1px solid var(--phpinfo-td-th-border); font-size: 75%; vertical-align: baseline; padding: 4px 5px;}
-#phpinfo th {position: sticky; top: 0; background: inherit;}
+#phpinfo td, th {border: 1px solid var(--bg-4); font-size: 75%; vertical-align: baseline; padding: 4px 5px;}
+#phpinfo th {position: sticky; top: 0; background-color: inherit;}
 #phpinfo h1 {font-size: 150%;}
 #phpinfo h2 {font-size: 125%;}
 #phpinfo .p {text-align: left; margin: 0;}
-#phpinfo .e {background-color: var(--phpinfo-e-bg); font-weight: bold; }
+#phpinfo .e {background-color: var(--bg-3); font-weight: bold; }
 #phpinfo .h {background-color: var(--phpinfo-h-bg); font-weight: bold; }
-#phpinfo .v {background-color: var(--phpinfo-v-bg); overflow-x: auto; }
+#phpinfo .v {background-color: var(--bg-3); overflow-x: auto; }
 #phpinfo .v i {color: var(--phpinfo-v-i-font);}
 #phpinfo img {float: right; border: 0;}
 #phpinfo hr {width: 100%; background-color: var(--phpinfo-hr-bg); border: 0; height: 1px;}
 #phpinfo th { border-color: transparent;}
-#phpinfo tr:hover td {background: var(--phpinfo-tr-hover-td-bg);}
+#phpinfo tr:hover td {background-color: var(--bg-2);}
 /* End */
 
 
@@ -653,7 +626,27 @@ body > main > section:not(:target) {
     row-gap: 0.3rem;
 }
 
-.modules-grid > div {
+#module-upload {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+label[for=module-upload] {
+	padding: 0.4rem 0.7rem 0.5rem 0.7rem;
+	white-space: nowrap;
+	cursor: pointer;
+	border-radius: 0.3rem;
+	color: var(--windows-font);
+	background-color: var(--bg-4);
+    width: max-content;
+    font-size: 0.9rem;
+}
+
+#modules .modules-grid > div {
     display: grid;
     grid-template-areas:
         "module-name module-version"
@@ -666,73 +659,75 @@ body > main > section:not(:target) {
     column-gap: 0.7rem;
     box-shadow: 0 2px 3px 0 #00000033;
     row-gap: 0.5rem;
+    background-image: var(--noise);
 }
 
-.modules-grid > div.enabled  {
-    background: var(--modules-grid-div-enabled);
+#modules .modules-grid > div.enabled  {
+    background-color: var(--windows);
 }
 @media (min-width: 1024px) {
-    .modules-grid > div.enabled:hover {
-        background: var(--modules-grid-div-enabled-hover);
+    #modules .modules-grid > div.enabled:hover {
+        background-color: var(--windows-hover);
     }
 }
 
-.modules-grid > div.disabled {
-    background: var(--modules-grid-div-disabled);
+#modules .modules-grid > div.disabled {
+    background-color: var(--modules-grid-div-disabled);
 }
 @media (min-width: 1024px) {
-    .modules-grid > div.disabled:hover {
-        background: var(--modules-grid-div-disabled-hover);
+    #modules .modules-grid > div.disabled:hover {
+        background-color: var(--modules-grid-div-disabled-hover);
     }
 }
 
-.module-name {
+#modules .module-name {
     grid-area: module-name;
     margin-top: -5px;
     font-size: 1rem;
 }
-.enabled .module-name {
-    color: var(--enabled-module-name);
+#modules .enabled .module-name {
+    color: var(--windows-font);
 }
-.disabled .module-name {
-    color: var(--disabled-module-name);
+#modules .disabled .module-name {
+    color: var(--disabled-module);
 }
 
-.module-version {
+#modules .module-version {
     grid-area: module-version;
     margin-top: -5px;
     font-size: 1rem;
-    color: var(--module-version);
+    color: var(--text);
 }
-.module-description {
+#modules .module-description {
     grid-area: module-description;
     font-size: 0.9rem;
 }
-.enabled .module-description {
+#modules .enabled .module-description {
     color: var(--enabled-module-description);
 }
-.disabled .module-description {
-    color: var(--disabled-module-description);
+#modules .disabled .module-description {
+    color: var(--disabled-module);
 }
 
-.module-del-btn {
+#modules .module-del-btn {
     grid-area: module-del-btn;
     font-size: 0.9rem;
-    color: var(--module-del-btn);
+    color: var(--link);
     cursor: pointer;
+    text-align: right;
 }
 
-.module-sw-btn {
+#modules .module-sw-btn {
     grid-area: module-sw-btn;
     width: max-content;
     font-size: 0.9rem;
     user-select: none;
     cursor: pointer;
 }
-.enabled .module-sw-btn {
-    color: var(--enabled-module-sw-btn);
+#modules .enabled .module-sw-btn {
+    color: var(--link);
 }
-.disabled .module-sw-btn {
+#modules .disabled .module-sw-btn {
     color: var(--disabled-module-sw-btn);
 }
 /* End */
@@ -780,8 +775,8 @@ body > main > section:not(:target) {
     display: grid;
     column-gap: 1rem;
     row-gap: 0.7rem;
-    background-color: var(--admin-menu-section);
-    box-shadow: 0 2px 2px 0 #00000033;
+    background-color: var(--windows);
+    background-image: var(--noise);
     border-radius: 0.3rem;
     position: relative;
     min-height: 4rem;
@@ -823,13 +818,14 @@ body > main > section:not(:target) {
     row-gap: 0.3rem;
     padding: 0.8rem 0 0.5rem 0.5rem;
     margin-top: -5px;
-    background-color: var(--admin-menu-items-grid);
+    background-color: var(--windows);
     border-radius: 0 0 0.3rem 0.3rem;
-    box-shadow: 0 2px 2px 0 #00000033;
 }
 
 #admin_menu [data-am-type="section"] input[name=title] {
     grid-area: title;
+    background-color: var(--menu-input-bg);
+	border: 2px solid var(--menu-input-border);
 }
 
 #admin_menu [data-am-type="section"] [data-am-delete] {
@@ -838,10 +834,10 @@ body > main > section:not(:target) {
     width: max-content;
     cursor: pointer;
     font-size: 0.9rem;
-    color: var(--admin-menu-buttons);
+    color: var(--buttons-font);
 }
 #admin_menu [data-am-type="section"] [data-am-delete]:hover {
-    color: var(--admin-menu-buttons-hover);
+    color: var(--buttons-hover);
 }
 
 #admin_menu [data-am-type="section"] input[name=sort] {
@@ -849,38 +845,81 @@ body > main > section:not(:target) {
     width: 4rem;
     justify-self: right;
     text-align: center;
+    background-color: var(--menu-input-bg);
+	border: 2px solid var(--menu-input-border);
 }
-#admin_menu input, #admin_menu select {
+#admin_menu input {
     border-radius: 4px;
     min-height: 30px;
     height: 100%;
-    background-color: var(--admin-menu-input-select);
-    border: 1px solid var(--admin-menu-input-select-border);
-    color: var(--admin-menu-input-select-font);
+    background-color: var(--bg-4);
+    border: 1px solid var(--bg-4);
+    color: var(--text);
 }
 #admin_menu input {
     padding: 0 0.54rem;
     font-size: 0.94rem;
 }
-#admin_menu select {
+
+
+#admin_menu .section-select-grid {
+    position: relative;
+}
+#admin_menu .field-select {
+    border-radius: 4px;
+    line-height: 26px;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    background-color: var(--bg-4);
+    border: 1px solid var(--bg-4);
+    color: var(--text);
     padding: 0 1.8rem 0 0.54rem;
     font-size: 0.9rem;
-    appearance: none;
     background-repeat: no-repeat;
     background-position: right 0.37rem center;
     background-size: 16px 12px;
     background-image: var(--select-icon);
 }
+#admin_menu .field-options {
+    display: grid;
+    position: absolute;
+    height: 0;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 3px 0 #00000033;
+    max-height: 17rem;
+    z-index: 777;
+}
+#admin_menu .field-options.open {
+    background-color: var(--bg-3);
+    border: 2px solid var(--bg-4);
+    color: var(--text);
+    overflow: auto;
+    height: auto;
+    margin-top: 2px;
+}
+#admin_menu .field-options option {
+    padding: 0.4rem 0.44rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+#admin_menu .field-options option:hover {
+    background-color: var(--bg-2);
+}
+
 
 #admin_menu [data-am-type="section"] [data-am-save] {
     grid-area: save;
     width: max-content;
     cursor: pointer;
     font-size: 0.9rem;
-    color: var(--admin-menu-buttons);
+    color: var(--buttons-font);
 }
 #admin_menu [data-am-type="section"] [data-am-save]:hover {
-    color: var(--admin-menu-buttons-hover);
+    color: var(--buttons-hover);
 }
 
 #admin_menu [data-am-type="section"] [data-am-sw] {
@@ -888,10 +927,10 @@ body > main > section:not(:target) {
     width: max-content;
     cursor: pointer;
     font-size: 0.9rem;
-    color: var(--admin-menu-buttons);
+    color: var(--buttons-font);
 }
 #admin_menu [data-am-type="section"] [data-am-sw]:hover {
-    color: var(--admin-menu-buttons-hover);
+    color: var(--buttons-hover);
 }
 
 
@@ -903,19 +942,21 @@ body > main > section:not(:target) {
     row-gap: 1rem;
 }
 
+.am-grid > div {
+    box-shadow: 0 0 3px 0 #00000096;
+    border-radius: 0.3rem;
+}
+
 #admin_menu .add-section {
     display: block;
     width: max-content;
     padding: 0.4rem 0.7rem 0.5rem 0.7rem;
-    background-color: var(--admin-menu-add-section);
+    background-color: var(--bg-4);
     text-decoration: none;
     font-size: 0.9rem;
-    color: var(--admin-menu-add-section-font);
+    color: var(--windows-font);
     border-radius: 0.3rem;
     cursor: pointer;
-}
-#admin_menu .add-section:hover {
-    background-color: var(--admin-menu-add-section-hover);
 }
 
 
@@ -923,12 +964,11 @@ body > main > section:not(:target) {
     display: grid;
     column-gap: 1rem;
     row-gap: 0.7rem;
-    background-color: var(--admin-menu-item);
-    box-shadow: 0 2px 3px 0 #00000033;
-    border-radius: 0.3rem;
+    background-color: var(--bg-3);
+    background-image: var(--noise);
+    border-radius: 0.3rem 0 0  0.3rem;
     position: relative;
     min-height: 4rem;
-    overflow: hidden;
     padding: 0.7rem;
 }
 #admin_menu [data-am-type="item"].hidden::before {
@@ -940,7 +980,7 @@ body > main > section:not(:target) {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background-color: var(--admin-menu-hidden-before);
+    background-color: var(--orange);
 }
 @media (max-width: 1023px) {
     #admin_menu [data-am-type="item"] {
@@ -964,7 +1004,7 @@ body > main > section:not(:target) {
     font-size: 1rem;
     align-self: center;
     margin-top: -5px;
-    color: var(--admin-menu-item-name);
+    color: var(--aside-section-a);
     white-space: pre;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -984,10 +1024,10 @@ body > main > section:not(:target) {
     width: max-content;
     cursor: pointer;
     font-size: 0.9rem;
-    color: var(--admin-menu-buttons);
+    color: var(--buttons-font);
 }
 #admin_menu [data-am-type="item"] [data-am-save]:hover {
-    color: var(--admin-menu-buttons-hover);
+    color: var(--buttons-hover);
 }
 #admin_menu [data-am-type="item"] [data-am-reset] {
     grid-area: reset;
@@ -995,20 +1035,20 @@ body > main > section:not(:target) {
     width: max-content;
     cursor: pointer;
     font-size: 0.9rem;
-    color: var(--admin-menu-buttons);
+    color: var(--buttons-font);
 }
 #admin_menu [data-am-type="item"] [data-am-reset]:hover {
-    color: var(--admin-menu-buttons-hover);
+    color: var(--buttons-hover);
 }
 #admin_menu [data-am-type="item"] [data-am-sw] {
     grid-area: sw;
     width: max-content;
     cursor: pointer;
     font-size: 0.9rem;
-    color: var(--admin-menu-buttons);
+    color: var(--buttons-font);
 }
 #admin_menu [data-am-type="item"] [data-am-sw]:hover {
-    color: var(--admin-menu-buttons-hover);
+    color: var(--buttons-hover);
 }
 /* End */
 
@@ -1031,21 +1071,19 @@ body > main > section:not(:target) {
 /* Service Messages */
 .log-info-box {
     position: fixed;
-    right: 0.3rem;
     z-index: 770;
     display: inline-grid;
 }
 @media (max-width: 1023px) {
     .log-info-box {
-        top: 7rem;
-    }
-    body.editor .log-info-box, body.template_editor .log-info-box {
-        top: 8rem;
+        top: 3rem;
+        right: 0.3rem;
     }
 }
 @media (min-width: 1024px) {
     .log-info-box {
-        top: 7rem;
+        top: 2.5rem;
+        right: 0.3rem;
     }
 }
 
@@ -1082,4 +1120,47 @@ body > main > section:not(:target) {
     padding-top: 0;
     padding-bottom: 0;
     margin-bottom: 0;
+}
+
+
+/* Checks */
+input[type="checkbox"] {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 0.25rem;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    appearance: none;
+    border: 2px solid;
+    background-color: var(--bg-3);
+    border-color: var(--bg-4);
+    cursor: pointer;
+}
+input[type="checkbox"]:checked {
+    background-color: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 0 0.25rem var(--focus-orange);
+    background-image: var(--check-icon);
+}
+
+/* Buttons */
+button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.44rem 0.74rem 0.37rem 0.74rem;
+    min-height: 35px;
+    border-radius: 0.25rem;
+    background-color: var(--button-bg);
+    border: 1px solid var(--button-border);
+    color: var(--windows-font);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.CodeMirror-dialog button {
+    display: inline-block;
+    padding: 0px 10px 1px;
+    min-height: auto;
 }

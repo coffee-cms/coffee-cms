@@ -3,13 +3,13 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Заготовки для шаблона Representative Dark</title>
+        <title>Заготовки для шаблона</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="stylesheet" href="style.css">
         <style>
             body { grid-template-rows: 0rem auto 1fr auto; }
             .copy { margin: 1rem auto 7rem auto; display: block; cursor: pointer; }
-            .help { max-width: 1280px; margin: auto; padding: 0 0.5rem; color: #4b86cc; }
+            .help { max-width: 1280px; margin: auto; padding: 1rem; color: #333; }
         </style>
     </head>
 
@@ -17,51 +17,72 @@
         <div>
 
 <main class="help" class="blog">
-    <p>Выберите нужный вам блок и нажмите кнопку Копировать под ним.</p>
+    <h2>Как создать свой шаблон</h2>
+    <p>Шаблон mini - это очень простой стартовый шаблон. Он находится в папке .cms/mini/. Создайте копию этой папки, например, с названием .cms/mini2/, переключитесь на шаблон mini2 и уже в этой папке изменяйте файлы под себя. Если же вы будете править файлы в оригинальном шаблоне, то CMS потом не сможет обновиться, будет сообщать, что файлы изменены и поэтому она не хочет перезатирать ваши наработки.</p>
+    <h2>Блог</h2>
+    <p>С помощью шаблона mini можно создать блог с бесконечной подгружаемой лентой тизеров статей. Тизер переводится как "приманка", это часть статьи, не обязательно ее начало, которая интригует к прочтению всей статьи. Для этого нужно для одной из страниц, которая будет лентой, задать шаблон blog, а остальным страницам, которые будут статьями в блоге, задать шаблоны post. А внутри постов выделить тизеры с помощью открывающего и закрывающего html-комментария.</p>
+    <pre>&lt;!-- preview-start -->
+&lt;p>тут расположен текст тизера&lt;/p>
+&lt;p>можно с html-тегами, а можно и без&lt;/p>
+&lt;!-- preview-end --></pre>
+    <p>Но если не отметить тизер специально, то будут взяты первые 500 символов статьи, при этом очищается html-разметка. Старайтесь задавать тизеры вручную чтобы они выглядели красиво и заинтересовывали читателей.</p>
+    <h2>Главная</h2>
+    <p>Так же имеется шаблон frontpage, который как и blog выводит тизеры страниц с шаблоном post, но только последние 6 штук. Он подойдет для создания главной страницы которая не должна быть лентой. В этом шаблоне php-код сильно упрощен по сравнению с blog.</p>
+    <h2>Заготовки</h2>
+    <p>Ниже представлены заготовки, которые вы можете использовать для оформления страниц сайта. Выберите нужный вам блок и нажмите кнопку Копировать под ним. Затем вставьте скопированный блок в редактируемую страницу.</p>
 </main>
+
+
 
 <main id="banner" class="blog">
 <!-- Баннер -->
 <img class="banner" alt="Баннер" src="/mini/banner.jpg" width="1920" height="700">
 </main>
-            <button for="banner" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+<button for="banner" class="slink copy">Копировать</button>
+
+
 
 <main id="article" class="blog">
 <h1>Заголовок записи</h1>
     
-<p>Это облёгчённый шаблон создан для творчества. Он одновременно является примером и отправной точкой для Вашего проекта.</p>
+<p>Этот облегченный шаблон создан для творчества. Он одновременно является примером и отправной точкой для Вашего проекта.</p>
 </main>
-<button for="article" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+<button for="article" class="slink copy">Копировать</button>
+
+
 
 <main id="lists" class="blog">
-<!-- Начало блока списка -->
-    <ul>
-        <li>Маркер</li>
-        <li>Маркер</li>
-        <li>Маркер</li>
-    </ul>
-        
-    <ol>
-        <li>Маркер</li>
-        <li>Маркер</li>
-        <li>Маркер</li>
-    </ol>
-<!-- Конец блока списка -->
-</main>
-<button for="lists" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+<ul>
+    <li>Маркер</li>
+    <li>Маркер</li>
+    <li>Маркер</li>
+</ul>
     
-<main id="cite" class="blog">
-<!-- Начало блока цитаты -->
-    <blockquote>
-        <p>За свою карьеру я пропустил более 9000 бросков, проиграл почти 300 игр. 26 раз мне доверяли сделать финальный победный бросок, и я промахивался. Я терпел поражения снова, и снова, и снова. И именно поэтому я добился успеха</p>
-        <p class="author">Майкл Джордан</p>
-    </blockquote>
-<!-- Конец блока цитаты -->
+<ol>
+    <li>Маркер</li>
+    <li>Маркер</li>
+    <li>Маркер</li>
+</ol>
 </main>
-<button for="cite" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+<button for="lists" class="slink copy">Копировать</button>
+
+
+
+<main id="cite" class="blog">
+<blockquote>
+    <p>Только работа дает ответы на все вопросы.</p>
+    <p class="author">Николай Замяткин</p>
+</blockquote>
+</main>
+
+<button for="cite" class="slink copy">Копировать</button>
+
+
 
 <main id="code" class="blog">
-<!-- Начало блока кода -->
 <pre class="ignorgap"><code><p>Заголовок</p>&lt;?php
 $cms['modules']['test.mod.php'] = array(
     'name' =&gt; 'Test',
@@ -75,65 +96,88 @@ $cms['modules']['test.mod.php'] = array(
     ),
     'sort'    =&gt; 100,
 );</code></pre>
-<!-- Конец блока кода -->
 </main>
-<button for="code" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
-    
+
+<button for="code" class="slink copy">Копировать</button>
+
+
+
 <main id="wpic1" class="blog">
-<!-- Начало блока широкой картинки -->
-    <p>Ниже пример картинки выходящей за ширину текста и описанием за счёт добавления класса wide тегу figure.</p>
-    
-    <figure class="wide">
-        <img alt="" src="/mini/test.png" width="800" height="600">
-        <figcaption>Описание изображения</figcaption>
-    </figure>
-<!-- Конец блока широкой картинки -->
-</main>
-<button for="wpic1" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
-    
-<main id="pic1" class="blog">
-<!-- Начало блока картинки -->
-    <p>Ниже пример картинки по ширине текста</p>
-    
+<p>Ниже пример картинки выходящей за ширину текста и описанием за счёт добавления класса wide тегу figure.</p>
+
+<figure class="wide">
     <img alt="" src="/mini/test.png" width="800" height="600">
-<!-- Конец блока картинки -->
+    <figcaption>Описание изображения</figcaption>
+</figure>
 </main>
-<button for="pic1" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
-    
+
+<button for="wpic1" class="slink copy">Копировать</button>
+
+
+
+<main id="pic1" class="blog">
+<p>Ниже пример картинки по ширине текста</p>
+
+<img alt="" src="/mini/test.png" width="800" height="600">
+</main>
+
+<button for="pic1" class="slink copy">Копировать</button>
+
+
+
 <main id="wpic2" class="blog">
-<!-- Начало блока широкой картинки -->
-    <p>Ниже пример картинки картинки выходящей за ширину текста за счёт добавления ей класса wide</p>
-    
-    <img class="wide" alt="" src="/mini/test.png" width="800" height="600">
-<!-- Конец блока широкой картинки -->
+<p>Ниже пример картинки картинки выходящей за ширину текста за счёт добавления ей класса wide</p>
+
+<img class="wide" alt="" src="/mini/test.png" width="800" height="600">
 </main>
-<button for="wpic2" class="slink copy" onclick="copy(this.getAttribute('for'))">Копировать</button>
+
+<button for="wpic2" class="slink copy">Копировать</button>
+
+
+
+
 
         </div>
 
-        <script>
-            
-            function copy( id ) {
-                var div  = document.getElementById( id );
-                var html = div.innerHTML;
-                var ta   = document.getElementById( "copy" );
-                ta.setAttribute('style','');
-                ta.value = html;
-                ta.select();
-                var r = document.execCommand( "copy" );
-                var btn = document.querySelector( "button[for="+id+"]" );
-                if ( r ) {
-                    btn.textContent = "OK";
-                    setTimeout( function(){ btn.textContent = "Копировать"; }, 1000 );
-                } else {
-                    btn.textContent = "Ошибка";
-                    setTimeout( function(){ btn.textContent = "Копировать"; }, 1000 );
-                }
-                ta.setAttribute('style','display:none;');
-            }
-            
-        </script>
+<script>
+document.addEventListener( "DOMContentLoaded", function( event ) {
 
-    <div><textarea id="copy" style="display: none;"></textarea></div>
+    document.querySelectorAll( "button[for]" ).forEach( function( button ) {
+
+        button.addEventListener( "click", function( e ) {
+
+            let id    = button.getAttribute( "for" );
+            let html  = document.getElementById( id ).innerHTML.trim();
+            let ta    = document.getElementById( "copy" );
+            ta.style = "";
+            ta.value  = html;
+            ta.select();
+            let r     = document.execCommand( "copy" );
+            let btn   = document.querySelector( `button[for="${id}"]` );
+            let btext = btn.textContent;
+            if ( r ) {
+                btn.textContent = "OK";
+                setTimeout( function() {
+                    btn.textContent = btext;
+                }, 1000 );
+            } else {
+                btn.textContent = "Ошибка";
+                setTimeout( function() {
+                    btn.textContent = btext;
+                }, 1000 );
+            }
+            ta.style.display = "none";
+
+        } );
+
+    } );
+
+} );
+</script>
+
+    <div>
+        <textarea id="copy" style="display: none;"></textarea>
+    </div>
+
     </body>
 </html>

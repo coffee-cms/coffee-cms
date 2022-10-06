@@ -1,17 +1,17 @@
 <?php
 
 $cms["modules"]["sitemap.mod.php"] = array(
-    "name" => __( "Sitemap", "sitemap.mod.php" ),
-    "description" => __( "Module for configure sitemap.xml", "sitemap.mod.php" ),
-    "version" => "22.04",
+    "name"        => __( "Карта сайта" ),
+    "description" => __( "Модуль настроек карты сайта sitemap.xml" ),
+    "version"     => "",
+    "locale"      => "ru_RU.UTF-8",
     "files" => array(
         ".cms/mod/sitemap.mod.php",
         ".cms/css/sitemap.css",
         ".cms/js/sitemap.js",
-        ".cms/lang/ru_RU.UTF-8/sitemap.mod.php",
+        ".cms/lang/en_US.UTF-8/sitemap.mod.php",
         ".cms/lang/uk_UA.UTF-8/sitemap.mod.php",
     ),
-    "sort" => 20,
 );
 
 // Return if module disabled
@@ -26,20 +26,21 @@ if ( ! empty( $cms["config"]["sitemap.mod.php"]["disabled"] ) ) {
     if ( empty( $cms["config"]["sitemap.mod.php"]["update_interval"] ) ) {
         $cms["config"]["sitemap.mod.php"]["update_interval"] = 60;
     }
+
     if ( empty( $cms["config"]["sitemap.mod.php"]["exclude"] ) ) {
         $cms["config"]["sitemap.mod.php"]["exclude"] = "";
     }
+
     if ( empty( $cms["config"]["sitemap.mod.php"]["include"] ) ) {
         $cms["config"]["sitemap.mod.php"]["include"] = "";
     }
+
     if ( empty( $cms["config"]["sitemap.mod.php"]["gen"] ) ) {
         $cms["config"]["sitemap.mod.php"]["gen"] = "static";
     }
+
     if ( empty( $cms["config"]["sitemap.mod.php"]["lastrun"] ) ) {
         $cms["config"]["sitemap.mod.php"]["lastrun"] = "";
-    }
-    if ( empty( $cms["config"]["sitemap.mod.php"]["excluded_types"] ) ) {
-        $cms["config"]["sitemap.mod.php"]["excluded_types"] = array( "redirect", "admin" );
     }
 
     if ( is_admin() ) {
@@ -103,36 +104,63 @@ function cms_sitemap_generate() {
         $domain = "{$cms['url']['scheme']}://{$cms['url']['host']}";
     }
 
+    // Формат массива
+    // $cms["sitemap"]["https://site.com/link"] = array(
+    //      "lastmod" => "2022-08-27T21:25:17+03:00" || "",
+    //      "changefreq" => "weekly",
+    //      "priority"   => "0.8"
+    // );
+    $cms["sitemap"] = array();
+
     $exclude = explode( "\n", $cms["config"]["sitemap.mod.php"]["exclude"] );
 
-    $excluded_types = "'" . implode( "','", $cms["config"]["sitemap.mod.php"]["excluded_types"] ) . "'";
-    $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
-    $q = "SELECT title, url, created, modified FROM pages WHERE `created`<='" . date( "Y-m-d H:i:s" ) . "' AND `tpl` NOT IN ({$excluded_types}) ORDER BY created DESC";
+    $date = date( "Y-m-d H:i:s" );
+    $q = "SELECT title, url, created, modified FROM pages WHERE `created`<='{$date}' ORDER BY created DESC";
     if ( $res = mysqli_query( $cms["base"], $q ) ) {
-        $links = array();
         while ( $page = mysqli_fetch_assoc( $res ) ) {
-            if ( ! empty( $page["url"] ) ) {
-                $link = $domain.$page["url"];
-                $modified = "";
-                $created  = strtotime( $page["created"] );
-                if ( $created > 0 and $modified = max( $created, (int)$page["modified"] ) ) {
-                    $modified = "<lastmod>" . date( "c", $modified ) . "</lastmod>";
+            if ( ! empty( $page["url"] ) and ! in_array( $page["url"], $exclude ) ) {
+                if ( $modified = max( strtotime( $page["created"] ), (int) $page["modified"] ) ) {
+                    $modified = date( "c", $modified );
+                } else {
+                    $modified = "";
                 }
-                if ( ! in_array( $page["url"], $exclude ) && ! in_array( $link, $links ) ) {
-                    $links[] = $link;
-                    $content .= "<url><loc>{$link}</loc>{$modified}</url>\n";
+                $link = $domain.$page["url"];
+                if ( ! isset( $cms["sitemap"][$link] ) ) {
+                    $cms["sitemap"][$link] = array( "lastmod" => $modified );
                 }
             }
         }
-        $link = $domain . "/";
-        if ( ! in_array( $link, $links ) ) $links[] = $link;
-
     }
+
+    // Обязательные для включения ссылки
     foreach( explode( "\n", $cms["config"]["sitemap.mod.php"]["include"] ) as $link ) {
         $link = trim( $link );
         if ( ! empty( $link ) ) {
-            $content .= "<url><loc>{$link}</loc></url>";
+            $cms["sitemap"][$link] = array( "lastmod" => "" );
         }
+    }
+
+    cms_do_stage( "sitemap" );
+
+    // Генерация файла
+    $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
+    foreach( $cms["sitemap"] as $url => $attr ) {
+        if ( empty( $attr["lastmod"] ) ) {
+            $lastmod = "";
+        } else {
+            $lastmod = "<lastmod>{$attr["lastmod"]}</lastmod>";
+        }
+        if ( empty( $attr["changefreq"] ) ) {
+            $changefreq = "";
+        } else {
+            $changefreq = "<changefreq>{$attr["changefreq"]}</changefreq>";
+        }
+        if ( empty( $attr["priority"] ) ) {
+            $priority = "";
+        } else {
+            $priority = "<priority>{$attr["priority"]}</priority>";
+        }
+        $content .= "<url><loc>{$url}</loc>{$lastmod}{$changefreq}{$priority}</url>\n";
     }
     $content .= "</urlset>";
     return $content;
@@ -173,32 +201,15 @@ function cms_sitemap_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["sitemap.mod.php"]["menu"]["sitemap"] ) ) {
         $cms["config"]["sitemap.mod.php"]["menu"]["sitemap"] = array(
-            "title"    => "Sitemap",
+            "title"    => "Карта сайта",
             "sort"     => 60,
             "class"    => "",
-            "section"  => "Settings",
+            "section"  => "Настройки",
         );
         cms_save_config();
     }
 
-    $tr_excluded_links = __( "Excluded links", "sitemap.mod.php" );
-    $tr_included_links = __( "Included links", "sitemap.mod.php" );
-    $tr_save           = __( "Save", "sitemap.mod.php" );
-    $tr_rules          = __( "Rules for processing sitemap.xml file", "sitemap.mod.php" );
-    $tr_dynamic        = __( "Dynamic generation", "sitemap.mod.php" );
-    $tr_static         = __( "Static generation (recommended)", "sitemap.mod.php" );
-    $tr_domain         = __( "Protocol and Domain for static map (leave empty for auto)*:", "sitemap.mod.php" );
-    $tr_freq           = __( "Frequency Recreate", "sitemap.mod.php" );
-    $tr_cron_1         = __( "Static CRON generation at", "sitemap.mod.php" );
-    $tr_cron_2         = __( "-minute intervals", "sitemap.mod.php" );
-    $tr_help           = __( "This function works when CRON is on. Information on using CRON can be obtained from your hosting provider.", "sitemap.mod.php" );
-    $tr_manual_title   = __( "Help on sitemap.xml options", "sitemap.mod.php" );
-    $tr_manual_1       = __( "If you don't need to do pending auto posts - you need to keep static generation. When you save the page or page properties, the site map is recreated.", "sitemap.mod.php" );
-    $tr_manual_2       = __( "If you have pending publications for the future, you can set the dynamic generation of the sitemap or static using the CRON scheduler.", "sitemap.mod.php" );
-    $tr_manual_3       = __( "The CRON scheduler should poll the site at", "sitemap.mod.php" );
-    $tr_manual_4       = __( "and thereby recreate the site map with the time interval you set.", "sitemap.mod.php" );
-    $tr_manual_5       = __( "We recommend using static generation to reduce server load.", "sitemap.mod.php" );
-    $tr_manual_6       = __( "* This option is needed if the site operates on two domains.", "sitemap.mod.php" );
+    $tr_save           = __( "Сохранить" );
 
     $ch["static"] = "";
     $ch["dynamic"] = "";
@@ -207,38 +218,38 @@ function cms_sitemap_admin() {
     @$page = "
 <form method=post>
     <div class=xml-wrapper-hidden>
-        <div>{$tr_excluded_links}</div>
+        <div>" . __( "Скрыть ссылки" ) . "</div>
         <textarea name=exclude rows=12>{$cms['config']['sitemap.mod.php']['exclude']}</textarea>
-        <input type=submit name=save_settings_sitemap value='{$tr_save}'>
+        <button name=save_settings_sitemap value=save>{$tr_save}</button>
     </div>
     <div class=xml-wrapper-link>
-        <div>{$tr_included_links}</div>
+        <div>" . __( "Добавить ссылки" ) . "</div>
         <textarea name=include rows=12>{$cms['config']['sitemap.mod.php']['include']}</textarea>
-        <input type=submit name=save_settings_sitemap value='{$tr_save}'>
+        <button name=save_settings_sitemap value=save>{$tr_save}</button>
     </div>
     <div class=xml-static-dynamic>
-        <div>{$tr_rules}</div>
-        <label><input name=gen type=radio value=dynamic {$ch['dynamic']}> {$tr_dynamic}</label>
-        <label><input name=gen type=radio value=static {$ch['static']}> {$tr_static}</label>
+        <div>" . __( "Правила обработки файла sitemap.xml" ) . "</div>
+        <label><input name=gen type=radio value=dynamic {$ch['dynamic']}> " . __( "Динамическая генерация карты сайта" ) . "</label>
+        <label><input name=gen type=radio value=static {$ch['static']}> " . __( "Статическая генерация карты сайта (рекомендуется)" ) . "</label>
         <div> </div>
-        <div>{$tr_domain}</div>
+        <div>" . __( "Протокол и Домен для статической карты сайта (пусто = авто)*:" ) . "</div>
         <input type=text name=domain value='{$cms['config']['sitemap.mod.php']['domain']}' placeholder='http://example.com'>
-        <input type=submit name=save_settings_sitemap value='{$tr_save}'>
+        <button name=save_settings_sitemap value=save>{$tr_save}</button>
     </div>
     <div class=xml-static-cron>
-        <div>{$tr_freq}</div>
-        <p>{$tr_cron_1} <input type=text name=update_interval value={$cms['config']['sitemap.mod.php']['update_interval']}> {$tr_cron_2}</p>
-        <p>{$tr_help}</p>
-        <input type=submit name=save_settings_sitemap value='{$tr_save}'>
+        <div>" . __( "Ограничения частоты пересоздания" ) . "</div>
+        <p>" . __( "Статическая генерация по CRON с интервалом" ) . " <input type=text name=update_interval value={$cms['config']['sitemap.mod.php']['update_interval']}> " . __( "минут" ) . "</p>
+        <p>" . __( "Данная функция работает при включенном CRON. Информацию по использованию CRON можете получить у вашего хостинг провайдера." ) . "</p>
+        <button name=save_settings_sitemap value=save>{$tr_save}</button>
     </div>
 </form>
 
 <div class=sitemap-manual>
-    <div>{$tr_manual_title}</div>
-    <p>{$tr_manual_1}</p>
-    <p>{$tr_manual_2} {$tr_manual_3} {$cms['url']['scheme']}://{$cms['url']['host']}{$cms['config']['admin.mod.php']['cron_url']} {$tr_manual_4}</p>
-    <p>{$tr_manual_5}</p>
-    <p>{$tr_manual_6}</p>
+    <div>" . __( "Справка по опциям sitemap.xml" ) . "</div>
+    <p>" . __( "Если Вам не нужно делать отложенные на будущее авто-публикации (без Вашего участия), оставляйте статическую генерацию. При сохранении страницы или свойств страницы происходит пересоздание карты сайта." ) . "</p>
+    <p>" . __( "Если имеются отложенные на будущее публикации, то можно выставить динамическую генерацию карты сайта или статическую с использованием планировщика CRON." ) . " " . __( "Планировщик CRON должен опрашивать сайт по адресу" ) . " {$cms['url']['scheme']}://{$cms['url']['host']}{$cms['config']['admin.mod.php']['cron_url']} " . __( "и тем самым пересоздавать карту сайта с установленным вами временным интервалом." ) . "</p>
+    <p>" . __( "Рекомендуем использовать статическую генерацию для снижения нагрузки на сервер." ) . "</p>
+    <p>" . __( "* Опция нужна если сайт работает на двух доменах." ) . "</p>
 </div>
     ";
 

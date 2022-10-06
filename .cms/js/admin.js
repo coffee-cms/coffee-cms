@@ -1,9 +1,17 @@
 "use strict";
 
+// Две функции для чтения и установки cookie.
+// Cookie используются для авторизации на сайте,
+// для запоминания количества отображаемых страниц в пейджере
+// и выбранной темы.
+// Другие модули так же могут их использовать
+// для запоминания своих настроек.
 function get_cookie( name ) {
     let cookies = document.cookie.split( ";" );
     for ( let line of cookies ) {
         let cookie = line.split( "=" );
+        // TODO: Нужно ли decodeURIComponent( cookie[ 0 ].trim() )?
+        // Имена указываются обычно латиницей, без специальных знаков...
         if ( name == cookie[ 0 ].trim() ) {
             return decodeURIComponent( cookie[ 1 ] );
         }
@@ -16,33 +24,58 @@ function set_cookie( name, value ) {
 }
 
 // Notifications
+
+// Уведомления, отображающиеся в правом верхнем. Обычно в течении 5 сек.
+// Через 5 секунд к уведомлению добавляется класс timeout,
+// благодаря ему происходит исчезновение уведомления.
 function notify( message, classes, msec ) {
     let bulb = document.createElement( "div" );
     bulb.innerHTML = message;
     bulb.className = classes;
     document.querySelector( ".log-info-box" ).appendChild( bulb );
     let h = bulb.clientHeight;
+    // Чтобы анимировать схлопывание
     bulb.setAttribute( "style", `height:${h}px` );
-    if ( msec )
-    setTimeout( function() {
-        bulb.classList.add( "timeout" );
-    }, msec);
+    if ( msec ) {
+        setTimeout( function() {
+            bulb.classList.add( "timeout" );
+        }, msec);
+    }
 }
 
 // Translate
-// context: "admin.mod.php" or "pages.mod.php" etc
-function __( str, context ) {
+// module: "admin.mod.php" or "pages.mod.php" etc
+
+// Шаблон admin добавляет глобальную js-переменную
+// в которой содержится текущая локаль и переводы,
+// загруженные из файлов .cms/lang/...
+// Поэтому ими можно пользоваться и на стороне админки.
+function __( str, module ) {
     if ( !cms ) return str;
     if ( !cms.locale ) return str;
     if ( !cms.lang ) return str;
-    if ( !cms.lang[context] ) return str;
-    if ( !cms.lang[context][cms.locale] ) return str;
-    if ( !cms.lang[context][cms.locale][str] ) return str;
-    return cms.lang[context][cms.locale][str];
+    if ( !cms.lang[module] ) return str;
+    if ( !cms.lang[module][cms.locale] ) return str;
+    if ( !cms.lang[module][cms.locale][str] ) {
+        // Если известна локаль модуля и она не совпадает с текущей локалью цмс
+        // То должен быть перевод
+        if ( cms.locale !== cms["modules"][module]["locale"] ) {
+            console.error( `Нет перевода [${module}] "${str}" на ${cms.locale}` );
+        }
+        return str;
+    }
+    return cms.lang[module][cms.locale][str];
 }
 
 // Call server side API
-async function api2( data, rfn ) {
+
+// Передаваемые на сервер данные упаковываются как положено
+// и можно передавать даже массивы.
+// Но массивы вложенные в массивы этим кодом уже не передадутся.
+// Нужно улучшать под это функцию.
+// После того, как сервер вернет ответ, вызывается функция rfn
+// И ответ передается ей в качестве параметра.
+function api( data, rfn ) {
     const formData = new FormData();
     // push data to formData
     for ( let key in data ) {
@@ -56,24 +89,121 @@ async function api2( data, rfn ) {
         }
     }
     // send data
-    try {
-        let response = await fetch( cms.api, {
-            method: "POST",
-            body: formData
-        } );
-        // get response and call callback function
-        if ( response.ok ) { // HTTP-status: 200-299
-            let rdata = await response.json();
-            if ( rfn ) {
-                rfn( rdata );
-            }
-        } else {
-            alert( __( "Error HTTP: ", "admin.mod.php" ) + response.status );
+    // По умолчанию запросы отправляются асинхронно,
+    // но если нужно дождаться ответа и затем изменить полученные данные,
+    // то перед вызовом обновляющих функций нужно дописать строчку
+    // cms.async_api = false;
+    let ajax = new XMLHttpRequest();
+    ajax.addEventListener( "load", function( event ) {
+        let data = JSON.parse( event.target.responseText );
+        if ( rfn ) {
+            rfn( data );
         }
-    } catch( error ) {
-        notify( __( error, "admin.mod.php" ), "info-error", 10000 );
-        throw error;
+    } );
+    ajax.open( "POST", cms.api, cms.async_api );
+	ajax.send( formData );
+    cms.async_api = true;
+}
+function api2( data, rfn ) {
+    api( data, rfn );
+}
+
+// Create and connect Codemirror
+function codemirror_connect( selector, name, mode = "application/x-httpd-php" ) {
+
+    // get theme
+    let n = get_cookie( "theme" );
+    let theme = admin_styles[n][1];
+
+    let txtarea = document.querySelector( selector );
+    window[name] = CodeMirror.fromTextArea( txtarea, {
+        mode: mode,
+        styleActiveLine:   true,
+        lineNumbers:       true,
+        lineWrapping:      true,
+        autoCloseBrackets: true,
+        smartIndent:       true,
+        matchBrackets:     true,
+        theme:             theme,
+        autoCloseTags: {
+            whenClosing: true,
+            whenOpening: true,
+            indentTags:  [ "div", "ul", "ol", "script", "style" ],
+        },
+        phrases: {
+            "Search:":                              __( "Поиск:", "admin.mod.php" ),
+            "(Use /re/ syntax for regexp search)" : __( "(Используйте синтаксис /re/ для поиска регулярными выражениями)", "admin.mod.php" ),
+            "Replace all:":                         __( "Заменить все:", "admin.mod.php" ),
+            "With:":                                __( "На:", "admin.mod.php" ),
+            "Replace:":                             __( "Заменить:", "admin.mod.php" ),
+            "Replace?":                             __( "Заменить?", "admin.mod.php" ),
+            "Yes":                                  __( "Да", "admin.mod.php" ),
+            "No":                                   __( "Нет", "admin.mod.php" ),
+            "All":                                  __( "Всё", "admin.mod.php" ),
+            "Stop":                                 __( "Стоп", "admin.mod.php" ),
+        },
+        extraKeys: { "Ctrl-Space": "autocomplete" }
+    } );
+
+    if ( window[name].showHint ) {
+        window[name].on( "keydown", function( editor, event ) {
+            if ( event.ctrlKey == true ) { return } // Ctrl+S call Hint
+            let isAlphaKey = /^[a-zA-Z]$/.test( event.key );
+            if ( window[name].state.completionActive && isAlphaKey ) {
+                return;
+            }
+
+            // Prevent autocompletion in string literals or comments
+            let cursor = window[name].getCursor();
+            let token = window[name].getTokenAt( cursor );
+            if ( token.type === "string" || token.type === "comment" ) {
+                return;
+            }
+            
+            let lineBeforeCursor = window[name].doc.getLine( cursor.line );
+            if ( typeof lineBeforeCursor !== "string" ) {
+                return;
+            }
+            lineBeforeCursor = lineBeforeCursor.substring( 0, cursor.ch );
+
+            // disable autoclose tag before text
+            let charAfterCursor  = window[name].doc.getLine( cursor.line );
+            charAfterCursor = charAfterCursor.substring( cursor.ch, cursor.ch + 1 );
+            window[name].options.autoCloseTags.dontCloseTags = null;
+            if ( charAfterCursor.match( /\S/ ) && charAfterCursor != "<" ) {
+                if ( lineBeforeCursor.match( /<[^>]+$/ ) ) {
+                    let tag = lineBeforeCursor.match( /<(\w+)\b[^>]*$/ );
+                    if ( tag ) {
+                        tag = tag[1];
+                        window[name].options.autoCloseTags.dontCloseTags = [tag];
+                    }
+                }
+            }
+            
+            let m = CodeMirror.innerMode( window[name].getMode(), token.state );
+            let innerMode = m.mode.name;
+            let shouldAutocomplete;
+            if ( innerMode === "html" || innerMode === "xml" ) {
+                shouldAutocomplete = event.key === "<" ||
+                    event.key === "/" && token.type === "tag" ||
+                    isAlphaKey && token.type === "tag" ||
+                    isAlphaKey && token.type === "attribute" ||
+                    token.string === "=" && token.state.htmlState && token.state.htmlState.tagName;
+            } else if ( innerMode === "css" ) {
+                shouldAutocomplete = isAlphaKey ||
+                    event.key === ":" ||
+                    event.key === " " && /:\s+$/.test( lineBeforeCursor );
+            } else if ( innerMode === "javascript" ) {
+                shouldAutocomplete = isAlphaKey || event.key === ".";
+            } else if ( innerMode === "clike" && window[name].options.mode === "php" ) {
+                shouldAutocomplete = token.type === "keyword" || token.type === "variable";
+            }
+            if ( shouldAutocomplete ) {
+                window[name].showHint( { completeSingle: false } );
+            }
+        } );
     }
+
 }
 
 
@@ -126,25 +256,10 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     let theme = admin_styles[n][0];
     document.documentElement.classList.add( theme );
 
-    // Lang Selector
-    if ( window.lang_selector ) {
-        lang_selector.onchange = function( e ) {
-            let search = window.location.search.replace( /&*locale=[^&]+/, "" );
-            if ( search == "" ) { 
-                search += "?locale=" + e.currentTarget.value;
-            } else if ( search == "?" ) {
-                search += "locale=" + e.currentTarget.value;
-            } else {
-                search += "&locale=" + e.currentTarget.value;
-            }
-            window.location.search = search;
-        }
-    }
-
     // Logout
     document.querySelectorAll( "[data-logout]" ).forEach( function ( logoutBtn ) {
         logoutBtn.addEventListener( "click", function() {
-            api2( { fn: "logout" }, function() {
+            api( { fn: "logout" }, function() {
                 window.location.reload( true );
             } );
             return false;
@@ -159,8 +274,10 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             if ( el ) {
                 el.click();
             }
-        } else {
+        } else if ( document.querySelector( "#start a[href='#base']" ) ) {
             window.location.hash = "#start";
+        } else {
+            window.location.hash = "#pages";
         }
     }
 
@@ -171,11 +288,11 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 fn:       "login",
                 login:    document.querySelector( "input[name=login]" ).value,
                 password: document.querySelector( "input[name=password]" ).value,
-                url: window.location.pathname,
-                href: window.location.href,
-                locale: lang_selector.value
+                url:      window.location.pathname,
+                href:     window.location.href,
+                locale:   document.querySelector( ".lang-select-grid .field-select" ).getAttribute( "data-lang" )
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
 
                 if ( r.reload ) {
                     if ( window.location.pathname === r.reload ) {
@@ -207,7 +324,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     document.querySelectorAll( ".clear-cache" ).forEach( function( el ) {
         el.addEventListener( "click", function( e ){
             e.preventDefault();
-            api2( { fn: "clear_cache" }, function( r ){
+            api( { fn: "clear_cache" }, function( r ){
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                 }
@@ -226,9 +343,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             if ( title ) {
                 title = title.value;
             }
-            let section = document.querySelector( `${selector} [name=section]` );
+            let section = document.querySelector( `${selector} .section-select-grid .field-select` );
             if ( section ) {
-                section = section.value;
+                section = section.getAttribute( "data-section" );
             }
             let data = {
                 fn:      "admin_menu_save",
@@ -240,7 +357,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 section: section,
                 reset:   this.hasAttribute( "data-am-reset" ),
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.ok == "true" ) {
                     window.location.reload( true );
                 }
@@ -254,15 +371,15 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             let item = this.closest( "[data-am-item]" ).getAttribute( "data-am-item" );
             let childs = document.querySelectorAll( `[data-am-childs="${item}"] > div` ).length;
             if ( childs ) {
-                notify( _( "Not Empty Container" ), "info-error", 2000 );
+                notify( _( "Секция не пуста" ), "info-error", 2000 );
                 return;
             }
-            if ( ! confirm( _( "Delete?" ) ) ) return;
+            if ( ! confirm( _( "Удалить?" ) ) ) return;
             let data = {
                 fn: "admin_menu_del",
                 item: item,
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                     if ( r.info_time )
@@ -286,9 +403,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 hide:    el.classList.contains( "showed" ),
             }
             if ( data.item == "admin_menu" ) {
-                if ( ! confirm( _( "Hide Admin settings?" ) ) ) return false;
+                if ( ! confirm( _( "Скрыть настройку админки?" ) ) ) return false;
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.ok == "true" ) {
                     window.location.reload( true );
                 }
@@ -299,7 +416,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     // Admin section, Add Section
     document.querySelectorAll( "#admin_menu .main-footer .add-section" ).forEach( function( button ) {
         button.addEventListener( "click", function( e ) {
-            api2( { fn: "admin_menu_add_section" }, function( r ) {
+            api( { fn: "admin_menu_add_section" }, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                     if ( r.info_time )
@@ -321,7 +438,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 disable: closest.classList.contains( "enabled" ),
                 module: closest.getAttribute( "data-module" ),
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                 } else {
@@ -339,7 +456,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 fn: "module_del",
                 module:  module,
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                 }
@@ -348,21 +465,30 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     } );
 
     // Close Sessions
-    document.querySelectorAll( "[data-logged] [data-login]" ).forEach( function( button ) {
+    document.querySelectorAll( "#auth [data-login]" ).forEach( function( button ) {
         button.addEventListener( "click", function( e ) {
             e.preventDefault();
-            if ( !confirm( _( "Close this session?" ) ) ) return;
+            if ( ! confirm( _( "Выполнить выход?" ) ) ) return;
+            let parent = button.parentElement;
             var data = {
                 fn: "logout",
                 sess: this.getAttribute( "data-login" ),
             }
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                     if ( r.result == "refresh" ) {
+                        // refresh приходит если мы закрываем свою сессию
                         window.location.reload( true );
                     } else if ( r.result == "ok" ) {
-                        document.querySelector( '[data-login="'+data.sess+'"]' ).closest( "[data-logged]" ).remove();
+                        // Перемещаем сессию в закрытые путем копирования html,
+                        // предварительно удалив класс del-sess чтобы не отображался крестик.
+                        // А старый элемент удаляем.
+                        // При копировании html так же удаляется привязанная функция.
+                        button.classList.remove( "del-sess" );
+                        let html = parent.outerHTML;
+                        parent.remove();
+                        document.querySelector( ".history-sess .sess-table" ).insertAdjacentHTML( "afterbegin", html );
                     }
                 }
             } );
@@ -380,6 +506,82 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             } else {
                 inp.setAttribute( "type", "password" );
             }
+        } );
+    } );
+
+    // Install module (upload module)
+    let input = document.querySelector( "#module-upload" );
+    if ( input ) {
+        input.addEventListener( "change", async function( e ) {
+            const formData = new FormData();
+            formData.append( "fn", "install_module" );
+            for ( let i = 0; i < input.files.length; i++ ) {
+                formData.append( "myfile[]", input.files[i] );
+            }
+            try {
+                const response = await fetch( cms.api, { method: "POST", body: formData } );
+                const r        = await response.json();
+                input.value = ""; // chrome fix
+                if ( r.info_text ) {
+                    notify( r.info_text, r.info_class, r.info_time );
+                    setTimeout( function() {
+                        window.location.reload( true );
+                    }, r.info_time );
+                }
+            } catch ( error ) {
+                console.error( "Error:", error );
+            }
+        } );
+    }
+
+    // БД. Открытие дополнительных настроек.
+    document.querySelectorAll( "#base .pro-btn" ).forEach( function( pro ) {
+        pro.addEventListener( "click", function( e ) {
+            document.querySelector( "#base .pro" ).classList.toggle( "hidden" );
+        } );
+    } );
+
+    // Выбор языков при входе. Select
+    // Выбор секции Админского меню. Select
+    document.querySelectorAll( ".login .field-select, #admin_menu .field-select" ).forEach( function( select ) {
+        select.addEventListener( "click", function( e ) {
+            e.stopPropagation();
+            select.nextElementSibling.classList.toggle( "open" );
+        } );
+    } );
+    // Выбор языков при входе. Option
+    document.querySelectorAll( ".login .field-options option" ).forEach( function( select ) {
+        select.addEventListener( "click", function( e ) {
+            let input = this.closest( ".lang-select-grid" ).querySelector( ".field-select" );
+            input.innerText = this.innerText;
+            input.setAttribute( "data-lang", this.getAttribute( "value" ) );
+            //e.stopPropagation(); убираем чтобы закрылось автоматически
+            let locale = this.getAttribute( "value" );
+            let search = window.location.search.replace( /&*locale=[^&]+/, "" );
+            if ( search == "" ) { 
+                search += "?locale=" + locale;
+            } else if ( search == "?" ) {
+                search += "locale=" + locale;
+            } else {
+                search += "&locale=" + locale;
+            }
+            window.location.search = search;
+        } );
+    } );
+    // Выбор секции Админского меню. Option
+    document.querySelectorAll( "#admin_menu .field-options option" ).forEach( function( select ) {
+        select.addEventListener( "click", function( e ) {
+            let input = this.closest( ".section-select-grid" ).querySelector( ".field-select" );
+            input.innerText = this.innerText;
+            input.setAttribute( "data-section", this.getAttribute( "value" ) );
+            //e.stopPropagation(); убираем чтобы закрылось автоматически
+        } );
+    } );
+    // Select
+    // Закрытие выпадающих списков при кликах вне их, а так же по ним
+    document.body.addEventListener( "click", function( e ) {
+        document.querySelectorAll( ".login .field-options, #admin_menu .field-options" ).forEach( function( list ) {
+            list.classList.remove( "open" );
         } );
     } );
 

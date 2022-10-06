@@ -1,17 +1,17 @@
 <?php
 
 $cms["modules"]["pages.mod.php"] = array(
-    "name" => __( "Pages", "pages.mod.php" ),
-    "description" => __( "Module for edditing pages", "pages.mod.php" ),
-    "version" => "22.04",
-    "files" => array(
+    "name"        => __( "Страницы" ),
+    "description" => __( "Модуль редактирования страниц" ),
+    "version"     => "",
+    "locale"      => "ru_RU.UTF-8",
+    "files"       => array(
         ".cms/mod/pages.mod.php",
         ".cms/js/pages.js",
         ".cms/css/pages.css",
-        ".cms/lang/ru_RU.UTF-8/pages.mod.php",
+        ".cms/lang/en_US.UTF-8/pages.mod.php",
         ".cms/lang/uk_UA.UTF-8/pages.mod.php",
     ),
-    "sort" => 20,
 );
 
 // Return if module disabled
@@ -86,30 +86,30 @@ function cms_pages_api() {
                     include( $settings_file );
                 }
 
-                $type = "page";
+                $tpl = "page";
                 
                 // Default text for new page from template
-                if ( ! empty( $cms["templates"][ $cms["template"] ]["page_templates"][$type] ) ) {
-                    $text = mysqli_real_escape_string( $cms["base"], $cms["templates"][ $cms["template"] ]["page_templates"][$type] );
+                if ( ! empty( $cms["templates"][ $cms["template"] ]["page_templates"][$tpl] ) ) {
+                    $text = mysqli_real_escape_string( $cms["base"], $cms["templates"][ $cms["template"] ]["page_templates"][$tpl] );
                 } else {
                     $text = "";
                 }
                 
                 $created = date( "Y-m-d H:i:s" );
                 
-                $q = "INSERT INTO pages SET created='{$created}', tpl='{$type}', text='{$text}'";
+                $q = "INSERT INTO pages SET created='{$created}', tpl='{$tpl}', text='{$text}'";
                 if ( $r = mysqli_query( $cms["base"], $q ) ) {
                     $id = mysqli_insert_id( $cms["base"] );
                 } else {
                     exit( json_encode( array(
-                        "info_text"  => __( "Error creating page: ", "pages.mod.php" ) . mysqli_error( $cms["base"] ),
+                        "info_text"  => __( "Ошибка создания страницы: " ) . mysqli_error( $cms["base"] ),
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
                 }
 
                 // Create title, url and update in database
-                $title     = __( "Page", "pages.mod.php" );
+                $title     = __( "Страница" );
                 $url       = "/{$id}";
                 
                 $q = "UPDATE pages SET title='{$title}', url='{$url}' WHERE id={$id}";
@@ -118,7 +118,7 @@ function cms_pages_api() {
                     $r = cms_pages_get_pages_list();
                     $r = array_merge( $r,
                         array(
-                            "info_text"  => __( "Page created", "pages.mod.php" ),
+                            "info_text"  => __( "Страница создана" ),
                             "info_class" => "info-success",
                             "info_time"  => 5000,
                         )
@@ -126,7 +126,7 @@ function cms_pages_api() {
                     exit( json_encode( $r ) );
                 } else {
                     exit( json_encode( array(
-                        "info_text"  => __( "Error creating page: ", "pages.mod.php" ) . mysqli_error( $cms["base"] ),
+                        "info_text"  => __( "Ошибка создания страницы: " ) . mysqli_error( $cms["base"] ),
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
@@ -134,11 +134,41 @@ function cms_pages_api() {
             break;
 
             case "save_prop":
+
+                // Read template settings
+                $settings_file = "{$cms['cms_dir']}/{$cms['template']}/settings.php";
+                if ( file_exists( $settings_file ) ) {
+                    include( $settings_file );
+                }
                 
                 $id          = (int) $_POST["id"];
                 $title       = mysqli_real_escape_string( $cms["base"], $_POST["title"] );
                 $seo_title   = mysqli_real_escape_string( $cms["base"], $_POST["seo_title"] );
                 $description = mysqli_real_escape_string( $cms["base"], $_POST["description"] );
+                $tags        = mysqli_real_escape_string( $cms["base"], $_POST["tags"] );
+
+                // get page text
+                $q    = "SELECT `text` FROM `pages` WHERE `id`={$id}";
+                $r    = mysqli_query( $cms["base"], $q );
+                $row  = mysqli_fetch_assoc( $r );
+                $text = $row["text"];
+
+                $update_text = "";
+                // Default text for old_template
+                if ( ! empty( $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["old_template"] ] ) ) {
+                    $text2 = $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["old_template"] ];
+                } else {
+                    $text2 = "";
+                }
+
+                // Change template text
+                if ( $_POST["old_template"] !== $_POST["template"] and $text === $text2 ) {
+                    // Default text for template
+                    if ( ! empty( $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["template"] ] ) ) {
+                        $text = mysqli_real_escape_string( $cms["base"], $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["template"] ] );
+                        $update_text = ", `text`='{$text}'";
+                    }
+                }
 
                 // if empty url then create from title
                 if ( empty( $_POST["url"] ) ) {
@@ -149,7 +179,7 @@ function cms_pages_api() {
                 $url = mysqli_real_escape_string( $cms["base"], $_POST["url"] );
 
                 // Check dupl
-                if ( $r = mysqli_query( $cms["base"], "SELECT COUNT(*) FROM pages WHERE url='{$url}' AND id<>{$id}" ) ) {
+                if ( $r = mysqli_query( $cms["base"], "SELECT COUNT(*) FROM `pages` WHERE `url`='{$url}' AND `id`<>{$id}" ) ) {
                     if ( $cnt = mysqli_fetch_assoc( $r ) ) {
                         if ( $cnt["COUNT(*)"] > 0 ) {
                             $_POST["url"] = "/" . cms_admin_pass_gen();
@@ -163,15 +193,18 @@ function cms_pages_api() {
                 $created = mysqli_real_escape_string( $cms["base"], $_POST["date"] . " " . $_POST["time"] . ":00" );
                 $tpl = mysqli_real_escape_string( $cms["base"], $_POST["template"] );
                 $modified = str_replace( ",", ".", microtime( true ) );
-                $q = "UPDATE pages SET 
-                        title='{$title}', 
-                        seo_title='{$seo_title}', 
-                        description='{$description}', 
-                        created='{$created}',
-                        modified='{$modified}',
-                        tpl='{$tpl}', 
-                        url='{$url}'
+                $q = "UPDATE `pages` SET 
+                        `title`='{$title}', 
+                        `seo_title`='{$seo_title}', 
+                        `description`='{$description}', 
+                        `tags`='{$tags}', 
+                        `created`='{$created}',
+                        `modified`='{$modified}',
+                        `tpl`='{$tpl}', 
+                        `url`='{$url}'
+                        {$update_text}
                       WHERE id={$id}";
+
                 // clear cache before change url
                 if ( function_exists( "cms_clear_cache" ) ) {
                     cms_clear_cache();
@@ -183,13 +216,13 @@ function cms_pages_api() {
                         $planned = false;
                     }
                     if ( $created === "0000-00-00 00:00:00" ) {
-                        $created = __( "no date", "pages.mod.php" );
+                        $created = __( "без даты" );
                     } else {
                         $time = strtotime( $created );
                         $created = date( "d.m.Y", $time )."<br>".date( "H:i", $time );
                     }
                     $r = array(
-                        "info_text"  => __( "Updated", "pages.mod.php" ),
+                        "info_text"  => __( "Обновлено" ),
                         "info_class" => "info-success",
                         "info_time"  => 1000,
                         "title"      => htmlspecialchars( $_POST["title"] ),
@@ -203,7 +236,7 @@ function cms_pages_api() {
                     }
 
                     // search page in menu
-                    $q = "SELECT * FROM menu WHERE id={$id}";
+                    $q = "SELECT * FROM `menu` WHERE `id`={$id}";
                     if ( mysqli_query( $cms["base"], $q ) and mysqli_affected_rows( $cms["base"] ) ) {
                         $r["update_menu"] = "true";
                     } else {
@@ -215,6 +248,12 @@ function cms_pages_api() {
             break;
 
             case "save_page":
+
+                // Read template settings
+                $settings_file = "{$cms['cms_dir']}/{$cms['template']}/settings.php";
+                if ( file_exists( $settings_file ) ) {
+                    include( $settings_file );
+                }
                 
                 // hook for save page
                 cms_do_stage( "save_page" );
@@ -223,28 +262,97 @@ function cms_pages_api() {
                 $old_modified = str_replace( ",", ".", (float) $_POST["modified"] );
                 $modified     = str_replace( ",", ".", microtime( true ) );
                 $text         = mysqli_real_escape_string( $cms["base"], $_POST["text"] );
-                $q = "UPDATE pages SET text='{$text}', modified={$modified} WHERE id={$id} AND modified={$old_modified}";
+
+                // Default text for old_template
+                if ( ! empty( $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["old_template"] ] ) ) {
+                    $text2 = mysqli_real_escape_string( $cms["base"], $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["old_template"] ] );
+                } else {
+                    $text2 = "";
+                }
+
+                // Change template text
+                $new_text = "";
+                if ( $_POST["old_template"] !== $_POST["template"] and $text === $text2 ) {
+                    // Default text for template
+                    if ( ! empty( $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["template"] ] ) ) {
+                        $new_text = $cms["templates"][ $cms["template"] ]["page_templates"][ $_POST["template"] ];
+                        $text = mysqli_real_escape_string( $cms["base"], $new_text );
+                    }
+                }
+
+
+                $title       = mysqli_real_escape_string( $cms["base"], $_POST["title"] );
+                $seo_title   = mysqli_real_escape_string( $cms["base"], $_POST["seo_title"] );
+                $description = mysqli_real_escape_string( $cms["base"], $_POST["description"] );
+                $tags        = mysqli_real_escape_string( $cms["base"], $_POST["tags"] );
+
+                // if empty url then create from title
+                if ( empty( $_POST["url"] ) ) {
+                    $_POST["url"] = "/" . strtolower( cms_translit( $_POST["title"] ) );
+                } elseif ( substr( $_POST["url"], 0, 1 ) !== "/" ) {
+                    $_POST["url"]  = "/" . $_POST["url"];
+                }
+                $url = mysqli_real_escape_string( $cms["base"], $_POST["url"] );
+
+                // Check dupl
+                if ( $r = mysqli_query( $cms["base"], "SELECT COUNT(*) FROM `pages` WHERE `url`='{$url}' AND `id`<>{$id}" ) ) {
+                    if ( $cnt = mysqli_fetch_assoc( $r ) ) {
+                        if ( $cnt["COUNT(*)"] > 0 ) {
+                            $_POST["url"] = "/" . cms_admin_pass_gen();
+                            $url = mysqli_real_escape_string( $cms["base"], $_POST["url"] );
+                        }
+                    }
+                }
+
+                if ( empty( $_POST["date"] ) ) { $_POST["date"] = "0000-00-00"; }
+                if ( empty( $_POST["time"] ) ) { $_POST["time"] = "00:00"; }
+                $created = mysqli_real_escape_string( $cms["base"], $_POST["date"] . " " . $_POST["time"] . ":00" );
+                $tpl = mysqli_real_escape_string( $cms["base"], $_POST["template"] );
+
+                $q = "UPDATE pages SET 
+                        text='{$text}', 
+                        modified={$modified},
+                        title='{$title}', 
+                        seo_title='{$seo_title}', 
+                        description='{$description}',
+                        tags='{$tags}',
+                        created='{$created}',
+                        tpl='{$tpl}', 
+                        url='{$url}'
+                      WHERE id={$id} AND modified={$old_modified}";
+                
+                // clear cache before change url
+                if ( function_exists( "cms_clear_cache" ) ) {
+                    cms_clear_cache();
+                }
+
                 if ( mysqli_query( $cms["base"], $q ) ) {
                     
                     if ( ! mysqli_affected_rows( $cms["base"] ) ) {
                         exit( json_encode( array(
                             "ok"        => "false",
-                            "info_text" => __( "Someone already changed the page", "pages.mod.php" ),
+                            "info_text" => __( "Кто-то уже изменил страницу. Переоткройте её заново." ),
                             "info_class" => "info-error",
                             "info_time"  => 5000,
                         ) ) );
                     }
 
-                    if ( function_exists( "cms_clear_cache" ) ) {
-                        cms_clear_cache();
-                    }
-
                     exit( json_encode( array(
                         "ok"          => "true",
-                        "info_text"   => __( "Saved", "pages.mod.php" ),
+                        "info_text"   => __( "Сохранено" ),
                         "info_class"  => "info-success",
                         "info_time"   => 5000,
                         "modified"    => $modified,
+                        "title"       => htmlspecialchars( $_POST["title"] ),
+                        "url"         => $_POST["url"],
+                        "new_text"    => $new_text,
+                    ) ) );
+                } else {
+                    exit( json_encode( array(
+                        "ok"         => "false",
+                        "info_text"  => mysqli_error( $cms["base"] ),
+                        "info_class" => "info-error",
+                        "info_time"  => 5000,
                     ) ) );
                 }
             break;
@@ -261,8 +369,43 @@ function cms_pages_api() {
             break;
 
             case "get_page":
-                if ( $id = (int) $_POST['id'] and $res = mysqli_query( $cms["base"], "SELECT * FROM pages WHERE id={$id}" ) ) {
+                if ( $id = (int) $_POST['id'] and $res = mysqli_query( $cms["base"], "SELECT * FROM `pages` WHERE `id`={$id}" ) ) {
                     if ( $page = mysqli_fetch_assoc( $res ) ) {
+
+                        // date and time
+                        $date = date( "Y-m-d", strtotime( $page["created"] ) );
+                        $time = date( "H:i", strtotime( $page["created"] ) );
+
+                        // template
+                        $telplates_list = array();
+                        $expr = $cms['cms_dir'] . "/" . $cms['config']['template.mod.php']['template'] . "/" . $cms["template_prefix"] . "*" . $cms["template_suffix"];
+                        foreach ( glob( $expr ) as $tpl ) {
+                            $name = preg_replace( "/.+\/{$cms['template_prefix']}(.+)".str_replace( '.', '\.', $cms["template_suffix"] )."/", "$1", $tpl );
+                            array_push( $telplates_list, $name );
+                        }
+                        // <option> for <select>
+                        $options = "";
+                        $option  = "";
+                        $found   = false;
+                        $tNoTemplate = __( "Нет шаблона" );
+                        if ( $page["tpl"] === "" ) {
+                            $options .= "<option value selected2>{$tNoTemplate}</option>";
+                            $found    = true;
+                        } else {
+                            $options .= "<option value>{$tNoTemplate}</option>";
+                        }
+                        foreach( $telplates_list as $tpl ) {
+                            if ( $tpl === $page["tpl"] ) {
+                                $options .= "<option value='{$tpl}' selected2>{$tpl}</option>";
+                                $found    = true;
+                                $option   = $tpl;
+                            } else {
+                                $options .= "<option value='{$tpl}'>{$tpl}</option>";
+                            }
+                        }
+                        if ( ! $found ) {
+                            $options .= "<option value='{$page["tpl"]}' selected2>{$page["tpl"]}</option>";
+                        }
                         
                         // files
                         $farr = array();
@@ -308,11 +451,15 @@ function cms_pages_api() {
                                 break;
                             }
                         }
-                        echo json_encode( array(
-                            "result" => "ok",
-                            "page"   => $page,
-                            "flist"  => $flist,
-                        ) );
+                        exit( json_encode( array(
+                            "result"  => "ok",
+                            "page"    => $page,
+                            "flist"   => $flist,
+                            "date"    => $date,
+                            "time"    => $time,
+                            "options" => $options,
+                            "option"  => $option,
+                        ) ) );
                     }
                 }
             break;
@@ -326,7 +473,7 @@ function cms_pages_api() {
                 }
                 @rmdir( dirname( $f ) ); // delete folder if empty
                 exit( json_encode( array(
-                    "info_text"  => __( "Files deleted", "pages.mod.php" ),
+                    "info_text"  => __( "Файлы удалены" ),
                     "info_class" => "info-success",
                     "info_time"  => 5000,
                 ) ) );
@@ -345,7 +492,7 @@ function cms_pages_api() {
                     if ( $id = (int) $id ) {
 
                         // Delete page from base
-                        mysqli_query( $cms["base"], "DELETE FROM pages WHERE id={$id}" );
+                        mysqli_query( $cms["base"], "DELETE FROM `pages` WHERE `id`={$id}" );
 
                         // Delete page files
                         foreach ( glob( "{$cms['site_dir']}/uploads/{$id}/*", GLOB_NOSORT ) as $f ) {
@@ -363,24 +510,8 @@ function cms_pages_api() {
                     cms_sitemap_update();
                 }
 
-                // Clear cache
-                if ( function_exists( "cms_clear_cache" ) ) {
-                    cms_clear_cache();
-                }
-
                 exit( json_encode( array(
-                    "info_text"  => __( "Pages deleted", "pages.mod.php" ),
-                    "info_class" => "info-success",
-                    "info_time"  => 5000,
-                ) ) );
-            break;
-
-            case "clear_cache":
-                if ( function_exists( "cms_clear_cache" ) ) {
-                    cms_clear_cache();
-                }
-                exit( json_encode( array(
-                    "info_text"  => __( "Cache Cleared", "pages.mod.php" ),
+                    "info_text"  => __( "Страницы удалены" ),
                     "info_class" => "info-success",
                     "info_time"  => 5000,
                 ) ) );
@@ -393,7 +524,7 @@ function cms_pages_api() {
                 // create dir if not exists
                 if ( ! is_dir( $dir ) && ! mkdir( $dir, 0777, true ) ) {
                     exit( json_encode( array(
-                        "info_text"  => __( "Can't create folder", "pages.mod.php" ) . " " . $dir,
+                        "info_text"  => __( "Не могу создать папку" ) . " " . $dir,
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
@@ -403,7 +534,7 @@ function cms_pages_api() {
                 foreach ( $_FILES["myfile"]["name"] as $n => $name ) {
                     if ( $_FILES["myfile"]["error"][$n] ) {
                         $success = false;
-                        $text = __( "Error upload file", "pages.mod.php" ) . " " . $name;
+                        $text = __( "Ошибка загрузки файла" ) . " " . $name;
                         break;
                     }
                     $ext  = strtolower( preg_replace( "/.*\./", ".", $name ) );
@@ -412,7 +543,7 @@ function cms_pages_api() {
                     $name = "{$name}{$ext}";
                     if ( ! move_uploaded_file( $_FILES["myfile"]["tmp_name"][$n], "{$dir}/{$name}" ) ) {
                         $success = false;
-                        $text = __( "File move error", "pages.mod.php" ) . " {$dir}/{$name}";
+                        $text = __( "Ошибка перемещения файла" ) . " {$dir}/{$name}";
                         break;
                     }
                     if ( file_exists( "{$cms['cms_dir']}/img/icon{$ext}.svg" ) ) {
@@ -450,7 +581,7 @@ function cms_pages_api() {
                 }
 
                 if ( $success ) {
-                    $text = __( "Files uploaded", "pages.mod.php" );
+                    $text = __( "Загрузка завершена" );
                     exit( json_encode( array(
                         "info_text"  => $text,
                         "info_class" => "info-success",
@@ -470,7 +601,7 @@ function cms_pages_api() {
 }
 
 // Create pages list
-// $_POST["where"] = "WHERE id=123";
+// $_POST["where"] = "id=123";
 // $_POST["limit"] = "LIMIT 1000";
 // $_POST["search"] = "test";
 // $_COOKIE["pages_pager"] = 10;
@@ -479,14 +610,14 @@ function cms_pages_get_pages_list() {
 
     if ( empty( $cms["base"] ) ) {
         exit( json_encode( array(
-            "no_database"  => true,
+            "no_database"  => "<span class=no-database>" . __( "Пожалуйста, подключитесь к базе данных" ) . "</span>",
         ) ) );
     }
     
     $telplates_list = array();
-    $expr = "{$cms['cms_dir']}/{$cms['config']['template.mod.php']['template']}/html-*.php";
+    $expr = "{$cms['cms_dir']}/{$cms['config']['template.mod.php']['template']}/{$cms['template_prefix']}*{$cms["template_suffix"]}";
     foreach ( glob( $expr ) as $tpl ) {
-        $name = preg_replace( "/.+\/html-(.+)\.php/", "$1", $tpl );
+        $name = preg_replace( "/.+\/{$cms['template_prefix']}(.+)".str_replace( '.', '\.', $cms["template_suffix"] )."/", "$1", $tpl );
         array_push( $telplates_list, $name );
     }
 
@@ -518,10 +649,10 @@ function cms_pages_get_pages_list() {
         $s = mysqli_real_escape_string( $cms["base"], $_POST["search"] );
         $s = str_replace( " ", "%", $s );
         $search = "(title LIKE '%{$s}%' OR url LIKE '%{$s}%' OR tpl LIKE '%{$s}%')";
-        $q = "SELECT COUNT(*) FROM pages WHERE {$search}";
+        $q = "SELECT COUNT(*) FROM `pages` WHERE {$search}";
     } else {
         $search = "1";
-        $q = "SELECT COUNT(*) FROM pages";
+        $q = "SELECT COUNT(*) FROM `pages`";
     }
     // count pages
     $res = mysqli_query( $cms["base"], $q );
@@ -531,26 +662,24 @@ function cms_pages_get_pages_list() {
     $pages = array();
     $start = microtime( true );
     $overload = false;
-    $q = "SELECT id, pin, title, seo_title, description, created, url, tpl FROM pages WHERE {$search} AND {$where} ORDER BY ( id + pin * 1000000000 ) DESC {$limit}";
+    $q = "SELECT `id`, `pin`, `title`, `seo_title`, `description`, `created`, `url`, `tpl`, `tags` FROM `pages` WHERE {$search} AND {$where} ORDER BY ( `id` + `pin` * 1000000000 ) DESC {$limit}";
     if ( $res = mysqli_query( $cms["base"], $q ) ) {
 
-        $tTitle           = __( "Title", "pages.mod.php" );
-        $tSeoTitle        = __( "SEO Title", "pages.mod.php" );
-        $tDescription     = __( "Description", "pages.mod.php" );
-        $tCancel          = __( "Cancel", "pages.mod.php" );
-        $tTemplate        = __( "Template", "pages.mod.php" );
-        $tNoTemplate      = __( "No template", "pages.mod.php" );
-        $tPublished       = __( "Published", "pages.mod.php" );
-        $tPlanned         = __( "Planned", "pages.mod.php" );
-        $tDate            = __( "Date", "pages.mod.php" );
-        $tTime            = __( "Time", "pages.mod.php" );
-        $tSave            = __( "Save", "pages.mod.php" );
-        $tProperties      = __( "Properties", "pages.mod.php" );
-        $tEdit            = __( "Edit", "pages.mod.php" );
+        $tTitle           = __( "Заголовок" );
+        $tSeoTitle        = __( "SEO Title" );
+        $tTemplate        = __( "Шаблон" );
+        $tNoTemplate      = __( "Нет шаблона" );
+        $tPublished       = __( "Опубликовано" );
+        $tPlanned         = __( "Запланировано" );
+        $tDate            = __( "Дата" );
+        $tTime            = __( "Время" );
+        $tSave            = __( "Сохранить" );
+        $tProperties      = __( "Свойства" );
+        $tEdit            = __( "Редактировать" );
         
         while ( $page = mysqli_fetch_assoc( $res ) ) {
             if ( $page["created"] === "0000-00-00 00:00:00" ) {
-                $created = __( "no date", "pages.mod.php" );
+                $created = __( "без даты" );
                 $date    = "";
                 $time    = "";
                 $published = $tPublished;
@@ -573,14 +702,14 @@ function cms_pages_get_pages_list() {
             $options = "";
             $found   = false;
             if ( $page["tpl"] === "" ) {
-                $options .= "<option value selected>{$tNoTemplate}</option>";
+                $options .= "<option value selected2>{$tNoTemplate}</option>";
                 $found    = true;
             } else {
                 $options .= "<option value>{$tNoTemplate}</option>";
             }
             foreach( $telplates_list as $tpl ) {
                 if ( $tpl === $page["tpl"] ) {
-                    $options .= "<option value='{$tpl}' selected>{$tpl}</option>";
+                    $options .= "<option value='{$tpl}' selected2>{$tpl}</option>";
                     $found    = true;
                 } else {
                     $options .= "<option value='{$tpl}'>{$tpl}</option>";
@@ -588,6 +717,11 @@ function cms_pages_get_pages_list() {
             }
             if ( ! $found ) {
                 $options .= "<option value='{$page["tpl"]}' selected>{$page["tpl"]}</option>";
+            }
+            if ( empty( $page["tpl"] ) ) {
+                $tpl = $tNoTemplate;
+            } else {
+                $tpl = $page["tpl"];
             }
 
             $html = "
@@ -614,19 +748,24 @@ function cms_pages_get_pages_list() {
         <div class=seo-title>{$tSeoTitle}:</div>
         <input name=seo_title type=text value='{$page['seo_title']}'>
 
-        <div class=description>{$tDescription}:</div>
+        <div class=description>Description:</div>
         <textarea name=description rows=3>{$page['description']}</textarea>
 
         <div class=template>{$tTemplate}:</div>
-        <select name=template>
-            {$options}
-        </select>
+        <div class=template-select-grid>
+            <div class=field-select data-template='{$page['tpl']}' data-old-template='{$page['tpl']}'>{$tpl}</div>
+            <div class=field-options>
+                {$options}
+            </div>
+        </div>
 
         <div class=date>{$tDate}:</div>
         <input name=date type=date value='{$date}'>
         <div class=time>{$tTime}:</div>
         <input name=time type=time value='{$time}'>
 
+        <div class=tags>" . __( "Теги" ) . ":</div>
+        <textarea name=tags rows=3>" . htmlspecialchars( $page["tags"] ) . "</textarea>
     </div>
 
 </div>";
@@ -656,7 +795,7 @@ function cms_pages_query() {
     
     if ( empty( $cms["base"] ) ) return; // fix 500 error
     $url = mysqli_real_escape_string( $cms["base"], $cms["url"]["path"] );
-    if ( $res = mysqli_query( $cms["base"], "SELECT * FROM pages WHERE url = '{$url}' OR CONCAT( url, '/' ) = '{$url}'" ) ) {
+    if ( $res = mysqli_query( $cms["base"], "SELECT * FROM pages WHERE url = '{$url}' OR CONCAT( url, '/' ) = '{$url}' OR url = CONCAT( '{$url}', '/' )" ) ) {
         if ( $cms["page"] = mysqli_fetch_assoc( $res ) ) {
             if ( $cms["page"]["created"] <= date( "Y-m-d H:i:s" ) ) {
                 $cms["status"] = "200";
@@ -673,7 +812,7 @@ function cms_pages_create_tables() {
     mysqli_query( $cms["base"], "
     CREATE TABLE IF NOT EXISTS `pages` (
         `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-        `pin` tinyint(1) NOT NULL DEFAULT 0,
+        `pin` tinyint(1) NOT NULL DEFAULT 1,
         `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
         `modified` double NOT NULL DEFAULT 0,
         `tpl` varchar(64) DEFAULT NULL,
@@ -683,40 +822,55 @@ function cms_pages_create_tables() {
         `url` varchar(255) DEFAULT NULL,
         `keywords` varchar(1024) NOT NULL DEFAULT '',
         `description` varchar(2048) NOT NULL DEFAULT '',
+        `tags` varchar(2048) NOT NULL DEFAULT '',
         UNIQUE KEY `id` (`id`)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 
 }
 
 function cms_pages_admin() {
     global $cms;
-    
-    $tr_upload_files = __( "Upload",         "pages.mod.php" );
-    $tr_of           = __( "of",             "pages.mod.php" );
-    $tr_search       = __( "Search...",      "pages.mod.php" );
-    $tr_copy         = __( "Copy",           "pages.mod.php" );
-    $tr_delete       = __( "Delete",         "pages.mod.php" );
-    $tr_mediateka    = __( "Mediateka",      "pages.mod.php" );
-    $tr_replace      = __( "Replace",        "pages.mod.php" );
-    $tr_blanks       = __( "Blanks",         "pages.mod.php" );
-    $tr_save         = __( "Save",           "pages.mod.php" );
-    $tr_tags         = __( "Tags",           "pages.mod.php" );
-    $tr_h1           = __( "Header",         "pages.mod.php" );
-    $tr_p            = __( "Paragraph",      "pages.mod.php" );
-    $tr_div          = __( "Block",          "pages.mod.php" );
-    $tr_a            = __( "Link",           "pages.mod.php" );
-    $tr_span         = __( "Span",           "pages.mod.php" );
-    $tr_code         = __( "Code",           "pages.mod.php" );
-    $tr_blockquote   = __( "Blockquote",     "pages.mod.php" );
-    $tr_ul           = __( "Unordered list", "pages.mod.php" );
-    $tr_ol           = __( "Ordered list",   "pages.mod.php" );
 
-    $help_file = "/{$cms['template']}/instruction.{$cms['config']['locale']}.html";
+    // Read template settings
+    $settings_file = "{$cms['cms_dir']}/{$cms['template']}/settings.php";
+    if ( file_exists( $settings_file ) ) {
+        include( $settings_file );
+    }
+    
+    $tr_upload_files = __( "Загрузить" );
+    $tr_of           = __( "из" );
+    $tr_search       = __( "Поиск..." );
+    $tr_copy         = __( "Копировать" );
+    $tr_delete       = __( "Удалить" );
+    $tr_properties   = __( "Свойства" );
+    $tr_mediateka    = __( "Медиатека" );
+    $tr_replace      = __( "Заменить" );
+    $tr_help         = __( "Инструкция" );
+    $tr_save         = __( "Сохранить" );
+    $tr_tags         = __( "Теги" );
+    $tr_h1           = __( "Заголовок" );
+    $tr_p            = __( "Параграф" );
+    $tr_div          = __( "Блок" );
+    $tr_a            = __( "Ссылка" );
+    $tr_span         = __( "Охват" );
+    $tr_code         = __( "Код" );
+    $tr_blockquote   = __( "Цитата" );
+    $tr_ul           = __( "Марк. список" );
+    $tr_ol           = __( "Нум. список" );
+    $tr_li           = __( "Пункт списка" );
+    $tTitle          = __( "Заголовок" );
+    $tSeoTitle       = __( "SEO Title" );
+    $tTemplate       = __( "Шаблон" );
+    $tDate           = __( "Дата" );
+    $tTime           = __( "Время" );
+    $tMaxUploadSize  = __( "Максимальный размер: " ) . number_format( file_upload_max_size(), 0, ".", " " ) . __( " байт" );
+
+    $help_file = "/{$cms['config']['template.mod.php']['template']}/instruction.{$cms['config']['locale']}.html";
     if ( file_exists( $cms["cms_dir"] . $help_file ) ) {
-        $help = "<a target=_blank href='{$help_file}'>{$tr_blanks}</a>";
+        $help = "<a target=_blank href='{$help_file}'>{$tr_help}</a>";
     } else {
-        $help = "<a></a>";
+        $help = "";
     }
 
     $files_panel = "
@@ -730,7 +884,7 @@ function cms_pages_admin() {
     <div class=mediateka-buttons>
         <div class=upload-files>
             <input id=upload-btn type=file name='myfile[]' multiple class=inputfile>
-            <label for=upload-btn>{$tr_upload_files}</label>
+            <label for=upload-btn title='{$tMaxUploadSize}'>{$tr_upload_files}</label>
         </div>
         <div class=link-file>
             <span class=link-file-tag></span>
@@ -742,10 +896,11 @@ function cms_pages_admin() {
 </div>";
 
     $buttons  = "<div class=save-page-button>{$tr_save}</div>";
+    $buttons .= "<div class=open-properties>{$tr_properties}</div>";
     $buttons .= "<div class=open-mediateka>{$tr_mediateka}</div>";
     $buttons .= "<div class=tags-helper>{$tr_tags}</div>";
-    $buttons .= $help;
     $buttons .= "<div class=codemirror-replace>{$tr_replace}</div>";
+    $buttons .= $help;
 
     $page = "
 <div class=main-header>
@@ -753,7 +908,7 @@ function cms_pages_admin() {
     <div class=search-wrapper>
         <input class=page-search type=text placeholder='{$tr_search}' autocomplete=off>
         <div class=reset></div>
-        <button class=page-search-button type=submit></button>
+        <button class=page-search-button></button>
     </div>
 
     <div class=add-page-btn>
@@ -783,29 +938,66 @@ function cms_pages_admin() {
 
 <div class='page-editor-bg hidden'>
     <div class=page-editor-grid>
+
         <div class=page-editor-header>
             <div class=close-page-button></div>
             <a data-page-title class=page-editor-title target=_blank></a>
         </div>
+
         <div class=page-editor-buttons>{$buttons}</div>
+        
+        <div class='page-properties hidden'>
+            <div class=page-title>{$tTitle}:</div>
+            <input name=title type=text>
+
+            <div class=url>URL:</div>
+            <input name=url type=text>
+
+            <div class=seo-title>{$tSeoTitle}:</div>
+            <input name=seo_title type=text>
+
+            <div class=description>Description:</div>
+            <textarea name=description rows=3></textarea>
+
+            <div class=template>{$tTemplate}:</div>
+            <div class=template-select-grid>
+                <div class=field-select data-template data-old-template></div>
+                <div class=field-options>
+                    
+                </div>
+            </div>
+
+            <div class=date>{$tDate}:</div>
+            <input name=date type=date>
+            <div class=time>{$tTime}:</div>
+            <input name=time type=time>
+
+            <div class=tags>" . __( "Теги" ) . ":</div>
+            <textarea name=tags rows=3></textarea>
+        </div>
+
         <div class='page-editor-panel hidden'>
             <div class=upload-progress></div>
             {$files_panel}
         </div>
+
         <div class=page-editor>
             <textarea data-modified class=coffee-editorpage-area name=add_editorpage></textarea>
         </div>
+
         <div class=tags>
             <div class=tags-grid>
                 <div data-type=wrap data-otag='<h1>' data-ctag='</h1>' data-len=4>{$tr_h1}</div>
                 <div data-type=wrap data-otag='<p>' data-ctag='</p>' data-len=3>{$tr_p}</div>
                 <div data-type=wrap data-otag='<div>' data-ctag='</div>' data-len=5>{$tr_div}</div>
-                <div data-type=wrap data-otag='<a href=\"\">' data-ctag='</a>' data-len=11>{$tr_a}</div>
+                <div data-type=wrap data-otag='<a href=\"\" target=_blank>' data-ctag='</a>' data-len=25>{$tr_a}</div>
                 <div data-type=wrap data-otag='<pre><code>' data-ctag='</code></pre>' data-len=11>{$tr_code}</div>
                 <div data-type=wrap data-otag='<span>' data-ctag='</span>' data-len=6>{$tr_span}</div>
                 <div data-type=wrap data-otag='<blockquote>' data-ctag='</blockquote>' data-len=12>{$tr_blockquote}</div>
                 <div data-type=wrap data-otag='<ul>\n  <li>' data-ctag='</li>\n</ul>' data-ch=6 data-line=1>{$tr_ul}</div>
                 <div data-type=wrap data-otag='<ol>\n  <li>' data-ctag='</li>\n</ol>' data-ch=6 data-line=1>{$tr_ol}</div>
+                <div data-type=wrap data-otag='<li>' data-ctag='</li>' data-len=4>{$tr_li}</div>
+                <div data-type=wrap data-otag='<!-- ' data-ctag=' -->' data-len=5>" . __( "Комментарий" ) . "</div>
             </div>
         </div>
     </div>
@@ -814,10 +1006,10 @@ function cms_pages_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["pages.mod.php"]["menu"]["pages"] ) ) {
         $cms["config"]["pages.mod.php"]["menu"]["pages"] = array(
-            "title"    => "Pages",
+            "title"    => "Страницы",
             "sort"     => 10,
             "class"    => "",
-            "section"  => "Content",
+            "section"  => "Контент",
         );
         cms_save_config();
     }

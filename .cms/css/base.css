@@ -7,20 +7,12 @@
 
 @media (max-width: 1023px) {
 #base {
-        grid-template-areas: 
-            "db-manual"
-            "db-settings";
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
         padding: 1rem 0.4rem 1rem 0.4rem;
-        display: flex; /*Samsung Browser - padding-bottom*/
-        flex-direction: column; /*Samsung Browser - padding-bottom*/
     }
 }
 
 @media (min-width: 1024px) {
     #base {
-        grid-template-areas: "db-settings db-manual";
         grid-template-columns: 17rem 1fr;
         grid-template-rows: auto;
         padding: 1rem;
@@ -28,8 +20,9 @@
 }
 
 #base .db-settings {
-    grid-area: db-settings;
-    background-color: var(--base-db-settings);
+    grid-column: 1/2;
+    background-color: var(--windows);
+    background-image: var(--noise);
     box-shadow: 0 2px 3px 0 #00000033;
     border-radius: 0.3rem;
 }
@@ -46,20 +39,39 @@
 
 #base form {
     display: grid;
-    row-gap: 1rem;
+    row-gap: 2rem;
 }
 
 #base form > div {
     position: relative;
+    display: grid;
+    row-gap: 1rem;
 }
 #base .create {
     font-size: 1rem;
-    color: var(--base-create);
+    color: var(--names);
+    text-align: center;
 }
-#base form div > div:not(.password-eye) {
+
+
+#base form div > div div:not(.password-eye) {
     font-size: 1rem;
     margin-bottom: 3px;
-    color: var(--base-form-div-div);
+    color: var(--windows-font);
+}
+
+#base form .pro-btn {
+    cursor: pointer;
+    text-align: center;
+    padding: 0.3rem;
+    border: 1px solid var(--bg-3);
+    border-radius: 0.2rem;
+    color: var(--link);
+    user-select: none;
+}
+
+#base form > .pro.hidden {
+    display: none;
 }
 
 #base form input {
@@ -68,11 +80,14 @@
     padding: 0 0.54rem;
     min-height: 35px;
     width: 100%;
-    color: var(--base-form-input-font);
-    background-color: var(--base-form-input);
-    border: 1px solid var(--base-form-input-border);
+    color: var(--input-font);
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
 }
 
+#base form > div > div {
+    position: relative;
+}
 #base form .password-eye {
     width: 23px;
     height: 23px;
@@ -90,36 +105,7 @@
     background-position-y: 100%;
 }
 
-#base input[type="submit"] {
-    cursor: pointer;
-}
-
-#base .db-manual {
-    grid-area: db-manual;
-    display: grid;
-    grid-auto-rows: max-content;
-    gap: 1rem;
-    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
-    border-radius: 5px 5px 5px 5px;
-    background-color: var(--base-db-manual);
-}
-#base .db-manual div {
-    color: var(--base-db-manual-div);
-}
-#base .db-manual p {
-    font-size: 1rem;
-    color: var(--base-db-manual-font);
-}
-#base .db-manual p a {
-    color: var(--base-db-manual-p-a);
-}
-@media (max-width: 1023px) {
-    #base .db-manual {
-        padding: 1rem 0.7rem 1rem 0.7rem;
-    }
-}
-@media (min-width: 1024px) {
-    #base .db-manual {
-        padding: 1rem;
-    }
+.no-database {
+    color: var(--windows-font);
+    border-radius: 0.4rem;
 }

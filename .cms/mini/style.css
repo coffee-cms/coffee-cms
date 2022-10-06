@@ -332,7 +332,6 @@ main code p  {
 }
 
 main img, main svg, main video, main audio, main source, main blockquote, main figure, main div, main iframe  {
-	
 	margin: 0;
 	padding: 0;
 	position: relative;

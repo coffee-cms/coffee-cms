@@ -1,17 +1,17 @@
 <?php
 
 $cms["modules"]["menu.mod.php"] = array(
-    "name" => __( "Menu", "menu.mod.php" ),
-    "description" => __( "Module for building menu", "menu.mod.php" ),
-    "version" => "22.04",
-    "files" => array(
+    "name"        => __( "Меню" ),
+    "description" => __( "Модуль для редактирования пунктов меню" ),
+    "version"     => "",
+    "locale"      => "ru_RU.UTF-8",
+    "files"       => array(
         ".cms/mod/menu.mod.php",
         ".cms/css/menu.css",
         ".cms/js/menu.js",
-        ".cms/lang/ru_RU.UTF-8/menu.mod.php",
+        ".cms/lang/en_US.UTF-8/menu.mod.php",
         ".cms/lang/uk_UA.UTF-8/menu.mod.php",
     ),
-    "sort" => 10,
 );
 
 // Return if module disabled
@@ -48,7 +48,7 @@ function cms_menu_api() {
 
                 if ( empty( $cms["base"] ) ) {
                     exit( json_encode( array(
-                        "info_text"  => __( "Please connect to database", "menu.mod.php" ),
+                        "info_text"  => __( "Пожалуйста, подключитесь к базе данных" ),
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
@@ -63,7 +63,7 @@ function cms_menu_api() {
                 } else {
 
                     exit( json_encode( array(
-                        "info_text"  => __( "Error creating: ", "menu.mod.php" ) . mysqli_error( $cms["base"] ),
+                        "info_text"  => __( "Error creating: " ) . mysqli_error( $cms["base"] ),
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
@@ -74,21 +74,22 @@ function cms_menu_api() {
                 if ( $pid ) {
                     $title = "";
                 } else {
-                    $title = __( "Menu", "menu.mod.php" );
+                    $title = __( "Меню" );
                 }
                 $sort      = $mid * 10;
                 $q = "UPDATE menu SET title='{$title}', url='', sort={$sort} WHERE mid={$mid}";
                 if ( $r = mysqli_query( $cms["base"], $q ) ) {
                     exit( json_encode( array(
-                        "info_text"  => __( "Created", "menu.mod.php" ),
+                        "info_text"  => __( "Создано" ),
                         "info_class" => "info-success",
                         "info_time"  => 5000,
                         "list"       => cms_menu_get_items_list(),
                         "parents"    => cms_menu_get_parents_list(),
+                        "mid"        => $mid,
                     ) ) );
                 } else {
                     exit( json_encode( array(
-                        "info_text"  => __( "Error creating: ", "menu.mod.php" ) . mysqli_error( $cms["base"] ),
+                        "info_text"  => __( "Error creating: " ) . mysqli_error( $cms["base"] ),
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
@@ -112,7 +113,7 @@ function cms_menu_api() {
                     cms_clear_cache();
                     
                     exit( json_encode( array(
-                        "info_text"  => __( "Deleted", "menu.mod.php" ),
+                        "info_text"  => __( "Удалено" ),
                         "info_class" => "info-success",
                         "info_time"  => 5000,
                         "list"       => cms_menu_get_items_list(),
@@ -155,7 +156,7 @@ function cms_menu_api() {
                     
                     $r = array(
                         "ok"         => "true",
-                        "info_text"  => __( "Updated", "menu.mod.php" ), // FIXME: never fire
+                        "info_text"  => __( "Обновлено" ), // FIXME: never fire
                         "info_class" => "info-success",
                         "info_time"  => 5000,
                         "list"       => cms_menu_get_items_list(),
@@ -165,7 +166,7 @@ function cms_menu_api() {
                 } else {
                     exit( json_encode( array(
                         "ok"         => "false",
-                        "info_text"  => __( "Error update properties", "menu.mod.php" ),
+                        "info_text"  => __( "Ошибка обновления свойств" ),
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
@@ -176,7 +177,7 @@ function cms_menu_api() {
             case "get_search_pages_list":
                 $s = mysqli_real_escape_string( $cms["base"], $_POST["search"] );
                 $s = str_replace( " ", "%", $s );
-                $html = "<li data-id=0 data-url>" . __( "No page", "menu.mod.php" ) . "</li>" ;
+                $html = "<li data-id=0 data-url>" . __( "Произвольная страница" ) . "</li>" ;
                 $q = "SELECT id, title, url FROM pages WHERE title LIKE '%{$s}%' OR url LIKE '%{$s}%' ORDER BY ( id + pin * 1000000000 ) DESC LIMIT 10";
                 $res = mysqli_query( $cms["base"], $q );
                 while ( $page = mysqli_fetch_assoc( $res ) ) {
@@ -211,7 +212,7 @@ function cms_menu_get_items_list( $pid = 0 ) {
     global $cms;
 
     if ( empty( $cms["base"] ) ) {
-        return __( "Please connect to database", "menu.mod.php" );
+        return "<span class=no-database>" . __( "Пожалуйста, подключитесь к базе данных" ) . "</span>";
     }
 
     $list = "";
@@ -224,26 +225,25 @@ function cms_menu_get_items_list( $pid = 0 ) {
     } else {
 
         // Translations
-        $tr_title              = __( "Title",               "menu.mod.php" );
-        $tr_area               = __( "Area",                "menu.mod.php" );
-        $tr_no_area            = __( "No Area",             "menu.mod.php" );
-        $tr_classes            = __( "Classes",             "menu.mod.php" );
-        $tr_sort               = __( "Sort",                "menu.mod.php" );
-        $tr_save               = __( "Save",                "menu.mod.php" );
-        $tr_delete             = __( "Delete",              "menu.mod.php" );
-        $tr_create             = __( "Item",                "menu.mod.php" );
-        $tr_prop               = __( "Properties",          "menu.mod.php" );
-        $tr_parent             = __( "Parent",              "menu.mod.php" );
-        $tr_no_parent          = __( "No parent",           "menu.mod.php" );
-        $tr_placeholder        = __( "Replaces page title", "menu.mod.php" );
-        $tr_no_page            = __( "No page",             "menu.mod.php" );
-        $tr_search             = __( "Search...",           "menu.mod.php" );
-        $tr_tag_title          = __( "Tag Title",           "menu.mod.php" );
-        $tr_url                = __( "URL",                 "menu.mod.php" );
-        $tr_new_window         = __( "Open in new window",  "menu.mod.php" );
-        $tr_page               = __( "Page",                "menu.mod.php" );
-        $tr_page_deleted       = __( "Page deleted",        "menu.mod.php" );
-        $tr_menu_item          = __( "Menu item",           "menu.mod.php" );
+        $tr_title              = __( "Заголовок" );
+        $tr_area               = __( "Область" );
+        $tr_no_area            = __( "Область не задана" );
+        $tr_classes            = __( "Классы" );
+        $tr_sort               = __( "Сортировка" );
+        $tr_save               = __( "Сохранить" );
+        $tr_delete             = __( "Удалить" );
+        $tr_create             = __( "Пункт" );
+        $tr_prop               = __( "Свойства" );
+        $tr_parent             = __( "Родитель" );
+        $tr_no_parent          = __( "Нет" );
+        $tr_placeholder        = __( "Заменяет заголовок страницы" );
+        $tr_no_page            = __( "Произвольная страница" );
+        $tr_search             = __( "Поиск..." );
+        $tr_tag_title          = __( "Подсказка" );
+        $tr_new_window         = __( "Открыть в новом окне" );
+        $tr_page               = __( "Страница" );
+        $tr_page_deleted       = __( "Страница удалена" );
+        $tr_menu_item          = __( "Пункт меню" );
 
         while ( $item = mysqli_fetch_assoc( $res ) ) {
 
@@ -257,19 +257,12 @@ function cms_menu_get_items_list( $pid = 0 ) {
 
                 // Menu Areas <option>
                 $areas   = "";
-                $default = "selected";
                 if ( ! empty( $cms["menu_areas"] ) )
                 foreach ( $cms["menu_areas"] as $area => $a ) {
-                    if ( $item["area"] === $area ) {
-                        $selected = "selected";
-                        $default  = "";
-                    } else {
-                        $selected = "";
-                    }
-                    $areas .= "<option value='{$area}' $selected>{$a['title']}</option>";
+                    $areas .= "<option value='{$area}'>{$a['title']}</option>";
                 }
 
-                $list   .= "
+                @$list   .= "
 <div>
 
     <div class=menu data-item={$item['mid']}>
@@ -286,10 +279,15 @@ function cms_menu_get_items_list( $pid = 0 ) {
 
         <div class=menu-prop>
             <div class=area-title>{$tr_area}:</div>
-            <select name=area data-menu-area='{$item['area']}'>
-                <option value $default>{$tr_no_area}</option>
-                {$areas}
-            </select>
+
+            <div class=area-select-grid>
+                <div class=field-select-menu data-menu-area='{$item['area']}'>{$cms["menu_areas"][ $item['area'] ]['title']}</div>
+                <div class=field-options>
+                    <option value>{$tr_no_area}</option>
+                    {$areas}
+                </div>
+            </div>
+
             <div class=classes-title>{$tr_classes}:</div>
             <input name=classes type=text value='{$item['class']}'>
         </div>
@@ -363,9 +361,14 @@ function cms_menu_get_items_list( $pid = 0 ) {
             <div class=sort-title>{$tr_sort}:</div>
             <input name=sort type=text value='{$item['sort']}'>
             <div class=parent-title>{$tr_parent}:</div>
-            <select name=pid data-parent={$item['pid']}>
-                <option value=0>{$tr_no_parent}</option>
-            </select>
+
+            <div class=parent-select-grid>
+                <div class=field-select data-parent='{$item['pid']}'></div>
+                <div class=field-options>
+                    <option value=0>{$tr_no_parent}</option>
+                </div>
+            </div>
+
             <div class=classes-title>{$tr_classes}:</div>
             <input name=classes type=text value='{$item['class']}'>
             <div class=page-title>{$tr_page}:</div>
@@ -384,7 +387,7 @@ function cms_menu_get_items_list( $pid = 0 ) {
             </div>
             <div class=tag-title>{$tr_tag_title}:</div>
             <input name=tag_title type=text value='{$e_tag_title}'>
-            <div class=url-title>{$tr_url}:</div>
+            <div class=url-title>URL:</div>
             <div class=target-blank>
                 <input name=url type=text value='{$item['url']}' {$disabled_url}>
                 <input name=targetblank type=checkbox {$checked} title='{$tr_new_window}'>
@@ -416,7 +419,7 @@ function cms_menu_get_parents_list( $pid = 0, $lvl = 0 ) {
                 if ( $res_page = mysqli_query( $cms["base"], $q ) and $page = mysqli_fetch_assoc( $res_page ) ) {
                     $item["title"] = $page["title"];
                 } else {
-                    $item["title"] = __( "Page deleted", "menu.mod.php" );
+                    $item["title"] = __( "Страница удалена" );
                 }
             }
             $title = htmlspecialchars( $item["title"] );
@@ -431,7 +434,7 @@ function cms_menu_get_parents_list( $pid = 0, $lvl = 0 ) {
 function cms_menu_admin() {
     global $cms;
 
-    $tr_add_menu = __( "Add menu", "menu.mod.php" );
+    $tr_add_menu = __( "Добавить меню" );
 
     $page = "
 <div class=main-main>
@@ -445,10 +448,10 @@ function cms_menu_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["menu.mod.php"]["menu"]["menu"] ) ) {
         $cms["config"]["menu.mod.php"]["menu"]["menu"] = array(
-            "title"    => "Menu",
+            "title"    => "Меню",
             "sort"     => 20,
             "class"    => "",
-            "section"  => "Navigation",
+            "section"  => "Навигация",
         );
         cms_save_config();
     }
@@ -472,7 +475,7 @@ function cms_menu_create_table() {
         `area` varchar(255) NOT NULL DEFAULT '',
         `target_blank` tinyint(1) NOT NULL DEFAULT 0,
         UNIQUE KEY `mid` (`mid`)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 
 }
@@ -480,6 +483,7 @@ function cms_menu_create_table() {
 // One or more Menus
 function menu( $area ) {
     global $cms;
+    if ( ! $cms["base"] ) { return ""; } // fix php 8.0
     $area = mysqli_real_escape_string( $cms["base"], $area );
     $q = "SELECT * FROM menu WHERE pid=0 AND area='{$area}' ORDER BY sort";
     $html = "";
@@ -518,7 +522,7 @@ function menu1( $pid = 0 ) {
                 }
                 if ( empty( $item["m.title"] ) ) {
                     if ( $item["p.title"] === NULL ) {
-                        $item["m.title"] = __( "Page deleted", "menu.mod.php" );
+                        $item["m.title"] = __( "Страница удалена" );
                     } else {
                         $item["m.title"] = $item["p.title"];
                     }

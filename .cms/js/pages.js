@@ -1,21 +1,22 @@
 "use strict";
+
 document.addEventListener( "DOMContentLoaded", function( event ) {
 
     function _( str ) {
         return __( str, "pages.mod.php" );
     }
 
-    api2( { fn: "get_pages_list" }, set_pages_list );
+    api( { fn: "get_pages_list" }, set_pages_list );
 
     function set_pages_list( r ) {
 
         if ( r.no_database ) {
-            document.querySelector( "#pages .pages-grid" ).innerText = _( "Please connect to database" );
+            document.querySelector( "#pages .pages-grid" ).innerHTML = r.no_database;
             return;
         }
 
         if ( r.overloaded ) {
-            let m = _( "Server overloaded. Sent xxx pages." );
+            let m = _( "Сервер перегружен. Прислал xxx страниц." );
             m = m.replace( "xxx", r.pages.length );
             notify( m, "info-error", 5000 );
         }
@@ -40,7 +41,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             let page = document.querySelector( `#pages .pages-grid [data-id="${r.pages[i].id}"]` );
             set_controls( page );
             if ( Date.now() - start > 1000 ) {
-                let m = _( "The browser is overloaded. Inserted xxx pages out of nnn." );
+                let m = _( "Браузер перегружен. Вставил xxx страниц из nnn." );
                 m = m.replace( "xxx", i + 1 );
                 m = m.replace( "nnn", r.pages.length );
                 notify( m, "info-error", 5000 );
@@ -52,9 +53,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         create_pager();
 
         // for "create_page" function
-        if ( cms.call_fn ) {
-            cms.call_fn();
-            cms.call_fn = null;
+        if ( cms.create_page_fn ) {
+            cms.create_page_fn();
+            cms.create_page_fn = null;
         }
 
     }
@@ -87,7 +88,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     }
                     document.querySelector( "#pages .main-main" ).scrollTop = 0;
                     cms.clear_pages_list = true;
-                    api2( data, set_pages_list );
+                    api( data, set_pages_list );
                 } );
             } );
             // scroll
@@ -130,7 +131,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             let p = document.querySelector( "#pages .main-footer input" ).value;
             set_cookie( "pages_pager", p );
             cms.clear_pages_list = true;
-            api2( { fn: "get_pages_list", search: document.querySelector( "#pages .page-search" ).value }, set_pages_list );
+            api( { fn: "get_pages_list", search: document.querySelector( "#pages .page-search" ).value }, set_pages_list );
         }
     } );
 
@@ -150,17 +151,19 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 let id       = this.closest( "[data-id]" ).getAttribute( "data-id" );
                 let item = document.querySelector( `#pages .pages-grid [data-id="${id}"] ` );
                 let data = {
-                    fn:          "save_prop",
-                    id:          id,
-                    title:       item.querySelector( '[name="title"]' ).value,
-                    seo_title:   item.querySelector( '[name="seo_title"]' ).value,
-                    url:         item.querySelector( '[name="url"]' ).value,
-                    date:        item.querySelector( '[name="date"]' ).value,
-                    time:        item.querySelector( '[name="time"]' ).value,
-                    template:    item.querySelector( '[name="template"]' ).value,
-                    description: item.querySelector( '[name="description"]' ).value
+                    fn:           "save_prop",
+                    id:           id,
+                    title:        item.querySelector( '[name="title"]' ).value,
+                    seo_title:    item.querySelector( '[name="seo_title"]' ).value,
+                    url:          item.querySelector( '[name="url"]' ).value,
+                    date:         item.querySelector( '[name="date"]' ).value,
+                    time:         item.querySelector( '[name="time"]' ).value,
+                    template:     item.querySelector( '.template-select-grid .field-select' ).getAttribute( "data-template" ),
+                    old_template: item.querySelector( '.template-select-grid .field-select' ).getAttribute( "data-old-template" ),
+                    description:  item.querySelector( '[name="description"]' ).value,
+                    tags:  item.querySelector( '[name="tags"]' ).value
                 }
-                api2( data, function( r ) {
+                api( data, function( r ) {
                     if ( r.ok == "false" ) { // FIXME: never fire
                         notify( r.info_text, r.info_class, 5000 );
                     }
@@ -178,6 +181,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                             date.classList.remove( "planned" );
                         }
 
+                        // update old template
+                        item.querySelector( '.template-select-grid .field-select' ).setAttribute( "data-old-template", data.template );
+
                         // edit marker
                         document.querySelectorAll( "#pages .pages-grid > div" ).forEach( function( el ) {
                             el.classList.remove( "last-edited" );
@@ -192,6 +198,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                             button.classList.remove( "saved" );
                         }, 200 );
 
+                        notify( r.info_text, r.info_class, 5000 );
+
                         // update event for menu
                         if ( r.update_menu == "true" ) {
                             let event = new Event( "update_menu" );
@@ -203,7 +211,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             } );
         } );
 
-        selector.querySelectorAll( ".pages-grid > div .pin" ).forEach( function( pin ) {
+        // Pin Page
+        selector.querySelectorAll( ".pin" ).forEach( function( pin ) {
             pin.addEventListener( "click", function( e ) {
                 let box  = this.closest( "[data-id]" );
                 let id   = box.getAttribute( "data-id" );
@@ -218,9 +227,9 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     id:  id,
                     pin: pin
                 }
-                api2( data, function( r ) {
+                api( data, function( r ) {
                     if ( r.ok == "true" ) {
-                        document.querySelector( `#pages .pages-grid [data-id="${id}"]` ).setAttribute( "data-pin", pin );
+                        box.setAttribute( "data-pin", pin );
                     }
                 } );
             } );
@@ -231,16 +240,39 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             button.addEventListener( "click", function( e ) {
                 let id = this.closest( "[data-id]" ).getAttribute( "data-id" );
                 // get page from server
-                api2( { fn: "get_page", id: id }, function( r ) {
+                api( { fn: "get_page", id: id }, function( r ) {
                     if ( r.result == "ok" ) {
                         
+                        document.querySelector( "#pages .page-editor-grid" ).setAttribute( "data-changed", "false" );
                         document.querySelector( "#pages .page-editor-title" ).innerHTML = r.page.title;
+                        document.querySelector( "#pages .page-properties input[name='title']" ).value = r.page.title;
                         document.querySelector( "#pages .page-editor-title" ).setAttribute( "href", r.page.url );
+                        document.querySelector( "#pages .page-properties input[name='url']" ).value = r.page.url;
+                        document.querySelector( "#pages .page-properties input[name='seo_title']" ).value = r.page.seo_title;
+                        document.querySelector( "#pages .page-properties textarea[name='description']" ).value = r.page.description;
+                        document.querySelector( "#pages .page-properties textarea[name='tags']" ).value = r.page.tags;
+                        document.querySelector( "#pages .page-properties input[name='date']" ).value = r.date;
+                        document.querySelector( "#pages .page-properties input[name='time']" ).value = r.time;
+                        document.querySelector( "#pages .page-properties .template-select-grid .field-options" ).innerHTML = r.options;
+                        document.querySelector( "#pages .page-properties .template-select-grid .field-select" ).setAttribute( "data-template", r.option );
+                        document.querySelector( "#pages .page-properties .template-select-grid .field-select" ).setAttribute( "data-old-template", r.option );
+                        let val = document.querySelector( `#pages .page-properties .template-select-grid .field-options [value="${r.option}"]` ).innerText;
+                        document.querySelector( "#pages .page-properties .template-select-grid .field-select" ).innerText = val;
                         document.querySelector( "#pages .page-editor > textarea" ).value = r.page.text;
                         if ( r.page.modified != null ) { // prevent delete attribute
                             document.querySelector( "#pages .page-editor > textarea" ).setAttribute( "data-modified", r.page.modified );
                         }
                         document.querySelector( "#pages .save-page-button" ).setAttribute( "data-id", r.page.id );
+
+                        // Option
+                        document.querySelectorAll( ".page-properties .field-options option" ).forEach( function( select ) {
+                            select.addEventListener( "click", function( e ) {
+                                let input = this.closest( ".template-select-grid" ).querySelector( ".field-select" );
+                                input.innerText = this.innerText;
+                                input.setAttribute( "data-template", this.getAttribute( "value" ) );
+                                //e.stopPropagation(); убираем чтобы закрылось автоматически
+                            } );
+                        } );
                         
                         // Images
                         document.querySelector( "#pages .link-file-tag" ).innerHTML = "";
@@ -260,106 +292,36 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                         document.querySelector( "#pages .page-editor-bg" ).classList.remove( "hidden" );
                         document.body.classList.add( "editor" ); // for notifications
 
-                        // get theme
-                        let n = get_cookie( "theme" );
-                        let theme = admin_styles[n][1];
-                        
                         // Connect Editor
-                        let txtarea = document.querySelector( "#pages .page-editor > textarea" );
-                        window.cm = CodeMirror.fromTextArea( txtarea, {
-                            mode: "application/x-httpd-php",
-                            styleActiveLine:   true,
-                            lineNumbers:       true,
-                            lineWrapping:      true,
-                            autoCloseBrackets: true,
-                            smartIndent:       true,
-                            matchBrackets:     true,
-                            theme:             theme,
-                            autoCloseTags: {
-                                whenClosing: true,
-                                whenOpening: true,
-                                indentTags:  [ "div", "ul", "ol", "script", "style" ],
-                            },
-                            phrases: {
-                                "Search:":                              _( "Search:" ),
-                                "(Use /re/ syntax for regexp search)" : _( "(Use /re/ syntax for regexp search)" ),
-                                "Replace all:":                         _( "Replace all:" ),
-                                "With:":                                _( "With:" ),
-                                "Replace:":                             _( "Replace:" ),
-                                "Replace?":                             _( "Replace?" ),
-                                "Yes":                                  _( "Yes" ),
-                                "No":                                   _( "No" ),
-                                "All":                                  _( "All" ),
-                                "Stop":                                 _( "Stop" ),
-                            },
-                            extraKeys: { "Ctrl-Space": "autocomplete" }
-                        } );
-                        if ( cm.showHint ) {
-                            cm.on( "keydown", function( editor, event ) {
-                                if ( event.ctrlKey == true ) { return } // Ctrl+S call Hint
-                                let isAlphaKey = /^[a-zA-Z]$/.test( event.key );
-                                if ( cm.state.completionActive && isAlphaKey ) {
-                                    return;
-                                }
+                        codemirror_connect( "#pages .page-editor > textarea", "cm" );
 
-                                // Prevent autocompletion in string literals or comments
-                                let cursor = cm.getCursor();
-                                let token = cm.getTokenAt( cursor );
-                                if ( token.type === "string" || token.type === "comment" ) {
-                                    return;
-                                }
-                                
-                                let lineBeforeCursor = cm.doc.getLine( cursor.line );
-                                if ( typeof lineBeforeCursor !== "string" ) {
-                                    return;
-                                }
-                                lineBeforeCursor = lineBeforeCursor.substring( 0, cursor.ch );
-
-                                // disable autoclose tag before text
-                                let charAfterCursor  = cm.doc.getLine( cursor.line );
-                                charAfterCursor = charAfterCursor.substring( cursor.ch, cursor.ch + 1 );
-                                cm.options.autoCloseTags.dontCloseTags = null;
-                                if ( charAfterCursor.match( /\S/ ) && charAfterCursor != "<" ) {
-                                    if ( lineBeforeCursor.match( /<[^>]+$/ ) ) {
-                                        let tag = lineBeforeCursor.match( /<(\w+)\b[^>]*$/ );
-                                        if ( tag ) {
-                                            tag = tag[1];
-                                            cm.options.autoCloseTags.dontCloseTags = [tag];
-                                        }
-                                    }
-                                }
-                                
-                                let m = CodeMirror.innerMode( cm.getMode(), token.state );
-                                let innerMode = m.mode.name;
-                                let shouldAutocomplete;
-                                if ( innerMode === "html" || innerMode === "xml" ) {
-                                    shouldAutocomplete = event.key === "<" ||
-                                        event.key === "/" && token.type === "tag" ||
-                                        isAlphaKey && token.type === "tag" ||
-                                        isAlphaKey && token.type === "attribute" ||
-                                        token.string === "=" && token.state.htmlState && token.state.htmlState.tagName;
-                                } else if ( innerMode === "css" ) {
-                                    shouldAutocomplete = isAlphaKey ||
-                                        event.key === ":" ||
-                                        event.key === " " && /:\s+$/.test( lineBeforeCursor );
-                                } else if ( innerMode === "javascript" ) {
-                                    shouldAutocomplete = isAlphaKey || event.key === ".";
-                                } else if ( innerMode === "clike" && cm.options.mode === "php" ) {
-                                    shouldAutocomplete = token.type === "keyword" || token.type === "variable";
-                                }
-                                if ( shouldAutocomplete ) {
-                                    cm.showHint( { completeSingle: false } );
-                                }
-                            } );
+                        // restore scroll and cursor position
+                        let cursor = localStorage.getItem( "cursor_page_" + id );
+                        if ( cursor ) {
+                            cursor = JSON.parse( cursor );
+                            window.cm.scrollTo( cursor.left, cursor.top );
+                            window.cm.setCursor( { line:cursor.line, ch:cursor.ch } );
+                            window.cm.refresh();
+                            //window.cm.scrollIntoView( { line:cursor.line, ch:cursor.ch } ); // fix glitch
                         }
 
                         // track changes
                         document.querySelector( "#pages .close-page-button" ).setAttribute( "data-changed", "false" );
+                        document.querySelector( "#pages .page-editor-grid" ).setAttribute( "data-changed", "false" );
                         cm.on( "change", function( cm, change ) {
                             document.querySelector( "#pages .close-page-button" ).setAttribute( "data-changed", "true" );
+                            document.querySelector( "#pages .page-editor-grid" ).setAttribute( "data-changed", "true" );
+                        } );
+                        // save scroll and cursor position
+                        [ "cursorActivity", "scroll" ].forEach( function( event ) {
+                            cm.on( event, function() {
+                                let cursor = window.cm.getCursor();
+                                let scroll = window.cm.getScrollInfo();
+                                localStorage.setItem( "cursor_page_" + id, JSON.stringify( { line:cursor.line, ch:cursor.ch, left: scroll.left, top: scroll.top } ) );
+                            } );
                         } );
 
-                        // set cursor to editor
+                        // set focus to editor
                         cm.focus();
 
                         // Save Page Ctrl+S
@@ -370,6 +332,10 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                             let mediateka = ! document.querySelector( "#pages .page-editor-panel" ).classList.contains( "hidden" );
                             if ( mediateka && window.innerWidth < 1024 ) {
                                 document.querySelector( "#pages .open-mediateka" ).click();
+                            }
+                            let properties = ! document.querySelector( "#pages .page-properties" ).classList.contains( "hidden" );
+                            if ( properties && window.innerWidth < 1024 ) {
+                                document.querySelector( "#pages .open-properties" ).click();
                             }
                         } );
 
@@ -382,16 +348,40 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             } );
         } );
 
+        // Select
+        selector.querySelectorAll( ".field-select" ).forEach( function( select ) {
+            select.addEventListener( "click", function( e ) {
+                e.stopPropagation();
+                select.nextElementSibling.classList.toggle( "open" );
+            } );
+        } );
+        // Option
+        selector.querySelectorAll( ".field-options option" ).forEach( function( select ) {
+            select.addEventListener( "click", function( e ) {
+                let input = this.closest( ".template-select-grid" ).querySelector( ".field-select" );
+                input.innerText = this.innerText;
+                input.setAttribute( "data-template", this.getAttribute( "value" ) );
+                //e.stopPropagation(); убираем чтобы закрылось автоматически
+            } );
+        } );
+
     }
 
-    function CtrlS( e ) {
-        if ( e.code == "KeyS" && e.ctrlKey == true ) {
-            e.preventDefault(); // don't save page
-            if ( window.location.hash == "#pages" ) {
-                document.querySelector( "#pages .save-page-button" ).click();
-            }
-        }
-    }
+    // Select for editor
+    document.querySelectorAll( ".page-properties .field-select" ).forEach( function( select ) {
+        select.addEventListener( "click", function( e ) {
+            e.stopPropagation();
+            select.nextElementSibling.classList.toggle( "open" );
+        } );
+    } );
+
+    // Select
+    // Закрытие выпадающих списков при кликах вне их, а так же по ним
+    document.body.addEventListener( "click", function( e ) {
+        document.querySelectorAll( "#pages .field-options" ).forEach( function( list ) {
+            list.classList.remove( "open" );
+        } );
+    } );
 
     // Search page
     document.querySelector( "#pages .page-search" ).addEventListener( "keydown", function( e ) {
@@ -409,7 +399,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             search: search_string
         };
         cms.clear_pages_list = true;
-        api2( data, set_pages_list );
+        api( data, set_pages_list );
     }
 
     // Reset Search
@@ -426,19 +416,24 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 let id = ch.closest( "[data-id]" ).getAttribute( "data-id" );
                 ids.push( id );
             } );
-            if ( ids.length === 0 || !confirm( _( "Delete selected pages? Files attached to these pages will be deleted." ) ) ) {
+            if ( ids.length === 0 ) {
+                notify( _( "Сначала выберите страницы." ), "info-error", 5000 );
+                return;
+            }
+            if ( ! confirm( _( "Удалить выбранные страницы? Прикрепленные к этим страницам файлы будут удалены." ) ) ) {
                 return;
             }
             let data = {
                 fn: "del_pages",
                 ids: ids
             };
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, 5000 );
                     if ( r.info_class == "info-success" ) {
                         data.ids.forEach( function( id ) {
                             document.querySelector( `#pages .pages-grid [data-id="${id}"]` ).remove();
+                            localStorage.removeItem( "cursor_page_" + id );
                         } );
                         let count = document.querySelector( "#pages .main-footer .count" );
                         let loaded = document.querySelector( "#pages .main-footer .loaded" );
@@ -464,7 +459,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                             offset: offset,
                             search: search
                         };
-                        api2( data2, set_pages_list );
+                        api( data2, set_pages_list );
                     }
                 }
             } );
@@ -482,14 +477,24 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         tmp.remove();
         if ( r ) {
             if ( img ) {
-                notify( _( "Copyed" ), "info-success", 5000 );
+                notify( _( "Скопировано" ), "info-success", 5000 );
             } else {
-                notify( _( "Please select file" ), "info-error", 5000 );
+                notify( _( "Выберите файл" ), "info-error", 5000 );
             }
         } else {
-            notify( _( "Copy Error" ), "info-error", 5000 );
+            notify( _( "Ошибка копирования" ), "info-error", 5000 );
         }
     };
+
+    function CtrlS( e ) {
+        // ы and і - fix for librewolf
+        if ( ( e.code == "KeyS" || e.key == "ы" || e.key == "і" ) && e.ctrlKey == true ) {
+            e.preventDefault(); // don't save page
+            if ( window.location.hash == "#pages" ) {
+                document.querySelector( "#pages .save-page-button" ).click();
+            }
+        }
+    }
 
     // Save Page
     document.querySelectorAll( "#pages .save-page-button" ).forEach( function( button ) {
@@ -500,15 +505,49 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 id: document.querySelector( "#pages .save-page-button" ).getAttribute( "data-id" ),
                 modified: document.querySelector( "#pages .page-editor > textarea" ).getAttribute( "data-modified" ),
                 text: document.querySelector( "#pages .page-editor > textarea" ).value,
-                url: document.querySelector( "#pages .page-editor-title" ).getAttribute( "href" ) // for delete old page
+                title: document.querySelector( "#pages .page-properties input[name='title']" ).value,
+                url: document.querySelector( "#pages .page-properties input[name='url']" ).value,
+                seo_title: document.querySelector( "#pages .page-properties input[name='seo_title']" ).value,
+                description: document.querySelector( "#pages .page-properties textarea[name='description']" ).value,
+                tags: document.querySelector( "#pages .page-properties textarea[name='tags']" ).value,
+                date: document.querySelector( "#pages .page-properties input[name='date']" ).value,
+                time: document.querySelector( "#pages .page-properties input[name='time']" ).value,
+                template: document.querySelector( "#pages .page-properties .template-select-grid .field-select" ).getAttribute( "data-template" ),
+                old_template: document.querySelector( "#pages .page-properties .template-select-grid .field-select" ).getAttribute( "data-old-template" ),
             }
-            api2( data, function( r ) {
-                if ( r.info_text ) {
-                    notify( r.info_text, r.info_class, r.info_time );
-                }
+            api( data, function( r ) {
                 if ( r.ok == "true" ) {
+                    // set text
+                    if ( r.new_text ) {
+                        window.cm.setValue( r.new_text );
+                    }
+
+                    // Update Title and URL
+                    document.querySelector( "#pages .page-editor-title" ).innerHTML = r.title;
+                    document.querySelector( "#pages .page-editor-title" ).setAttribute( "href", r.url );
+                    document.querySelector( "#pages .page-properties input[name='url']" ).value = r.url;
+
+                    // update old template
+                    document.querySelector( "#pages .page-properties .template-select-grid .field-select" ).setAttribute( "data-old-template", data.template );
+
+                    // Update item in page list
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] .page-name` ).innerHTML = r.title;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] .page-name` ).setAttribute( "href", r.url );
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] input[name='title']` ).value = r.title;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] input[name='url']` ).value = r.url;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] input[name='seo_title']` ).value = data.seo_title;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] textarea[name='description']` ).value = data.description;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] textarea[name='tags']` ).value = data.tags;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] .template-select-grid .field-select` ).setAttribute( "data-template", data.template );
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] .template-select-grid .field-select` ).setAttribute( "data-old-template", data.template );
+                    let val = document.querySelector( `#pages .pages-grid [data-id='${data.id}'] .template-select-grid .field-options [value="${data.template}"]` ).innerText;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] .template-select-grid .field-select` ).innerText = val;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] input[name='date']` ).value = data.date;
+                    document.querySelector( `#pages .pages-grid [data-id='${data.id}'] input[name='time']` ).value = data.time;
+
                     document.querySelector( "#pages .page-editor > textarea" ).setAttribute( "data-modified", r.modified );
                     document.querySelector( "#pages .close-page-button" ).setAttribute( "data-changed", "false" );
+                    document.querySelector( "#pages .page-editor-grid" ).setAttribute( "data-changed", "false" );
                     // edit marker
                     document.querySelectorAll( "#pages .pages-grid > div" ).forEach( function( item ) {
                         item.classList.remove( "last-edited" );
@@ -524,6 +563,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     setTimeout( function() {
                         document.querySelector( "#pages .save-page-button" ).classList.remove( "saved" );
                     }, 1000 );
+
+                    notify( r.info_text, r.info_class, r.info_time );
                 }
                 if ( r.ok == "false" ) {
                     // highlight save button
@@ -531,6 +572,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     setTimeout( function() {
                         document.querySelector( "#pages .save-page-button" ).classList.remove( "error" );
                     }, 1000 );
+
+                    notify( r.info_text, r.info_class, r.info_time );
                 }
             } );
         };
@@ -560,32 +603,50 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     }
 
     // Upload files
-    let input = document.querySelector( "#pages .upload-files input[type=file]" );
-    input.onchange = async function( event ) {
+    document.querySelector( "#pages .upload-files input[type=file]" ).addEventListener( "change", async function( event ) {
         const formData = new FormData();
         let id = document.querySelector( "#pages .save-page-button" ).getAttribute( "data-id" );
         formData.append( "id", id );
         formData.append( "fn", "upload_files" );
         let n = 0;
-        for ( let i = 0; i < input.files.length; i++ ) {
-            formData.append( "myfile[]", input.files[i] );
-            let f = `/uploads/${id}/` + __tr_file( input.files[i].name );
+        for ( let i = 0; i < this.files.length; i++ ) {
+            formData.append( "myfile[]", this.files[i] );
+            let f = `/uploads/${id}/` + __tr_file( this.files[i].name );
             let f_exists = document.querySelector( `#pages .file-block [data-src="${f}"]` );
             if ( f_exists ) { n++; }
         }
+        let google_chrome_fix = this;
         if ( n )  {
-            let c = confirm( _( "Files with the same names found on the server" ) + ` - ${n} ` + _( "pc." ) + "\n" + _( "Overwrite them or cancel the upload?" ) );
+            let c = confirm( _( "На сервере найдены файлы с такими же именами" ) + ` - ${n} ` + _( "шт." ) + "\n" + _( "Перезаписать их или отменить загрузку?" ) );
             if ( !c ) {
-                input.value = ""; // google chrome fix
+                google_chrome_fix.value = "";
                 return c;
             }
         }
         let bar = document.querySelector( "#pages .upload-progress" );
-        bar.style.width = "100%";
-        try {
-            const response = await fetch( cms.api, { method: "POST", body: formData } );
-            const r        = await response.json();
-            input.value = ""; // google chrome fix
+
+        
+        let ajax = new XMLHttpRequest();
+        
+        ajax.upload.addEventListener( "progress", function( event ) {
+            let percent = Math.round( (event.loaded / event.total) * 100 );
+            bar.style.width = percent + "%";
+        }, false );
+
+        ajax.addEventListener( "error", function( event ) {
+            notify( _( "Ошибка загрузки файла" ), "info-error", 3600000 );
+            bar.style = "";
+        }, false );
+        
+        ajax.addEventListener( "abort", function( event ) {
+            notify( _( "Ошибка загрузки файла" ), "info-error", 3600000 );
+            bar.style = "";
+        }, false );
+
+        ajax.addEventListener( "load", function( event ) {
+            bar.style = "";
+            google_chrome_fix.value = "";
+            let r = JSON.parse( event.target.responseText );
             if ( r.info_text ) {
                 notify( r.info_text, r.info_class, r.info_time );
                 if ( r.info_class == "info-success" ) {
@@ -615,23 +676,24 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     } );
                     // select last uploaded
                     container.querySelector( ".file-block" ).click();
-                    // hide progress bar
-                    bar.style = "";
                 }
             }
-        } catch ( error ) {
-            console.error( _( "Error:" ), error );
-        }
-    };
+        }, false );
+
+        ajax.open( "POST", cms.api );
+	    ajax.send( formData );
+        
+    } );
 
     // Close Editor
     document.querySelectorAll( "#pages .close-page-button" ).forEach( function( button ) {
-        button.onclick = function( e ) {
+        button.addEventListener( "click", function( e ) {
+
             document.documentElement.removeEventListener( "keydown", CtrlS );
             // detach
             if ( window.cm !== undefined ) {
                 if ( this.getAttribute( "data-changed" ) === "true" ) {
-                    if ( confirm( _( "Save changes?" ) ) ) {
+                    if ( confirm( _( "Сохранить изменения?" ) ) ) {
                         document.querySelector( "#pages .save-page-button" ).setAttribute( "data-close", "true" );
                         document.querySelector( "#pages .save-page-button" ).click();
                         return;
@@ -640,30 +702,35 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 window.cm.toTextArea();
                 window.cm = null;
             }
+
             // hide editor
             document.querySelector( "#pages .page-editor-bg" ).classList.add( "hidden" );
             document.body.classList.remove( "editor" );
+
             // hide mediateka
             if ( ! document.querySelector( "#pages .page-editor-panel" ).classList.contains( "hidden" ) ) {
                 document.querySelector( "#pages .open-mediateka" ).click();
             }
-        };
+            
+        } );
     } );
 
     // Create Page
-    document.querySelector( "#pages .add-page-btn" ).addEventListener( "click", function ( e ) {
-        document.querySelector( "#pages .page-search" ).value = "";
-        document.querySelector( "#pages .page-search-button" ).click();
-        cms.call_fn = function() {
-            api2( { fn: "create_page" }, function( r ) {
-                if ( r.info_text ) {
-                    notify( r.info_text, r.info_class, r.info_time );
-                    if ( r.info_class == "info-success" ) {
+    document.querySelectorAll( "#pages .add-page-btn" ).forEach( function( btn ) {
+        btn.addEventListener( "click", function ( e ) {
+            // deffered call
+            cms.create_page_fn = function() {
+                api( { fn: "create_page" }, function( r ) {
+                    if ( r.info_text ) {
+                        notify( r.info_text, r.info_class, r.info_time );
+                    }
+                    if ( r.pages ) {
                         let grid = document.querySelector( "#pages .pages-grid" );
                         grid.insertAdjacentHTML( "afterbegin", r.pages[0].html );
 
                         let page_box = grid.querySelector( `[data-id="${r.pages[0].id}"]` );
                         set_controls( page_box );
+                        page_box.querySelector( ".page-prop-btn" ).click();
 
                         let counter = document.querySelector( "#pages .main-footer .count" );
                         counter.innerText = parseInt( counter.innerText ) + 1;
@@ -676,15 +743,26 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                             document.querySelector( "#pages .main-footer .counters input" ).value = count + 1;
                         }
                     }
-                }
-            } );
-        }
+                } );
+            }
+            document.querySelector( "#pages .reset" ).click();
+        } );
     } );
 
+    // Open Properties
+    document.querySelector( "#pages .open-properties" ).onclick = function( e ) {
+        document.querySelector( "#pages .page-editor-grid" ).classList.toggle( "properties" );
+        document.querySelector( "#pages .page-properties" ).classList.toggle( "hidden" );
+        if ( window.cm ) {
+            let cursor = window.cm.getCursor();
+            window.cm.scrollIntoView( { line:cursor.line, ch:cursor.ch } );
+        }
+    };
+    
     // Open Mediateka
     document.querySelector( "#pages .open-mediateka" ).onclick = function( e ) {
-        document.querySelector( "#pages .page-editor-panel" ).classList.toggle( "hidden" );
         document.querySelector( "#pages .page-editor-grid" ).classList.toggle( "mediateka" );
+        document.querySelector( "#pages .page-editor-panel" ).classList.toggle( "hidden" );
         if ( window.cm ) {
             let cursor = window.cm.getCursor();
             window.cm.scrollIntoView( { line:cursor.line, ch:cursor.ch } );
@@ -797,7 +875,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 fn: "del_files",
                 flist: flist
             };
-            api2( data, function( r ) {
+            api( data, function( r ) {
                 if ( r.info_text ) {
                     document.querySelector( "#pages .link-file-tag" ).innerHTML = "";
                     notify( r.info_text, r.info_class, r.info_time );
@@ -820,6 +898,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         }
     } );
 
+    // switch theme
     document.documentElement.addEventListener( "theme", function( e ) {
         if ( window.cm ) {
             let n = get_cookie( "theme" );
@@ -827,12 +906,14 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         }
     } );
 
+    // show/hide tags
     document.querySelector( "#pages .tags-helper" ).addEventListener( "click", function( e ) {
         document.querySelector( "#pages .page-editor-grid" ).classList.toggle( "tags-opened" );
         cm.focus();
         cm.refresh();
     } );
 
+    // for tags
     document.querySelectorAll( "#pages .tags-grid [data-type='wrap']" ) .forEach( function( btn ) {
         btn.addEventListener( "click", function( e ) {
             let otag = this.getAttribute( "data-otag" );
@@ -844,7 +925,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         } );
     } );
      
-
+    // for tags
     function wrap_selections( open_tag, close_tag, len, line, ch ) {
         let cursor = cm.getCursor();
         let selections = cm.getSelections();
@@ -867,11 +948,24 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         cm.refresh();
     }
 
+    // for tags
     function tag_panel_collapse() {
         let w = document.querySelector( "#pages .page-editor" ).offsetWidth;
         if ( document.documentElement.offsetWidth < 1024 ) {
             document.querySelector( "#pages .tags-helper" ).click();
         }
     }
+
+    // fix glitches codemirror
+    document.querySelector( "aside a[href='#pages']" ).addEventListener( "click", function( e ) {
+        setTimeout( function( e ) {
+            if ( window.cm ) {
+                cm.refresh();
+                cm.focus();
+            }
+        }, 50 );
+    } );
+
+    
 
 } );
