@@ -1,4 +1,3 @@
-"use strict";
 document.addEventListener( "DOMContentLoaded", function( event ) {
 
     function _( str ) {
@@ -187,7 +186,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         // Delete Menu or Item
         document.querySelectorAll( "#menu .menu-buttons .del" ).forEach( function( button ) {
             button.addEventListener( "click", function( e ) {
-                if ( ! confirm( __( "Удалить?", "menu.mod.php" ) ) ) return;
+                if ( ! confirm( __( "confirm_delete", "menu.mod.php" ) ) ) return;
                 let data = {
                     fn: "del_menu_item",
                     mid: this.closest( "[data-item]" ).getAttribute( "data-item" )

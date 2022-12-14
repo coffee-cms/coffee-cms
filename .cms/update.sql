@@ -1,0 +1,2 @@
+ALTER TABLE `pages` ADD `tags` VARCHAR(2048) NOT NULL DEFAULT '' AFTER `description`;
+ALTER TABLE `pages` CHANGE `pin` `pin` TINYINT(1) NOT NULL DEFAULT '1';

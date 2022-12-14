@@ -28,7 +28,44 @@
 
 <section id=v5 class=first>
 
+  <h2>Version 6.x</h2>
+
+  <p>See <a href="https://codemirror.net/docs/changelog/">the new website</a>.</p>
+
   <h2>Version 5.x</h2>
+
+  <p class="rel">20-11-2022: <a href="https://codemirror.net/5/codemirror-5.65.10.zip">Version 5.65.10</a>:</p>
+
+  <ul class="rel-note">
+    <li><a href="https://codemirror.net/5/doc/manual.html#addon_sql-hint">sql mode</a>: Fix completion when the SQL mode is wrapped by some outer mode.</li>
+    <li><a href="https://codemirror.net/5/mode/javascript/index.html">javascript mode</a>: Fix parsing of property keywords before private property names.</li>
+  </ul>
+
+  <p class="rel">20-09-2022: <a href="https://codemirror.net/5/codemirror-5.65.9.zip">Version 5.65.9</a>:</p>
+
+  <ul class="rel-note">
+    <li>Add a workaround for a regression in Chrome 105 that could cause content below the editor to not receive mouse events.</li>
+    <li><a href="https://codemirror.net/5/doc/manual.html#addon_show-hint">show-hint addon</a>: Resize the tooltip if it doesn’t fit the screen.</li>
+    <li><a href="https://codemirror.net/5/mode/swift">swift mode</a>: Fix tokenizing of block comments.</li>
+    <li><a href="https://codemirror.net/5/mode/jinja2/">jinja2 mode</a>: Support line statements.</li>
+  </ul>
+
+  <p class="rel">20-08-2022: <a href="https://codemirror.net/5/codemirror-5.65.8.zip">Version 5.65.8</a>:</p>
+
+  <ul class="rel-note">
+    <li>Include direction override and isolate characters in the default set of special characters.</li>
+    <li>Fix an issue that could cause document corruption when mouse-selecting during composition.</li>
+    <li><a href="https://codemirror.net/5/doc/manual.html#addon_foldgutter">foldgutter addon</a>: Refresh markers when the editor’s mode changes.</li>
+    <li><a href="https://codemirror.net/5/doc/manual.html#addon_merge">merge addon</a>: Fix syntax that prevented the addon from loading in IE10.</li>
+  </ul>
+
+  <p class="rel">20-07-2022: <a href="https://codemirror.net/5/codemirror-5.65.7.zip">Version 5.65.7</a>:</p>
+
+  <ul class="rel-note">
+    <li>Fix several references to the global <code>document</code>/<code>window</code>, improving support for creating an editor in another frame.</li>
+    <li><a href="https://codemirror.net/5/demo/vim.html">vim bindings</a>: Use <a href="https://github.com/replit/codemirror-vim/">upstream</a> code instead of keeping our own copy.</li>
+    <li><a href="https://codemirror.net/5/demo/tern.html">tern addon</a>: Properly HTML escape variable names in rename dialog.</li>
+  </ul>
 
   <p class="rel">20-06-2022: <a href="https://codemirror.net/5/codemirror-5.65.6.zip">Version 5.65.6</a>:</p>
 

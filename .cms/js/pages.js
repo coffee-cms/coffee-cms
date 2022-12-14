@@ -1,5 +1,3 @@
-"use strict";
-
 document.addEventListener( "DOMContentLoaded", function( event ) {
 
     function _( str ) {
@@ -16,7 +14,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         }
 
         if ( r.overloaded ) {
-            let m = _( "Сервер перегружен. Прислал xxx страниц." );
+            let m = _( "server_overloaded_xxx" );
             m = m.replace( "xxx", r.pages.length );
             notify( m, "info-error", 5000 );
         }
@@ -41,7 +39,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             let page = document.querySelector( `#pages .pages-grid [data-id="${r.pages[i].id}"]` );
             set_controls( page );
             if ( Date.now() - start > 1000 ) {
-                let m = _( "Браузер перегружен. Вставил xxx страниц из nnn." );
+                let m = _( "browser_overloaded_xxx" );
                 m = m.replace( "xxx", i + 1 );
                 m = m.replace( "nnn", r.pages.length );
                 notify( m, "info-error", 5000 );
@@ -238,9 +236,11 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         // Edit page
         selector.querySelectorAll( ".page-edit-btn" ).forEach( function( button ) {
             button.addEventListener( "click", function( e ) {
+                button.classList.add( "loading" );
                 let id = this.closest( "[data-id]" ).getAttribute( "data-id" );
                 // get page from server
                 api( { fn: "get_page", id: id }, function( r ) {
+                    button.classList.remove( "loading" );
                     if ( r.result == "ok" ) {
                         
                         document.querySelector( "#pages .page-editor-grid" ).setAttribute( "data-changed", "false" );
@@ -417,10 +417,10 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 ids.push( id );
             } );
             if ( ids.length === 0 ) {
-                notify( _( "Сначала выберите страницы." ), "info-error", 5000 );
+                notify( _( "no_selected_pages" ), "info-error", 5000 );
                 return;
             }
-            if ( ! confirm( _( "Удалить выбранные страницы? Прикрепленные к этим страницам файлы будут удалены." ) ) ) {
+            if ( ! confirm( _( "confirm_delete_pages" ) ) ) {
                 return;
             }
             let data = {
@@ -468,7 +468,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
     // copy file link button
     document.querySelector( "#pages .link-file-copy-btn" ).onclick = function( e ) {
-        let img = document.querySelector( "#pages .link-file-tag" ).innerText;
+        let img = this.previousElementSibling.innerText;
         let tmp = document.createElement( "textarea" );
         document.body.appendChild( tmp );
         tmp.value = img;
@@ -477,12 +477,12 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         tmp.remove();
         if ( r ) {
             if ( img ) {
-                notify( _( "Скопировано" ), "info-success", 5000 );
+                notify( _( "copyed" ), "info-success", 5000 );
             } else {
-                notify( _( "Выберите файл" ), "info-error", 5000 );
+                notify( _( "select_file" ), "info-error", 5000 );
             }
         } else {
-            notify( _( "Ошибка копирования" ), "info-error", 5000 );
+            notify( _( "copy_error" ), "info-error", 5000 );
         }
     };
 
@@ -617,8 +617,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         }
         let google_chrome_fix = this;
         if ( n )  {
-            let c = confirm( _( "На сервере найдены файлы с такими же именами" ) + ` - ${n} ` + _( "шт." ) + "\n" + _( "Перезаписать их или отменить загрузку?" ) );
-            if ( !c ) {
+            let c = confirm( _( "same_files" ) + ` - ${n} ` + _( "pc" ) + "\n" + _( "confirm_replace" ) );
+            if ( ! c ) {
                 google_chrome_fix.value = "";
                 return c;
             }
@@ -634,12 +634,12 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         }, false );
 
         ajax.addEventListener( "error", function( event ) {
-            notify( _( "Ошибка загрузки файла" ), "info-error", 3600000 );
+            notify( _( "error_upload_file" ), "info-error", 3600000 );
             bar.style = "";
         }, false );
         
         ajax.addEventListener( "abort", function( event ) {
-            notify( _( "Ошибка загрузки файла" ), "info-error", 3600000 );
+            notify( _( "error_upload_file" ), "info-error", 3600000 );
             bar.style = "";
         }, false );
 
@@ -650,6 +650,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             if ( r.info_text ) {
                 notify( r.info_text, r.info_class, r.info_time );
                 if ( r.info_class == "info-success" ) {
+
+                    // удалить файлы которые были обновлены
                     let tmp = document.createElement( "div" );
                     tmp.innerHTML = r.flist;
                     let imgs = tmp.querySelectorAll( "img" );
@@ -660,20 +662,25 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                             exists_file.parentElement.remove();
                         }
                     } );
+
                     let container = document.querySelector( "#pages .mediateka-files-grid" );
                     container.innerHTML = r.flist + container.innerHTML;
+                    
                     // images checkboxes
                     container.querySelectorAll( "input[type=checkbox]" ).forEach( function( checkbox ) {
                         checkbox.addEventListener( "change", img_rechecked );
                     } );
+                    
                     // open lightbox
                     container.querySelectorAll( "img" ).forEach( function( img ) {
                         img.addEventListener( "dblclick", img_lbox );
                     } );
+                    
                     // generate link
                     document.querySelectorAll( "#pages .file-block" ).forEach( function( file_block ) {
                         file_block.addEventListener( "click", img_click );
                     } );
+                    
                     // select last uploaded
                     container.querySelector( ".file-block" ).click();
                 }
@@ -693,7 +700,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             // detach
             if ( window.cm !== undefined ) {
                 if ( this.getAttribute( "data-changed" ) === "true" ) {
-                    if ( confirm( _( "Сохранить изменения?" ) ) ) {
+                    if ( confirm( _( "confirm_save" ) ) ) {
                         document.querySelector( "#pages .save-page-button" ).setAttribute( "data-close", "true" );
                         document.querySelector( "#pages .save-page-button" ).click();
                         return;
@@ -727,10 +734,27 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     if ( r.pages ) {
                         let grid = document.querySelector( "#pages .pages-grid" );
                         grid.insertAdjacentHTML( "afterbegin", r.pages[0].html );
+                        // Подкрутить список страниц в начало
+                        document.querySelector( "#pages .main-main" ).scrollTop = 0;
 
                         let page_box = grid.querySelector( `[data-id="${r.pages[0].id}"]` );
+                        // чтобы список страниц не дрыгался
+                        // но дрыгается при добавлении второй страницы
+                        //page_box.style = "display: none;"; 
+
                         set_controls( page_box );
-                        page_box.querySelector( ".page-prop-btn" ).click();
+                        // Раскрыть свойства страниц в списке страниц
+                        //page_box.querySelector( ".page-prop-btn" ).click();
+                        // Раскрыть свойства страницы внутри редактора
+                        //if ( ! document.querySelector( "#pages .page-editor-grid" ).classList.contains( "properties" ) ) {
+                        //    document.querySelector( "#pages .page-editor-grid .open-properties" ).click();
+                        //}
+                        // Редактировать страницу
+                        page_box.querySelector( ".page-edit-btn" ).click();
+
+                        //setTimeout( function() {
+                        //    page_box.style = "";
+                        //}, 200 );
 
                         let counter = document.querySelector( "#pages .main-footer .count" );
                         counter.innerText = parseInt( counter.innerText ) + 1;
@@ -785,7 +809,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
     // generate link to clicked file
     function img_click() {
-        document.querySelectorAll( "#pages .file-block" ).forEach( function( block ) {
+        this.parentElement.querySelectorAll( ".file-block" ).forEach( function( block ) {
             block.classList.remove( "active-file" );
         } );
         this.classList.add( "active-file" );
@@ -799,6 +823,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         let mus = [ "mp3", "ogg", "m4a", "flac" ];
         let vid = [ "mp4", "mkv" ];
         let a = `<a href="${l}" target=_blank>${l}</a>`;
+        let tag = this.closest( ".mediateka-grid" ).querySelector( ".link-file-tag" );
         if ( img.indexOf( e ) >= 0 ) {
             l = `&lt;img alt="" src="${a}"`;
             if ( w ) {
@@ -808,16 +833,16 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 l += ` height="${h}"`;
             }
             l += "&gt;";
-            document.querySelector( "#pages .link-file-tag" ).innerHTML = l;
+            tag.innerHTML = l;
         } else if ( mus.indexOf( e ) >= 0 ) {
             l = `&lt;audio src="${a}" controls>&lt;/audio>`;
-            document.querySelector( "#pages .link-file-tag" ).innerHTML = l;
+            tag.innerHTML = l;
         } else if ( vid.indexOf( e ) >= 0 ) {
             l = `&lt;video src="${a}" controls>&lt;/video>`;
-            document.querySelector( "#pages .link-file-tag" ).innerHTML = l;
+            tag.innerHTML = l;
         } else {
             l = `&lt;a href="${a}"&gt;TEXT&lt;/a&gt;`;
-            document.querySelector( "#pages .link-file-tag" ).innerHTML = l;
+            tag.innerHTML = l;
         }
     }
 
@@ -865,7 +890,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
     // Delete files
     document.querySelector( "#pages .del-uploaded-files" ).onclick = function( e ) {
-        if ( !this.classList.contains( "disabled" ) ) {
+        if ( ! this.classList.contains( "disabled" ) ) {
             let flist = [];
             document.querySelectorAll( "#pages .mediateka-files-grid input[type=checkbox]:checked" ).forEach( function( e ) {
                 let f = e.closest( ".file-block" ).querySelector( "img" ).getAttribute( "data-src" );
@@ -898,14 +923,6 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         }
     } );
 
-    // switch theme
-    document.documentElement.addEventListener( "theme", function( e ) {
-        if ( window.cm ) {
-            let n = get_cookie( "theme" );
-            window.cm.setOption( "theme", admin_styles[n][1] );
-        }
-    } );
-
     // show/hide tags
     document.querySelector( "#pages .tags-helper" ).addEventListener( "click", function( e ) {
         document.querySelector( "#pages .page-editor-grid" ).classList.toggle( "tags-opened" );
@@ -921,40 +938,32 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             let len  = this.getAttribute( "data-len" );
             let ch   = this.getAttribute( "data-ch" );
             let line = this.getAttribute( "data-line" );
-            wrap_selections( otag, ctag, len, line, ch );
+            
+            //wrap_selections( otag, ctag, len, line, ch );
+            let cursor = cm.getCursor();
+            let selections = cm.getSelections();
+            let replacements = [];
+            for ( let i = 0; i < selections.length; i++ ) {
+                replacements[i] = otag + selections[i] + ctag;
+            }
+            cm.replaceSelections( replacements );
+            //tag_panel_collapse();
+            if ( window.innerWidth < 1024 ) {
+                document.querySelector( "#pages .tags-helper" ).click();
+            }
+            if ( selections.length < 2 ) {
+                if ( line ) {
+                    cursor.line += +line;
+                    cursor.ch = +ch;
+                } else if ( len ) {
+                    cursor.ch += +len;
+                }
+                cm.setCursor( cursor );
+            }
+            cm.focus();
+            cm.refresh();
         } );
     } );
-     
-    // for tags
-    function wrap_selections( open_tag, close_tag, len, line, ch ) {
-        let cursor = cm.getCursor();
-        let selections = cm.getSelections();
-        let replacements = [];
-        for ( let i = 0; i < selections.length; i++ ) {
-            replacements[i] = open_tag + selections[i] + close_tag;
-        }
-        cm.replaceSelections( replacements );
-        tag_panel_collapse();
-        if ( selections.length < 2 ) {
-            if ( line ) {
-                cursor.line += +line;
-                cursor.ch = +ch;
-            } else if ( len ) {
-                cursor.ch += +len;
-            }
-            cm.setCursor( cursor );
-        }
-        cm.focus();
-        cm.refresh();
-    }
-
-    // for tags
-    function tag_panel_collapse() {
-        let w = document.querySelector( "#pages .page-editor" ).offsetWidth;
-        if ( document.documentElement.offsetWidth < 1024 ) {
-            document.querySelector( "#pages .tags-helper" ).click();
-        }
-    }
 
     // fix glitches codemirror
     document.querySelector( "aside a[href='#pages']" ).addEventListener( "click", function( e ) {

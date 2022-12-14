@@ -108,7 +108,7 @@ header {
     bottom: 0;
     width: 44px;
     height: 44px;
-    padding: 10px;
+    padding: 6px;
     color: green;
     z-index: 7;
 }
@@ -715,6 +715,4 @@ main .hot-scroll ul li a {
         font-size: 1.6rem;
     }
 }
-
-
 

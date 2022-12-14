@@ -32,8 +32,7 @@ $cms["cms_file"] = $cms["cms_dir"] . "/" . preg_replace( "/^{$esc}/", "", $cms["
 
 // Load config.php
 $cms["config_file"] = "{$cms['cms_dir']}/config.php";
-if ( file_exists( $cms["config_file"] ) ) {
-    $config_file = fopen( $cms["config_file"], "r" );
+if ( $config_file = fopen( $cms["config_file"], "r" ) ) {
     flock( $config_file, LOCK_SH );
     include( $cms["config_file"] );
     flock( $config_file, LOCK_UN );
@@ -93,11 +92,14 @@ while ( ! empty( $cms["stage"] ) ) {
 // Сброс накопленной отладочной информации в файл
 if ( ! empty( $cms["debug"] ) ) {
     $debug_file = $cms["cms_dir"] . "/debug.log.php";
-    if ( file_exists( $debug_file ) ) {
-        $new_debug = $cms["debug"];
+    $new_debug = $cms["debug"];
+    if ( $f = fopen( $debug_file, "r" ) ) {
+        flock( $f, LOCK_SH );
         include( $debug_file );
-        $cms["debug"] = array_merge( $cms["debug"], $new_debug );
+        $cms["debug"] = array_replace_recursive( $cms["debug"], $new_debug );
+        flock( $f, LOCK_UN );
+        file_put_contents( $debug_file, '<?php $cms["debug"] = ' . var_export( $cms["debug"], true ) . ";\n", LOCK_EX );
+    } else {
+        file_put_contents( $debug_file, '<?php $cms["debug"] = ' . var_export( $cms["debug"], true ) . ";\n", LOCK_EX );
     }
-    file_put_contents( $debug_file, '<?php
-$cms["debug"] = ' . var_export( $cms["debug"], true) . ";\n", LOCK_EX );
 }

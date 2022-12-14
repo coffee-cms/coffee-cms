@@ -1,3 +1,45 @@
+## 5.65.10 (2022-11-20)
+
+### Bug fixes
+
+[sql-hint addon](https://codemirror.net/5/doc/manual.html#addon_sql-hint): Fix completion when the SQL mode is wrapped by some outer mode.
+
+[javascript mode](https://codemirror.net/5/mode/javascript/index.html): Fix parsing of property keywords before private property names.
+
+## 5.65.9 (2022-09-20)
+
+### Bug fixes
+
+Add a workaround for a regression in Chrome 105 that could cause content below the editor to not receive mouse events.
+
+[show-hint addon](https://codemirror.net/5/doc/manual.html#addon_show-hint): Resize the tooltip if it doesn't fit the screen.
+
+[swift mode](https://codemirror.net/5/mode/swift): Fix tokenizing of block comments.
+
+[jinja2 mode](https://codemirror.net/5/mode/jinja2/): Support line statements.
+
+## 5.65.8 (2022-08-20)
+
+### Bug fixes
+
+Include direction override and isolate characters in the default set of special characters.
+
+Fix an issue that could cause document corruption when mouse-selecting during composition.
+
+[foldgutter addon](https://codemirror.net/5/doc/manual.html#addon_foldgutter): Refresh markers when the editor's mode changes.
+
+[merge addon](https://codemirror.net/5/doc/manual.html#addon_merge): Fix syntax that prevented the addon from loading in IE10.
+
+## 5.65.7 (2022-07-20)
+
+### Bug fixes
+
+Fix several references to the global `document`/`window`, improving support for creating an editor in another frame.
+
+[vim bindings](https://codemirror.net/5/demo/vim.html): Use [upstream](https://github.com/replit/codemirror-vim/) code instead of keeping our own copy.
+
+[tern addon](https://codemirror.net/5/demo/tern.html): Properly HTML escape variable names in rename dialog.
+
 ## 5.65.6 (2022-06-20)
 
 ### Bug fixes

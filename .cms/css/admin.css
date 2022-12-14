@@ -773,6 +773,10 @@ label[for=module-upload] {
 
 #admin_menu [data-am-type="section"] {
     display: grid;
+    grid-template-areas:
+        "title   sort"
+        "buttons buttons";
+    grid-template-columns: 1fr auto;
     column-gap: 1rem;
     row-gap: 0.7rem;
     background-color: var(--windows);
@@ -782,23 +786,6 @@ label[for=module-upload] {
     min-height: 4rem;
     overflow: hidden;
     padding: 0.7rem;
-}
-
-@media (max-width: 1023px) {
-    #admin_menu [data-am-type="section"] {
-        grid-template-areas:
-            "title title sort"
-            "save delete hide";
-        grid-template-columns: 1fr auto auto;
-    }
-}
-@media (min-width: 1024px) {
-    #admin_menu [data-am-type="section"] {
-        grid-template-areas:
-            "title title  sort"
-            "save  delete hide";
-        grid-template-columns: 0.5fr 0.5fr auto;
-    }
 }
 
 #admin_menu [data-am-type="section"].hidden::before {
@@ -824,20 +811,9 @@ label[for=module-upload] {
 
 #admin_menu [data-am-type="section"] input[name=title] {
     grid-area: title;
+    width: 100%;
     background-color: var(--menu-input-bg);
 	border: 2px solid var(--menu-input-border);
-}
-
-#admin_menu [data-am-type="section"] [data-am-delete] {
-    grid-area: delete;
-    justify-self: right;
-    width: max-content;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--buttons-font);
-}
-#admin_menu [data-am-type="section"] [data-am-delete]:hover {
-    color: var(--buttons-hover);
 }
 
 #admin_menu [data-am-type="section"] input[name=sort] {
@@ -863,6 +839,7 @@ label[for=module-upload] {
 
 
 #admin_menu .section-select-grid {
+    grid-area: select;
     position: relative;
 }
 #admin_menu .field-select {
@@ -899,6 +876,7 @@ label[for=module-upload] {
     color: var(--text);
     overflow: auto;
     height: auto;
+    width: max-content;
     margin-top: 2px;
 }
 #admin_menu .field-options option {
@@ -908,29 +886,6 @@ label[for=module-upload] {
 }
 #admin_menu .field-options option:hover {
     background-color: var(--bg-2);
-}
-
-
-#admin_menu [data-am-type="section"] [data-am-save] {
-    grid-area: save;
-    width: max-content;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--buttons-font);
-}
-#admin_menu [data-am-type="section"] [data-am-save]:hover {
-    color: var(--buttons-hover);
-}
-
-#admin_menu [data-am-type="section"] [data-am-sw] {
-    grid-area: hide;
-    width: max-content;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--buttons-font);
-}
-#admin_menu [data-am-type="section"] [data-am-sw]:hover {
-    color: var(--buttons-hover);
 }
 
 
@@ -947,7 +902,14 @@ label[for=module-upload] {
     border-radius: 0.3rem;
 }
 
-#admin_menu .add-section {
+#admin_menu .main-footer {
+	grid-auto-flow: column;
+	display: grid;
+	justify-content: start;
+	grid-column-gap: 1rem;
+}
+
+#admin_menu .add-section, #admin_menu .reset-all {
     display: block;
     width: max-content;
     padding: 0.4rem 0.7rem 0.5rem 0.7rem;
@@ -962,6 +924,10 @@ label[for=module-upload] {
 
 #admin_menu [data-am-type="item"] {
     display: grid;
+    grid-template-areas:
+        "item-name select  sort"
+        "buttons   buttons buttons";
+    grid-template-columns: 1fr  auto auto;
     column-gap: 1rem;
     row-gap: 0.7rem;
     background-color: var(--bg-3);
@@ -970,6 +936,9 @@ label[for=module-upload] {
     position: relative;
     min-height: 4rem;
     padding: 0.7rem;
+}
+#admin_menu [data-am-type="item"]:hover {
+    background-color: var(--open-menu);
 }
 #admin_menu [data-am-type="item"].hidden::before {
     content: "";
@@ -982,22 +951,7 @@ label[for=module-upload] {
     border-radius: 50%;
     background-color: var(--orange);
 }
-@media (max-width: 1023px) {
-    #admin_menu [data-am-type="item"] {
-        grid-template-areas:
-            "item-name select select sort"
-            "save      save   reset  sw";
-        grid-template-columns: 1fr 1fr auto auto;
-    }
-}
-@media (min-width: 1024px) {
-    #admin_menu [data-am-type="item"] {
-        grid-template-areas:
-            "item-name select sort"
-            "save      reset sw";
-        grid-template-columns: 1fr auto auto;
-    }
-}
+
 
 #admin_menu .item-name {
     grid-area: item-name;
@@ -1012,43 +966,25 @@ label[for=module-upload] {
 #admin_menu select {
     grid-area: select;
 }
-#admin_menu [data-am-type="item"] input[name=sort] {
-    grid-area: sort;
-    width: 4rem;
-    justify-self: right;
-    text-align: center;
+#admin_menu .showed .buttons {
+    grid-area: buttons;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: right;
+    column-gap: 1rem;
+    font-size: 0.9rem;
+}
+#admin_menu .showed .buttons > a  {
+    cursor: pointer;
+    color: var(--buttons-font);
+}
+#admin_menu .showed .buttons > a:hover  {
+    color: var(--buttons-hover);
 }
 
-#admin_menu [data-am-type="item"] [data-am-save] {
-    grid-area: save;
-    width: max-content;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--buttons-font);
-}
-#admin_menu [data-am-type="item"] [data-am-save]:hover {
-    color: var(--buttons-hover);
-}
-#admin_menu [data-am-type="item"] [data-am-reset] {
-    grid-area: reset;
-    justify-self: right;
-    width: max-content;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--buttons-font);
-}
-#admin_menu [data-am-type="item"] [data-am-reset]:hover {
-    color: var(--buttons-hover);
-}
-#admin_menu [data-am-type="item"] [data-am-sw] {
-    grid-area: sw;
-    width: max-content;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--buttons-font);
-}
-#admin_menu [data-am-type="item"] [data-am-sw]:hover {
-    color: var(--buttons-hover);
+#admin_menu input[name="sort"] {
+    width: 4rem;
+    text-align: center;
 }
 /* End */
 

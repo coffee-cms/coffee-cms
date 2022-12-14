@@ -1,5 +1,3 @@
-"use strict";
-
 // Две функции для чтения и установки cookie.
 // Cookie используются для авторизации на сайте,
 // для запоминания количества отображаемых страниц в пейджере
@@ -51,43 +49,25 @@ function notify( message, classes, msec ) {
 // загруженные из файлов .cms/lang/...
 // Поэтому ими можно пользоваться и на стороне админки.
 function __( str, module ) {
-    if ( !cms ) return str;
-    if ( !cms.locale ) return str;
-    if ( !cms.lang ) return str;
-    if ( !cms.lang[module] ) return str;
-    if ( !cms.lang[module][cms.locale] ) return str;
-    if ( !cms.lang[module][cms.locale][str] ) {
-        // Если известна локаль модуля и она не совпадает с текущей локалью цмс
-        // То должен быть перевод
-        if ( cms.locale !== cms["modules"][module]["locale"] ) {
-            console.error( `Нет перевода [${module}] "${str}" на ${cms.locale}` );
-        }
+    if ( cms && cms.locale && cms.lang && cms.lang[module] && cms.lang[module][cms.locale] && cms.lang[module][cms.locale][str] ) {
+        return cms.lang[module][cms.locale][str];
+    } else {
+        api( { fn: "no_translation", str: str, module: module } );
         return str;
     }
-    return cms.lang[module][cms.locale][str];
 }
 
 // Call server side API
 
 // Передаваемые на сервер данные упаковываются как положено
 // и можно передавать даже массивы.
-// Но массивы вложенные в массивы этим кодом уже не передадутся.
-// Нужно улучшать под это функцию.
+// Массивы вложенные в массивы воспринимаются как объекты
+// и кодируются в JSON.
 // После того, как сервер вернет ответ, вызывается функция rfn
 // И ответ передается ей в качестве параметра.
 function api( data, rfn ) {
     const formData = new FormData();
-    // push data to formData
-    for ( let key in data ) {
-        if ( ! data.hasOwnProperty( key ) ) continue;
-        if ( Array.isArray( data[key] ) ) {
-            for ( let key2 in data[key] ) {
-                formData.append( key + "[]", data[key][key2] );
-            }
-        } else {
-            formData.append( key, data[key] );
-        }
-    }
+    buildFormData( formData, data );
     // send data
     // По умолчанию запросы отправляются асинхронно,
     // но если нужно дождаться ответа и затем изменить полученные данные,
@@ -95,10 +75,18 @@ function api( data, rfn ) {
     // cms.async_api = false;
     let ajax = new XMLHttpRequest();
     ajax.addEventListener( "load", function( event ) {
-        let data = JSON.parse( event.target.responseText );
+        let data = {};
+        try {
+            data = JSON.parse( event.target.responseText );
+        } catch {
+            notify( __( "server_error", "admin.mod.php" ), "info-error", 5000 );
+        }
         if ( rfn ) {
             rfn( data );
         }
+    } );
+    ajax.addEventListener( "error", function( event ) {
+        notify( __( "network_error", "admin.mod.php" ), "info-error", 5000 );
     } );
     ajax.open( "POST", cms.api, cms.async_api );
 	ajax.send( formData );
@@ -107,43 +95,55 @@ function api( data, rfn ) {
 function api2( data, rfn ) {
     api( data, rfn );
 }
+function buildFormData( formData, data, parentKey ) {
+    if ( data && typeof data === 'object' && ! ( data instanceof Date ) && ! ( data instanceof File ) ) {
+        Object.keys( data ).forEach( key => {
+            buildFormData( formData, data[key], parentKey ? `${parentKey}[${key}]` : key );
+        } );
+    } else {
+        const value = data == null ? '' : data;
+        formData.append( parentKey, value );
+    }
+}
+
 
 // Create and connect Codemirror
-function codemirror_connect( selector, name, mode = "application/x-httpd-php" ) {
+function codemirror_connect( selector, name, options = {} ) {
 
-    // get theme
-    let n = get_cookie( "theme" );
-    let theme = admin_styles[n][1];
+    if ( window[name] ) return;
 
-    let txtarea = document.querySelector( selector );
-    window[name] = CodeMirror.fromTextArea( txtarea, {
-        mode: mode,
+    let default_options = {
+        mode: "application/x-httpd-php",
         styleActiveLine:   true,
         lineNumbers:       true,
         lineWrapping:      true,
         autoCloseBrackets: true,
         smartIndent:       true,
+        indentUnit:        4,
         matchBrackets:     true,
-        theme:             theme,
         autoCloseTags: {
             whenClosing: true,
             whenOpening: true,
             indentTags:  [ "div", "ul", "ol", "script", "style" ],
         },
         phrases: {
-            "Search:":                              __( "Поиск:", "admin.mod.php" ),
-            "(Use /re/ syntax for regexp search)" : __( "(Используйте синтаксис /re/ для поиска регулярными выражениями)", "admin.mod.php" ),
-            "Replace all:":                         __( "Заменить все:", "admin.mod.php" ),
-            "With:":                                __( "На:", "admin.mod.php" ),
-            "Replace:":                             __( "Заменить:", "admin.mod.php" ),
-            "Replace?":                             __( "Заменить?", "admin.mod.php" ),
-            "Yes":                                  __( "Да", "admin.mod.php" ),
-            "No":                                   __( "Нет", "admin.mod.php" ),
-            "All":                                  __( "Всё", "admin.mod.php" ),
-            "Stop":                                 __( "Стоп", "admin.mod.php" ),
+            "Search:":                              __( "codemirror_search", "admin.mod.php" ),
+            "(Use /re/ syntax for regexp search)" : __( "codemirror_re", "admin.mod.php" ),
+            "Replace all:":                         __( "codemirror_replace_all", "admin.mod.php" ),
+            "With:":                                __( "codemirror_replace_with", "admin.mod.php" ),
+            "Replace:":                             __( "codemirror_replace_replace", "admin.mod.php" ),
+            "Replace?":                             __( "codemirror_replace_confirm", "admin.mod.php" ),
+            "Yes":                                  __( "codemirror_yes", "admin.mod.php" ),
+            "No":                                   __( "codemirror_no", "admin.mod.php" ),
+            "All":                                  __( "codemirror_all", "admin.mod.php" ),
+            "Stop":                                 __( "codemirror_stop", "admin.mod.php" ),
         },
         extraKeys: { "Ctrl-Space": "autocomplete" }
-    } );
+    }
+
+    let txtarea = document.querySelector( selector );
+    options = Object.assign( default_options, options );
+    window[name] = CodeMirror.fromTextArea( txtarea, options );
 
     if ( window[name].showHint ) {
         window[name].on( "keydown", function( editor, event ) {
@@ -236,14 +236,11 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         el.addEventListener( "click", function( event ) {
             event.preventDefault();
             let n = get_cookie( "theme" );
-            document.documentElement.classList.remove( admin_styles[n][0] );
+            document.documentElement.classList.remove( admin_styles[n] );
             n = (+n+1) % admin_styles.length;
-            document.documentElement.classList.add( admin_styles[n][0] );
-            notify( admin_styles[n][0], "info-success", 5000 );
+            document.documentElement.classList.add( admin_styles[n] );
+            notify( admin_styles[n], "info-success", 5000 );
             set_cookie( "theme" , n );
-            // switch theme in codemirror
-            let theme_event = new Event( "theme" );
-            document.documentElement.dispatchEvent( theme_event );
         } );
     } );
 
@@ -253,7 +250,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         n = 0; // dark
         set_cookie( "theme" , n );
     }
-    let theme = admin_styles[n][0];
+    let theme = admin_styles[n];
     document.documentElement.classList.add( theme );
 
     // Logout
@@ -277,7 +274,11 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
         } else if ( document.querySelector( "#start a[href='#base']" ) ) {
             window.location.hash = "#start";
         } else {
-            window.location.hash = "#pages";
+            // Чтобы было выделение, нужен именно клик
+            let el = document.querySelector( 'a[href="#pages"]' );
+            if ( el ) {
+                el.click();
+            }
         }
     }
 
@@ -371,10 +372,10 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             let item = this.closest( "[data-am-item]" ).getAttribute( "data-am-item" );
             let childs = document.querySelectorAll( `[data-am-childs="${item}"] > div` ).length;
             if ( childs ) {
-                notify( _( "Секция не пуста" ), "info-error", 2000 );
+                notify( _( "not_empty_section" ), "info-error", 2000 );
                 return;
             }
-            if ( ! confirm( _( "Удалить?" ) ) ) return;
+            if ( ! confirm( _( "confirm_delete" ) ) ) return;
             let data = {
                 fn: "admin_menu_del",
                 item: item,
@@ -403,7 +404,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 hide:    el.classList.contains( "showed" ),
             }
             if ( data.item == "admin_menu" ) {
-                if ( ! confirm( _( "Скрыть настройку админки?" ) ) ) return false;
+                if ( ! confirm( _( "hide_admin_settings" ) ) ) return false;
             }
             api( data, function( r ) {
                 if ( r.ok == "true" ) {
@@ -417,6 +418,22 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     document.querySelectorAll( "#admin_menu .main-footer .add-section" ).forEach( function( button ) {
         button.addEventListener( "click", function( e ) {
             api( { fn: "admin_menu_add_section" }, function( r ) {
+                if ( r.info_text ) {
+                    notify( r.info_text, r.info_class, r.info_time );
+                    if ( r.info_time )
+                    setTimeout( function() {
+                        window.location.reload( true );
+                    }, r.info_time );
+                }
+            } );
+        } );
+    } );
+
+
+    // Reset all items in Admin Menu
+    document.querySelectorAll( "#admin_menu .main-footer .reset-all" ).forEach( function( button ) {
+        button.addEventListener( "click", function( e ) {
+            api( { fn: "reset_admin_menu_items" }, function( r ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                     if ( r.info_time )
@@ -468,7 +485,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
     document.querySelectorAll( "#auth [data-login]" ).forEach( function( button ) {
         button.addEventListener( "click", function( e ) {
             e.preventDefault();
-            if ( ! confirm( _( "Выполнить выход?" ) ) ) return;
+            if ( ! confirm( _( "confirm_logout" ) ) ) return;
             let parent = button.parentElement;
             var data = {
                 fn: "logout",

@@ -1,13 +1,13 @@
 <?php
 
 $cms["modules"]["base.mod.php"] = array(
-    "name"        => __( "База данных" ),
-    "description" => __( "Модуль подключающий базу данных" ),
+    "name"        => __( "module_name" ),
+    "description" => __( "module_description" ),
     "version"     => "",
-    "locale"      => "ru_RU.UTF-8",
     "files" => array(
         ".cms/css/base.css",
         ".cms/mod/base.mod.php",
+        ".cms/lang/ru_RU.UTF-8/base.mod.php",
         ".cms/lang/en_US.UTF-8/base.mod.php",
         ".cms/lang/uk_UA.UTF-8/base.mod.php",
     ),
@@ -96,21 +96,31 @@ function cms_base_admin() {
         cms_save_config();
         if ( cms_base_connect() ) {
             cms_do_stage( "create_tables" );
+
+            // Выполнить запросы в БД, находящиеся в файле update.sql
+            $update_sql = "{$cms['cms_dir']}/update.sql";
+            $q = "";
+            if ( file_exists( $update_sql ) ) {
+                $q = file_get_contents( $update_sql );
+            }
+            if ( $q ) {
+                mysqli_multi_query( $cms["base"], $q );
+            }
         }
         header( "Location: {$cms['config']['admin.mod.php']['admin_url']}" );
-        exit;
+        return;
     }
 
-    $tr_host         = __( "Адрес сервера БД" );
-    $tr_port         = __( "Порт сервера БД" );
-    $tr_base         = __( "Название БД" );
-    $tr_user         = __( "Пользователь БД" );
-    $tr_pass         = __( "Пароль БД" );
-    $tr_save         = __( "Сохранить" );
-    $tr_create_db    = __( "Создать базу данных:" );
-    $tr_admin_login  = __( "Админ СУБД" );
-    $tr_admin_passwd = __( "Пароль Админа СУБД" );
-    $tr_create_btn   = __( "Создать" );
+    $tr_host         = __( "server_address" );
+    $tr_port         = __( "server_port" );
+    $tr_base         = __( "db_name" );
+    $tr_user         = __( "db_user" );
+    $tr_pass         = __( "db_password" );
+    $tr_save         = __( "save" );
+    $tr_create_db    = __( "create_db" );
+    $tr_admin_login  = __( "admin_login" );
+    $tr_admin_passwd = __( "admin_passwd" );
+    $tr_create_btn   = __( "create_btn" );
 
     @$page = "
 <div class=db-settings>
@@ -161,10 +171,9 @@ function cms_base_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["base.mod.php"]["menu"]["base"] ) ) {
         $cms["config"]["base.mod.php"]["menu"]["base"] = array(
-            "title"    => "База данных",
+            "title"    => "module_name",
             "sort"     => 20,
-            "class"    => "",
-            "section"  => "Настройки",
+            "section"  => "settings",
         );
         cms_save_config();
     }

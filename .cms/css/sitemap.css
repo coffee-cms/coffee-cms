@@ -94,6 +94,69 @@
     width: fit-content;
 }
 
+#sitemap .save_2_col {
+	display: grid;
+}
+#sitemap .save_2_col > button {
+	grid-area: button;
+}
+#sitemap .save_2_col > div {
+	grid-area: div;
+}
+@media (max-width: 767px) {
+    #sitemap .save_2_col {
+        grid-template-columns: 1fr;
+        row-gap: 0.7rem;
+    }
+    #sitemap .save_2_col {
+        grid-template-areas:
+        "div"
+        "button";
+    }
+}
+@media (min-width: 768px) {
+    #sitemap .save_2_col {
+        grid-template-areas:
+        "button div";
+        grid-template-columns: auto 1fr;
+        column-gap: 1rem;
+    }
+}
+
+
+#sitemap .select-dropdown {
+    position: relative;
+}
+#sitemap .select-dropdown ul.list-search {
+    height: 0;
+    background-color: var(--bg-3);
+	display: grid;
+	margin: 0;
+    margin-top: 2px;
+	padding: 0;
+	overflow-y: auto;
+	max-height: 17rem;
+	overscroll-behavior: contain;
+    position: absolute;
+    width: 100%;
+    border-radius: 4px;
+}
+#sitemap .select-dropdown.open ul.list-search {
+    height: auto;
+    border: 2px solid var(--bg-4);
+}
+#sitemap .select-dropdown .list-search li {
+	display: block;
+	list-style-type: none;
+	padding: 0.4rem 0.44rem;
+	cursor: pointer;
+	font-size: 0.94rem;
+	text-align: left;
+}
+#sitemap .select-dropdown .list-search li:hover {
+	background-color: var(--menu-item-list-search-li-hover-active);
+}
+
 #sitemap .xml-static-dynamic input[type="text"] {
     color: var(--input-font);
 }
@@ -136,6 +199,29 @@
     border: 2px solid var(--input-border);
     color: var(--input-font);
     text-align: center;
+}
+.sitemap {
+    grid-auto-rows: max-content;
+    box-shadow: 0 2px 3px 0 rgb(0 0 0 / 20%);
+    border-radius: 0.3rem;
+    background-color: var(--windows);
+    background-image: var(--noise);
+    color: var(--text);
+}
+@media (max-width: 1023px) {
+    .sitemap {
+        padding: 1rem 0.7rem 1rem 0.7rem;
+    }
+}
+@media (min-width: 1024px) {
+    .sitemap {
+        padding: 1rem;
+    }
+}
+.sitemap a {
+    color: var(--link);
+    text-decoration: none;
+    border-bottom: 1px solid;
 }
 
 .sitemap-manual {

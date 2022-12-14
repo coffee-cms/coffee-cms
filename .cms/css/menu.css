@@ -432,9 +432,9 @@
 	position: absolute;
 	left: 0;
 	right: 0;
-	top: -1px;
+	top: 2px;
 	background-color: var(--bg-3);
-	border: 1px solid var(--menu-item-field-border);
+	border: 2px solid var(--bg-4);
 	color: var(--menu-item-select-dropdown-font);
 	border-radius: 0.25rem;
 	z-index: 7;
@@ -444,13 +444,13 @@
 #menu .select-grid .field-search {
 	display: grid;
 	padding: 0.37rem;
-	border-bottom: 1px solid var(--menu-item-field-border);
+	border-bottom: 2px solid var(--bg-4);
 }
 #menu .select-grid .field-search input {
 	width: 100%;
 	background-color: var(--menu-item-field-search-input-bg);
 	color: var(--text);
-	border: 1px solid var(--menu-item-field-border);
+	border: 2px solid var(--bg-4);
 	font-size: 0.94rem;
 	background-repeat: no-repeat;
 	background-position: right .37rem center;
@@ -461,7 +461,7 @@
 	background-image: var(--search-icon);
 }
 #menu .select-grid .field-search input:focus {
-	border: 1px solid var(--menu-item-field-search-input-focus);
+	border: 2px solid var(--menu-item-field-search-input-focus);
 	transition: all .700s ease 0s;
 }
 #menu .select-grid ul.list-search, #menu .item .field-search {

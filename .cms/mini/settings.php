@@ -37,7 +37,7 @@ $cms["menu_areas"]["side"]     = array( "title" => __( "Side",     $name ) );
 
 // Editable theme files
 $cms["templates"][$name]["files"] = array(
-    ".cms/{$name}/style.css",
+    ".cms/{$name}/styles.css",
     ".cms/{$name}/html.php",
     ".cms/{$name}/html-page.php",
     ".cms/{$name}/html-post.php",

@@ -254,12 +254,26 @@ label[for=template-upload] {
 #template .template-editor-grid {
     background-color: var(--bg-3);
     display: grid;
+    position: relative;
     box-shadow: 0 0 3px 0 #00000096;
     grid-template-rows: auto 1fr 1rem;
     grid-template-areas: 
         "template-editor-header"
         "template-editor" 
         "bottom";
+}
+#template .template-editor-grid::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+#template .template-editor-grid[data-changed="true"]::before {
+    background-color: var(--changes);
 }
 @media (min-width: 1024px) {
     #template .template-editor-grid {
@@ -350,7 +364,6 @@ label[for=template-upload] {
 
 .template-editor {
     grid-area: template-editor;
-    padding: 5px 0 0 0;
 }
 .template-editor .CodeMirror {
     min-height: 100%;

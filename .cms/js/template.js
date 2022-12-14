@@ -1,4 +1,3 @@
-"use strict";
 document.addEventListener( "DOMContentLoaded", function( event ) {
 
     function _( str ) {
@@ -19,10 +18,6 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     document.querySelector( ".template-editor-bg" ).classList.remove( "hidden" );
                     document.body.classList.add( "editor" ); // for notifications
 
-                    // get theme
-                    let n = get_cookie( "theme" );
-                    let theme = admin_styles[n][1];
-
                     let ext = file.match( /\.[^\.]+$/, "" );
                     let aext = {
                         ".php" : "application/x-httpd-php",
@@ -30,12 +25,13 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                     }
 
                     // Подключаем редактор Codemirror функцией расположенной в admin.js
-                    codemirror_connect( "#template .template-editor > textarea", "cmt", aext[ext] );
+                    codemirror_connect( "#template .template-editor > textarea", "cmt", { mode: aext[ext] } );
 
                     // track changes
                     document.querySelector( ".close-template-button" ).setAttribute( "data-changed", "false" );
                     cmt.on( "change", function( cmt, change ) {
                         document.querySelector( ".close-template-button" ).setAttribute( "data-changed", "true" );
+                        document.querySelector( ".template-editor-grid" ).setAttribute( "data-changed", "true" );
                     } );
 
                     // set cursor to editor
@@ -43,6 +39,8 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
 
                     // Save Teplate Ctrl+S
                     document.querySelector( "body" ).addEventListener( "keydown", CtrlS );
+
+                    document.querySelector( ".template-editor-grid" ).setAttribute( "data-changed", "false" );
                 }
             } );
         } );
@@ -55,7 +53,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             // detach
             if ( window.cmt !== undefined ) {
                 if ( this.getAttribute( "data-changed" ) === "true" ) {
-                    if ( confirm( _( "Сохранить изменения?" ) ) ) {
+                    if ( confirm( _( "confirm_save" ) ) ) {
                         document.querySelector( ".save-template-button" ).setAttribute( "data-close", "true" );
                         document.querySelector( ".save-template-button" ).click();
                         return;
@@ -84,6 +82,7 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
                 if ( r.info_text ) {
                     notify( r.info_text, r.info_class, r.info_time );
                     document.querySelector( ".close-template-button" ).setAttribute( "data-changed", "false" );
+                    document.querySelector( ".template-editor-grid" ).setAttribute( "data-changed", "false" );
                     // close editor after save
                     if ( document.querySelector( ".save-template-button" ).getAttribute( "data-close" ) === "true" ) {
                         document.querySelector( ".save-template-button" ).setAttribute( "data-close", "false" );
@@ -109,13 +108,6 @@ document.addEventListener( "DOMContentLoaded", function( event ) {
             }
         }
     }
-
-    document.documentElement.addEventListener( "theme", function( e ) {
-        if ( window.cmt ) {
-            let n = get_cookie( "theme" );
-            window.cmt.setOption( "theme", admin_styles[n][1] );
-        }
-    } );
 
     // Install template (upload template)
     let input = document.querySelector( "#template-upload" );

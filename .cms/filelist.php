@@ -15,13 +15,13 @@ $list = array (
   ),
   '.cms/admin/html.php' => 
   array (
-    'sha1' => '94721b8c91b1f28616202c9fe0abb1ad5c9556ca',
-    'size' => 6484,
+    'sha1' => '4f354ee0fa3ed109b83fd2ec3314fa6d0fdfa4ad',
+    'size' => 6873,
   ),
   '.cms/css/admin.css' => 
   array (
-    'sha1' => '01c02d602a97c7012f0be526bfbcc67ea8a0c966',
-    'size' => 25410,
+    'sha1' => 'f138ad4607e8a7b50f2b2ec55ce9310400157df7',
+    'size' => 23676,
   ),
   '.cms/css/base.css' => 
   array (
@@ -30,38 +30,38 @@ $list = array (
   ),
   '.cms/css/menu.css' => 
   array (
-    'sha1' => '106c6491ebe26d182a74ee6054a7d898ca377c95',
-    'size' => 12523,
+    'sha1' => '80d188e5072acdf244fea9c398b54426e1ceccaf',
+    'size' => 12468,
   ),
   '.cms/css/pages.css' => 
   array (
-    'sha1' => '6bfa2b001ab61b541a030f2eb97175edea79d37d',
-    'size' => 29537,
+    'sha1' => '47b9b5936cd247d0d1e1eb4740f2d4a7b59f2ebc',
+    'size' => 30462,
   ),
   '.cms/css/sitemap.css' => 
   array (
-    'sha1' => '229cfd0305984b5e2276e539d4212bead891313d',
-    'size' => 3877,
+    'sha1' => '4d8a443c1238a22bd072cc21f38f1e47eed0eef1',
+    'size' => 5641,
   ),
   '.cms/css/template.css' => 
   array (
-    'sha1' => '3c515bbfe1e8677177fa5a85a1608c0b8a45f45e',
-    'size' => 9142,
+    'sha1' => 'a72ba19e069d1f23413184674e66970368f790f0',
+    'size' => 9432,
   ),
   '.cms/css/update.css' => 
   array (
     'sha1' => 'd7d6839e60e997fadd599c36db46f657e0f71cf1',
     'size' => 3041,
   ),
-  '.cms/css/admin.dark.dark.css' => 
+  '.cms/css/admin.dark.css' => 
   array (
-    'sha1' => '3fcf8e2385437733d49e181e24eeb34e08fe5ca6',
-    'size' => 9178,
+    'sha1' => '891dbdbeb8fd698caa690cd428724afc5b3c46b2',
+    'size' => 9642,
   ),
-  '.cms/css/admin.light.default.css' => 
+  '.cms/css/admin.light.css' => 
   array (
-    'sha1' => 'aae7cb7f6e175cf2f6e936a0ea520d6c964a4e7c',
-    'size' => 9169,
+    'sha1' => 'e1a321d011d64f101acff61d0def4980ae089e69',
+    'size' => 9637,
   ),
   '.cms/filelist.php' => 
   array (
@@ -70,33 +70,68 @@ $list = array (
   ),
   '.cms/js/admin.js' => 
   array (
-    'sha1' => '561b64d06fc962b623b8655b8ae454b122a60f1b',
-    'size' => 25233,
+    'sha1' => 'cca2c97a221c48df41eea3bc470d2bddac04a25a',
+    'size' => 25751,
   ),
   '.cms/js/menu.js' => 
   array (
-    'sha1' => '9453f1caef46607129e99832421883e401f66996',
-    'size' => 10593,
+    'sha1' => '6ba239ff142fd785f4c9ed3d6c69dc91f5196e1e',
+    'size' => 10577,
   ),
   '.cms/js/pages.js' => 
   array (
-    'sha1' => '908e5022b57c0da5ba4e5785edcca9e081b3c829',
-    'size' => 47135,
+    'sha1' => 'c2537a9c5142a68bfc8e7e56b346a4694a6662ee',
+    'size' => 47573,
+  ),
+  '.cms/js/sitemap.js' => 
+  array (
+    'sha1' => '9f9e6d4d98a8fb3cee84073fd37e525d7d0f118b',
+    'size' => 1605,
   ),
   '.cms/js/template.js' => 
   array (
-    'sha1' => 'ab3656bad5223205eb8f9b9af80c7bd74c791292',
-    'size' => 7511,
+    'sha1' => 'e1dd782730664b1c1539c685263db9ac11147491',
+    'size' => 7453,
   ),
   '.cms/js/update.js' => 
   array (
-    'sha1' => 'ade0bbb6cb2b45c67ee8bd48a5a3902f904771f6',
-    'size' => 2973,
+    'sha1' => '987d5730cd5aee83cba453da239bee010b9c195d',
+    'size' => 2956,
   ),
   '.cms/lang/ru_RU.UTF-8/admin.mod.php' => 
   array (
-    'sha1' => '0488ed32a0828082eeb92b96219fb269fc048cf6',
-    'size' => 545,
+    'sha1' => 'b3a97de3116155a37c2b88c18dffe85f3599eea1',
+    'size' => 4158,
+  ),
+  '.cms/lang/ru_RU.UTF-8/base.mod.php' => 
+  array (
+    'sha1' => 'de2ac6912442c64a372db9c1b558416e0c3507b7',
+    'size' => 681,
+  ),
+  '.cms/lang/ru_RU.UTF-8/menu.mod.php' => 
+  array (
+    'sha1' => 'de71dd6a86c276a19907bcf6e8b2163f73eb1c10',
+    'size' => 1514,
+  ),
+  '.cms/lang/ru_RU.UTF-8/pages.mod.php' => 
+  array (
+    'sha1' => 'fcfedf9d9b5a938523022e4bd4c83599e4600767',
+    'size' => 3250,
+  ),
+  '.cms/lang/ru_RU.UTF-8/sitemap.mod.php' => 
+  array (
+    'sha1' => '99ae1c02847eaa9df1223a48529b9f7b7b332698',
+    'size' => 2659,
+  ),
+  '.cms/lang/ru_RU.UTF-8/template.mod.php' => 
+  array (
+    'sha1' => '655b3548805fa7a62b9c9787931c5583c76df0be',
+    'size' => 1380,
+  ),
+  '.cms/lang/ru_RU.UTF-8/update.mod.php' => 
+  array (
+    'sha1' => 'e04e9b7d7ef17111e73087a2628986c2d28a8828',
+    'size' => 3171,
   ),
   '.cms/lang/ru_RU.UTF-8/translit.php' => 
   array (
@@ -105,73 +140,73 @@ $list = array (
   ),
   '.cms/lang/en_US.UTF-8/admin.mod.php' => 
   array (
-    'sha1' => 'f2c67d4c342da12d29a8c1d1cd72ee18801af845',
-    'size' => 3596,
+    'sha1' => '96e26243a98b8a5b6260343f986103f4c01f24da',
+    'size' => 2789,
   ),
   '.cms/lang/en_US.UTF-8/base.mod.php' => 
   array (
-    'sha1' => '0af2835ace0feaf8f17776b0b4994982c0c37947',
-    'size' => 660,
+    'sha1' => 'c8e93cc164fa8606eca9cab5dcfaa0ce2577cb33',
+    'size' => 458,
   ),
   '.cms/lang/en_US.UTF-8/menu.mod.php' => 
   array (
-    'sha1' => 'c61140379d40cb0989db9f2c6e48f04d3b8981d0',
-    'size' => 1450,
+    'sha1' => '3b544c474ed727e8261eac2e9b56e1312d8664c2',
+    'size' => 1080,
   ),
   '.cms/lang/en_US.UTF-8/pages.mod.php' => 
   array (
-    'sha1' => '5ff4ce850ee582d197b584efc5ad32b62a4e715a',
-    'size' => 3489,
+    'sha1' => '223e3a7cb6efaae15ec3cd0a8c5c617c231dbfaf',
+    'size' => 2298,
   ),
   '.cms/lang/en_US.UTF-8/sitemap.mod.php' => 
   array (
-    'sha1' => 'f095a1a7b9942fadba0bd0bfd9a88185bfd8b3b5',
-    'size' => 3274,
+    'sha1' => 'eb0c44b6f8543fefc22bf1875d2a77b797faf47c',
+    'size' => 1516,
   ),
   '.cms/lang/en_US.UTF-8/template.mod.php' => 
   array (
-    'sha1' => '662eaa716eb7d26f08bbb20577317d5a3fbe0ca0',
-    'size' => 1454,
+    'sha1' => '4906809739029bd8394ab7927f9d97f19cb7155a',
+    'size' => 985,
   ),
   '.cms/lang/en_US.UTF-8/update.mod.php' => 
   array (
-    'sha1' => '53681eb9b73e6429fabf055351c8a8a878825b7d',
-    'size' => 3174,
+    'sha1' => '61e805b6516d81f0ec3aa2ca10acf352a86631fe',
+    'size' => 2125,
   ),
   '.cms/lang/uk_UA.UTF-8/admin.mod.php' => 
   array (
-    'sha1' => '39296af4bb3515b52ce06cf29830bf0dfed293c5',
-    'size' => 4579,
+    'sha1' => '14a76a6e92163aa31c06ad83863a1796217911c7',
+    'size' => 4230,
   ),
   '.cms/lang/uk_UA.UTF-8/base.mod.php' => 
   array (
-    'sha1' => 'e7cf602556c7cf1bb8385b70784e8211fc0eecb3',
-    'size' => 852,
+    'sha1' => '1a896781dd6b11cb76614d416ac88d0e091305f3',
+    'size' => 674,
   ),
   '.cms/lang/uk_UA.UTF-8/menu.mod.php' => 
   array (
-    'sha1' => 'a8330b5615072865157d84679df3a169d88d909e',
-    'size' => 1822,
+    'sha1' => 'a848fd8a9fb16a1f4e2e946d954aa05362483acf',
+    'size' => 1514,
   ),
   '.cms/lang/uk_UA.UTF-8/pages.mod.php' => 
   array (
-    'sha1' => 'b27e967d20259b1e05c365a1c55e425e63ebc3cc',
-    'size' => 4346,
+    'sha1' => 'ad26d875befbf19e8075a76b46cee3c38ae30d82',
+    'size' => 3322,
   ),
   '.cms/lang/uk_UA.UTF-8/sitemap.mod.php' => 
   array (
-    'sha1' => '78afea4f032bbc37fa551c82407b4a2b5f2e2f36',
-    'size' => 4314,
+    'sha1' => '2503a65d936b92d6f01cf69a47d903aa71f7cb65',
+    'size' => 2647,
   ),
   '.cms/lang/uk_UA.UTF-8/template.mod.php' => 
   array (
-    'sha1' => '1d188c37215454527b6090974538e1a0e0b860a1',
-    'size' => 1760,
+    'sha1' => 'eb757b452ebfc30764d0a982d6b874a77abe8a06',
+    'size' => 1385,
   ),
   '.cms/lang/uk_UA.UTF-8/update.mod.php' => 
   array (
-    'sha1' => '91a1379390dc52abe4d380571c7e3851fbc90d70',
-    'size' => 3984,
+    'sha1' => 'f271ebc09e7c85fd94984f625e97b4a45388cde8',
+    'size' => 3076,
   ),
   '.cms/lang/uk_UA.UTF-8/translit.php' => 
   array (
@@ -180,53 +215,53 @@ $list = array (
   ),
   '.cms/mod/admin.mod.php' => 
   array (
-    'sha1' => '965fb4472c6f05f810e9317e12c7fabc7296c01e',
-    'size' => 29242,
+    'sha1' => '7be21947aa6b60c1d4605ac82dda6b348b5ab351',
+    'size' => 31050,
   ),
   '.cms/mod/base.mod.php' => 
   array (
-    'sha1' => 'fa9fcdbaf9d299d2e05b16b2d2dd1d07fe17bde4',
-    'size' => 6304,
+    'sha1' => '8780dda20fcc214272266aebde8e2233fda310f6',
+    'size' => 6461,
   ),
   '.cms/mod/menu.mod.php' => 
   array (
-    'sha1' => '9315e04cc5ca40d74f060b014283851ef56f622b',
-    'size' => 21221,
+    'sha1' => 'd02cb015c90a74eb797b572c0751471de8fe56ef',
+    'size' => 21178,
   ),
   '.cms/mod/pages.mod.php' => 
   array (
-    'sha1' => '8ace1b81ab5baf27297b8e292819af71fc93238e',
-    'size' => 45161,
+    'sha1' => '672ff26329c14ff66885354109a756d1407a6660',
+    'size' => 44880,
   ),
   '.cms/mod/sitemap.mod.php' => 
   array (
-    'sha1' => '3017092452fd08dd47922f9d2bde233301690da3',
-    'size' => 11248,
+    'sha1' => '8dc9871ea0797a408ad10f58ac4d2b9f7f1c4195',
+    'size' => 10075,
   ),
   '.cms/mod/template.mod.php' => 
   array (
-    'sha1' => '4787b8d16347d6a4c4347908165c016793b08dcf',
-    'size' => 16546,
+    'sha1' => '8709f7665e705eebaabb819fe0785d775bad125e',
+    'size' => 16408,
   ),
   '.cms/mod/update.mod.php' => 
   array (
-    'sha1' => '85f83edd935a19819ff28e9c62e4dad3437fc9a3',
-    'size' => 29106,
+    'sha1' => '2b2133b832404a48a17270b8c25fc07bdcb38aff',
+    'size' => 28514,
   ),
   '.cms/index.fn.php' => 
   array (
-    'sha1' => 'cb70d1dbb1ac22fbec26fb8de23067d4ef289cab',
-    'size' => 22171,
+    'sha1' => 'e01028748daba5b3178706758f216baa74147dc8',
+    'size' => 21786,
   ),
   '.cms/index.php' => 
   array (
-    'sha1' => 'c59027ebd61722d56c9868a0782b89b3311a1a7b',
-    'size' => 3411,
+    'sha1' => '23134b8a397ab9ec5dca5e3729e453cd729c6598',
+    'size' => 3582,
   ),
   '.cms/update.sql' => 
   array (
-    'sha1' => 'da39a3ee5e6b4b0d3255bfef95601890afd80709',
-    'size' => 0,
+    'sha1' => '772d0a29be440e687767e2dd3c0a37b83e5e34ca',
+    'size' => 157,
   ),
   '.cms/.unlicense.txt' => 
   array (
@@ -325,13 +360,13 @@ $list = array (
   ),
   '.cms/lib/codemirror/AUTHORS' => 
   array (
-    'sha1' => '59ccd6591898ee0e845c9a6107da7c7efe772ad6',
-    'size' => 12592,
+    'sha1' => '7ae299639f910a96587cc59fbf35ad2a1ce04c37',
+    'size' => 12771,
   ),
   '.cms/lib/codemirror/CHANGELOG.md' => 
   array (
-    'sha1' => '7b55fa9454fda4075344395fadafe4a7ac7799f1',
-    'size' => 112768,
+    'sha1' => '8a06bc7247958e573c37a7b2ef7b03aa017e0765',
+    'size' => 114437,
   ),
   '.cms/lib/codemirror/CONTRIBUTING.md' => 
   array (
@@ -340,8 +375,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/index.html' => 
   array (
-    'sha1' => 'b579a7e1520b5f234f0a4ff97ae8e060e3865309',
-    'size' => 8282,
+    'sha1' => 'e53d729072e592f733f0dae7b4a4ccfb8e08443c',
+    'size' => 8281,
   ),
   '.cms/lib/codemirror/LICENSE' => 
   array (
@@ -350,18 +385,18 @@ $list = array (
   ),
   '.cms/lib/codemirror/package.json' => 
   array (
-    'sha1' => 'c53dc1305bc7a40cbaa80a4d8a66de1194133081',
-    'size' => 1085,
+    'sha1' => 'df957656c578c706922797352cedf48d9b64d8cd',
+    'size' => 1195,
   ),
   '.cms/lib/codemirror/README.md' => 
   array (
-    'sha1' => '6d92c90c4ce119f354ecf31bf9c8114121abe37c',
-    'size' => 1943,
+    'sha1' => 'c598fcb828b89025df8bb12a1d27a079abf8e667',
+    'size' => 1944,
   ),
   '.cms/lib/codemirror/rollup.config.js' => 
   array (
-    'sha1' => '5b469ea29090c78c95d4dc7cbfa3772eebbb06a3',
-    'size' => 1249,
+    'sha1' => '48bed29223b72a22a9939b57333c2d6e58bdfd39',
+    'size' => 1444,
   ),
   '.cms/mini/404.en_US.UTF-8.php' => 
   array (
@@ -400,8 +435,8 @@ $list = array (
   ),
   '.cms/mini/html.php' => 
   array (
-    'sha1' => '6b1bfe171760a8ca88a00fd8d9a98dccc65a5d35',
-    'size' => 6410,
+    'sha1' => '4dec409ca9b58f8133c33ecdac9ffe8123ce4a16',
+    'size' => 6700,
   ),
   '.cms/mini/html-post.php' => 
   array (
@@ -415,13 +450,13 @@ $list = array (
   ),
   '.cms/mini/settings.php' => 
   array (
-    'sha1' => 'be205edfe3c5bcc214beccf03cad586fd8aac850',
-    'size' => 3872,
+    'sha1' => '079e76f198fdcb71d6515dbfa8db846b77ae8449',
+    'size' => 3873,
   ),
-  '.cms/mini/style.css' => 
+  '.cms/mini/styles.css' => 
   array (
-    'sha1' => '2bd75282c384a9eb224eeab1542851d915e7ba86',
-    'size' => 12888,
+    'sha1' => '4314e534811d27bdd9cd1b1f82da7438600a487c',
+    'size' => 12883,
   ),
   '.cms/mini/teaser.php' => 
   array (
@@ -455,8 +490,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/bin/upload-release.js' => 
   array (
-    'sha1' => '372cb372813c505891e84ee217778f079d568f97',
-    'size' => 938,
+    'sha1' => '4f4f1f53d80fae8396b5400d9740f133f5e7e7b7',
+    'size' => 1228,
   ),
   '.cms/lib/codemirror/demo/activeline.html' => 
   array (
@@ -665,8 +700,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/demo/vim.html' => 
   array (
-    'sha1' => '86944aac8d3bb5e7b06bf81ea9abd623e9f4a27c',
-    'size' => 4129,
+    'sha1' => '3ef8daa0c22db57f007ef6144a0de286c604135c',
+    'size' => 3997,
   ),
   '.cms/lib/codemirror/demo/visibletabs.html' => 
   array (
@@ -710,18 +745,18 @@ $list = array (
   ),
   '.cms/lib/codemirror/doc/manual.html' => 
   array (
-    'sha1' => 'effbea1e7dbbe88c61498497429e7e1311571f42',
-    'size' => 217161,
+    'sha1' => '48b1a03b71619bad6709e5b36a3ce4153b6dfcfe',
+    'size' => 217198,
   ),
   '.cms/lib/codemirror/doc/realworld.html' => 
   array (
-    'sha1' => 'f748ceac89fa072d35e5262a40fd9f074a5e8a82',
-    'size' => 18432,
+    'sha1' => 'deea70eadb7bfdefd59ccd32af9b8b5fdacb31ea',
+    'size' => 18523,
   ),
   '.cms/lib/codemirror/doc/releases.html' => 
   array (
-    'sha1' => '70f12861711883c4528b040626028edc4c9a9788',
-    'size' => 156618,
+    'sha1' => 'ea541598f92fee5ac0da957536bf45e4a637ff3e',
+    'size' => 159102,
   ),
   '.cms/lib/codemirror/doc/reporting.html' => 
   array (
@@ -765,8 +800,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/keymap/vim.js' => 
   array (
-    'sha1' => '4e3a297359b3099ebf3876eef965f4a5f80f2277',
-    'size' => 224467,
+    'sha1' => 'b8afaac94045745d4517c9635a5d0c1c266db7ca',
+    'size' => 232206,
   ),
   '.cms/lib/codemirror/lib/codemirror.css' => 
   array (
@@ -775,8 +810,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/lib/codemirror.js' => 
   array (
-    'sha1' => 'e2b7c2af2ec421f014c9f5b7a54429a4497ab781',
-    'size' => 400851,
+    'sha1' => 'ef68deb3db5a2adcc5481837f7ea59b666d9ee27',
+    'size' => 401653,
   ),
   '.cms/lib/codemirror/mode/index.html' => 
   array (
@@ -820,8 +855,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/test/driver.js' => 
   array (
-    'sha1' => '3c764ae1a3f055f6003272df3eaf011c5d2647b1',
-    'size' => 4112,
+    'sha1' => 'f4d3f05501dcb8a57f488b36dc62852f1be96e5a',
+    'size' => 4203,
   ),
   '.cms/lib/codemirror/test/emacs_test.js' => 
   array (
@@ -835,8 +870,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/test/index.html' => 
   array (
-    'sha1' => 'ae3b9d6bfd8bcf71989b3430018ec5e7209c45a7',
-    'size' => 11176,
+    'sha1' => '8ae6702ad66cc415ef7ce4895570ca2b6ad8aae1',
+    'size' => 11136,
   ),
   '.cms/lib/codemirror/test/lint.js' => 
   array (
@@ -887,11 +922,6 @@ $list = array (
   array (
     'sha1' => 'c4eecfee5f591d10141625a3bc377d6c1be56469',
     'size' => 98806,
-  ),
-  '.cms/lib/codemirror/test/vim_test.js' => 
-  array (
-    'sha1' => '4249d56c2e9eb38b9916c67c0c8d56170925dbec',
-    'size' => 181451,
   ),
   '.cms/lib/codemirror/theme/3024-day.css' => 
   array (
@@ -1320,8 +1350,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/addon/fold/foldgutter.js' => 
   array (
-    'sha1' => '2f4f7e099042dcbde74bfd3a8f5856f595326ecd',
-    'size' => 5370,
+    'sha1' => '33db6195e0d5ef96a74fe770cfae60bac35e6cc8',
+    'size' => 5539,
   ),
   '.cms/lib/codemirror/addon/fold/indent-fold.js' => 
   array (
@@ -1360,18 +1390,18 @@ $list = array (
   ),
   '.cms/lib/codemirror/addon/hint/show-hint.css' => 
   array (
-    'sha1' => '784f4c1f09a19b482d2242ab97e8be357ef25540',
-    'size' => 623,
+    'sha1' => 'c6ccf71f580ac481b44a0874e80ee1d7b1d984c6',
+    'size' => 649,
   ),
   '.cms/lib/codemirror/addon/hint/show-hint.js' => 
   array (
-    'sha1' => 'e8092d9477bb1ad4d17d44522d99cc67ead53b16',
-    'size' => 19994,
+    'sha1' => 'eaf7d16542ffcf8ae6cc5178bc427001ca1f9560',
+    'size' => 19792,
   ),
   '.cms/lib/codemirror/addon/hint/sql-hint.js' => 
   array (
-    'sha1' => '6a2cbde78c9311f75509d3350877a8018499e8c7',
-    'size' => 9606,
+    'sha1' => 'ff8bcf343afeae8779f776b18b779e1490d6a72e',
+    'size' => 9560,
   ),
   '.cms/lib/codemirror/addon/hint/xml-hint.js' => 
   array (
@@ -1425,8 +1455,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/addon/merge/merge.js' => 
   array (
-    'sha1' => 'c2c82dc8159b4d4b38ac4e74d88b513cae40be01',
-    'size' => 38606,
+    'sha1' => 'a4b01699400bbb7f3ddc847e9d740862934728bb',
+    'size' => 38612,
   ),
   '.cms/lib/codemirror/addon/mode/loadmode.js' => 
   array (
@@ -1455,23 +1485,23 @@ $list = array (
   ),
   '.cms/lib/codemirror/addon/runmode/colorize.js' => 
   array (
-    'sha1' => 'c413068d373c6b74796b99b2cfa866bd34ce26a7',
-    'size' => 1306,
+    'sha1' => '4899e8d499849fb02f134afb39711d3ab2c28903',
+    'size' => 1308,
   ),
   '.cms/lib/codemirror/addon/runmode/runmode.js' => 
   array (
-    'sha1' => '786d334a12b0026be13fda91ec3d38b354ae6507',
-    'size' => 2775,
+    'sha1' => '88d7a8053ef7fe9996f63800076992a5f65c4dba',
+    'size' => 2777,
   ),
   '.cms/lib/codemirror/addon/runmode/runmode.node.js' => 
   array (
-    'sha1' => 'f381be5fd9d927be475fd7cd7bc9f5687dc102d3',
-    'size' => 11496,
+    'sha1' => '91e688f6fc356c47f9bea928ea3768b7c7a57693',
+    'size' => 11498,
   ),
   '.cms/lib/codemirror/addon/runmode/runmode-standalone.js' => 
   array (
-    'sha1' => '3fc987bcf05277702bf9f3270041df29ee8eb729',
-    'size' => 12051,
+    'sha1' => '591c22764dd7599a2d443c593bd5d4fd77928e65',
+    'size' => 12053,
   ),
   '.cms/lib/codemirror/addon/scroll/annotatescrollbar.js' => 
   array (
@@ -1545,8 +1575,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/addon/tern/tern.js' => 
   array (
-    'sha1' => 'b49622b14a1420cd45c8750255916671f67c0aa9',
-    'size' => 26221,
+    'sha1' => 'e4d1225e756d51fcb69c2f14ddce1b09fa2a23b7',
+    'size' => 26448,
   ),
   '.cms/lib/codemirror/addon/tern/worker.js' => 
   array (
@@ -1695,7 +1725,7 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/css/css.js' => 
   array (
-    'sha1' => '736c28ee9e1ca0e9bb46da55d85e927d08e40801',
+    'sha1' => '1045cdc88a58fb002511eb21db184ed242730f05',
     'size' => 40492,
   ),
   '.cms/lib/codemirror/mode/css/gss.html' => 
@@ -1870,8 +1900,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/elm/elm.js' => 
   array (
-    'sha1' => 'c2003910a0cbd99fdb85109ce341949c2ac7e62e',
-    'size' => 5631,
+    'sha1' => 'e28a667656ac12ff06766d2ee857962dcd9146e2',
+    'size' => 5657,
   ),
   '.cms/lib/codemirror/mode/elm/index.html' => 
   array (
@@ -1965,8 +1995,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/go/go.js' => 
   array (
-    'sha1' => 'd0ae0b4d5118ce176621f777088b95558124de2d',
-    'size' => 6033,
+    'sha1' => 'ef0de14a73f6656facd0d7355a11b1d17df86b16',
+    'size' => 6064,
   ),
   '.cms/lib/codemirror/mode/go/index.html' => 
   array (
@@ -2085,8 +2115,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/javascript/javascript.js' => 
   array (
-    'sha1' => '969b4a80be53b334612b44a0cc6ef57cfe171a26',
-    'size' => 38892,
+    'sha1' => '5dc646acbc67a46801d15f6e5c80b9ad620ffc18',
+    'size' => 38894,
   ),
   '.cms/lib/codemirror/mode/javascript/json-ld.html' => 
   array (
@@ -2105,13 +2135,13 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/jinja2/index.html' => 
   array (
-    'sha1' => '6435a436439ccc83368ec19d69e8090bfb9bf83d',
-    'size' => 1750,
+    'sha1' => 'd7dd4ff9e2e761b205f65de0a036c2b410789cad',
+    'size' => 2061,
   ),
   '.cms/lib/codemirror/mode/jinja2/jinja2.js' => 
   array (
-    'sha1' => 'f1b92b1cce15292571979194dc1331accc5fb2d9',
-    'size' => 4393,
+    'sha1' => '0e5dfa653ec704c7aaf3c9acd58fb7e0324e77e9',
+    'size' => 5907,
   ),
   '.cms/lib/codemirror/mode/jsx/index.html' => 
   array (
@@ -2275,8 +2305,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/nsis/nsis.js' => 
   array (
-    'sha1' => '9df3147e20ca18123a7cf7f39030b30e6c4b4bbe',
-    'size' => 8058,
+    'sha1' => '635076e23c22aeba6d4ee2ea79065ed25a1bc9fc',
+    'size' => 8107,
   ),
   '.cms/lib/codemirror/mode/ntriples/index.html' => 
   array (
@@ -2325,8 +2355,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/pegjs/pegjs.js' => 
   array (
-    'sha1' => '978baa600d3539e1eb05834fd0b7d659f0fed792',
-    'size' => 3572,
+    'sha1' => '5911a8d96b4e99905201a22454270c01ade941d0',
+    'size' => 3532,
   ),
   '.cms/lib/codemirror/mode/perl/index.html' => 
   array (
@@ -2425,8 +2455,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/python/python.js' => 
   array (
-    'sha1' => 'b178c4d31cc4eeefe58e97a60723d47af96b79ed',
-    'size' => 14926,
+    'sha1' => '032fbab544e6257b4aca256c7708b90ddf8335c1',
+    'size' => 14952,
   ),
   '.cms/lib/codemirror/mode/python/test.js' => 
   array (
@@ -2630,8 +2660,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/sparql/sparql.js' => 
   array (
-    'sha1' => '11bf2d33045f2417a948b32370df01c644cff8f7',
-    'size' => 6718,
+    'sha1' => 'd4675ce0d6471dd82e6ff962975b02598fbcdaaa',
+    'size' => 6901,
   ),
   '.cms/lib/codemirror/mode/spreadsheet/index.html' => 
   array (
@@ -2645,13 +2675,13 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/sql/index.html' => 
   array (
-    'sha1' => 'af74944f9ee38347a8045d2c341ef49f496f55fb',
-    'size' => 3179,
+    'sha1' => '199059a297f2dba082ecde0663f55cab27a992e6',
+    'size' => 3403,
   ),
   '.cms/lib/codemirror/mode/sql/sql.js' => 
   array (
-    'sha1' => 'a5d27cc0bdfd652aef883456cda8d7e4cfacf134',
-    'size' => 51019,
+    'sha1' => '5a11eff6b824f74f221566260a3fa190c2c68716',
+    'size' => 59564,
   ),
   '.cms/lib/codemirror/mode/stex/index.html' => 
   array (
@@ -2685,8 +2715,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/mode/swift/swift.js' => 
   array (
-    'sha1' => 'f4c52f71dc626781eb6d5fc0772ab64fe190d93f',
-    'size' => 7524,
+    'sha1' => 'cb2da62d408e283f01d19d41c0dbbffb3c0ff677',
+    'size' => 7527,
   ),
   '.cms/lib/codemirror/mode/swift/test.js' => 
   array (
@@ -2980,8 +3010,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/display/Display.js' => 
   array (
-    'sha1' => '6bcab3100f9fd46d39f5c47d78b6ad9ad863b464',
-    'size' => 4867,
+    'sha1' => '6ceaf4a78031c00eef13a13f02aad85690f35383',
+    'size' => 5046,
   ),
   '.cms/lib/codemirror/src/display/focus.js' => 
   array (
@@ -3010,8 +3040,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/display/operations.js' => 
   array (
-    'sha1' => 'bcbfd5f80381f462bcebd829875ef5c74a3c8257',
-    'size' => 8084,
+    'sha1' => 'dbbbc8bf0cd26ed344d48e6be8ba83d3a3ad983a',
+    'size' => 8096,
   ),
   '.cms/lib/codemirror/src/display/scrollbars.js' => 
   array (
@@ -3020,13 +3050,13 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/display/scroll_events.js' => 
   array (
-    'sha1' => '554e61d5da01741cd5d3df18823e99f41b38ec63',
+    'sha1' => 'c92034958533fbaa6512c99d715a6032d43355b0',
     'size' => 5478,
   ),
   '.cms/lib/codemirror/src/display/scrolling.js' => 
   array (
-    'sha1' => 'e91b5098c162abc2ad3bebe0439b32bf4c1e40d2',
-    'size' => 8167,
+    'sha1' => '54446fd791e3331041e6e9a0874fa66d4794bcb4',
+    'size' => 8213,
   ),
   '.cms/lib/codemirror/src/display/selection.js' => 
   array (
@@ -3035,8 +3065,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/display/update_display.js' => 
   array (
-    'sha1' => '031bd17bef4efb93a87f5ab90dc039bd57663a1a',
-    'size' => 10504,
+    'sha1' => '79b7a1faa3bfaa65f28ab4e324fa88b485ed21e2',
+    'size' => 10605,
   ),
   '.cms/lib/codemirror/src/display/update_line.js' => 
   array (
@@ -3075,8 +3105,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/edit/fromTextArea.js' => 
   array (
-    'sha1' => 'edcb136068431a98f9ab36462ce89435807ec525',
-    'size' => 1986,
+    'sha1' => 'c2bb053e04c5cc11df632ae7332863f5f0d30c70',
+    'size' => 2008,
   ),
   '.cms/lib/codemirror/src/edit/global_events.js' => 
   array (
@@ -3085,8 +3115,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/edit/key_events.js' => 
   array (
-    'sha1' => 'bd8094b54bb15c28a88c7a383a48c828653e99fc',
-    'size' => 5507,
+    'sha1' => '09df110e22b2ecccf9f3deb5a2dbe0a6fa884d23',
+    'size' => 5519,
   ),
   '.cms/lib/codemirror/src/edit/legacy.js' => 
   array (
@@ -3095,23 +3125,23 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/edit/main.js' => 
   array (
-    'sha1' => '51e54b4622ca7ea96081f2adcef5c650e7e731f8',
-    'size' => 2072,
+    'sha1' => 'b8ed1777ddef41a0ae9261e577c372b4faf3e086',
+    'size' => 2073,
   ),
   '.cms/lib/codemirror/src/edit/methods.js' => 
   array (
-    'sha1' => '0478275dd2d520372bfc00c9c4bd75d58397ec88',
-    'size' => 22242,
+    'sha1' => 'ec9e2b700a1252d5787249b1c8046b5fb0df6073',
+    'size' => 22264,
   ),
   '.cms/lib/codemirror/src/edit/mouse_events.js' => 
   array (
-    'sha1' => 'dc43b64b7028982a657f44f1aebe0753ccda089a',
-    'size' => 15974,
+    'sha1' => '88d8b3f37ba37358b2f270ac184852f0f53c4e8d',
+    'size' => 16015,
   ),
   '.cms/lib/codemirror/src/edit/options.js' => 
   array (
-    'sha1' => '99d3d0aa7ab678573f2970b2273404ed4c7cc73b',
-    'size' => 7226,
+    'sha1' => 'd732c1c65a7f2e9572c486fb2db1baace52ebbea',
+    'size' => 7256,
   ),
   '.cms/lib/codemirror/src/edit/utils.js' => 
   array (
@@ -3120,8 +3150,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/input/ContentEditableInput.js' => 
   array (
-    'sha1' => 'cbdfded8c3f14409657a09bdab34b62ebb1fc314',
-    'size' => 19337,
+    'sha1' => '70cfc8bedef61e8d2f6cbb85ee41d65088d44c53',
+    'size' => 19398,
   ),
   '.cms/lib/codemirror/src/input/indent.js' => 
   array (
@@ -3150,8 +3180,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/input/TextareaInput.js' => 
   array (
-    'sha1' => 'f6bd78d7f27ac383319b38b21b57c06c6f3634ba',
-    'size' => 13921,
+    'sha1' => '80e89b452265cc1455a01f36fe7609c8a2ae79ba',
+    'size' => 14100,
   ),
   '.cms/lib/codemirror/src/line/highlight.js' => 
   array (
@@ -3185,8 +3215,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/measurement/position_measurement.js' => 
   array (
-    'sha1' => '8e39c7e02dcaeb4a9c01fcc6e4da31b4ceb8ee01',
-    'size' => 28846,
+    'sha1' => 'c5dd40151e773a61694906cf92f941fe27ce51de',
+    'size' => 28863,
   ),
   '.cms/lib/codemirror/src/measurement/widgets.js' => 
   array (
@@ -3255,8 +3285,8 @@ $list = array (
   ),
   '.cms/lib/codemirror/src/util/dom.js' => 
   array (
-    'sha1' => 'de5e2a1fb19b307b5f90cb15a3feb90d119ec2a2',
-    'size' => 3309,
+    'sha1' => '6425ef8de5f6d50a057a5cdaced4da9ed166ddfe',
+    'size' => 3427,
   ),
   '.cms/lib/codemirror/src/util/event.js' => 
   array (

@@ -1,14 +1,14 @@
 <?php
 
 $cms["modules"]["template.mod.php"] = array(
-    "name"        => __( "Шаблоны" ),
-    "description" => __( "Переключение шаблонов и управление их настройками" ),
+    "name"        => __( "module_name" ),
+    "description" => __( "module_description" ),
     "version"     => "",
-    "locale"      => "ru_RU.UTF-8",
     "files"       => array(
         ".cms/mod/template.mod.php",
         ".cms/css/template.css",
         ".cms/js/template.js",
+        ".cms/lang/ru_RU.UTF-8/template.mod.php",
         ".cms/lang/en_US.UTF-8/template.mod.php",
         ".cms/lang/uk_UA.UTF-8/template.mod.php",
     ),
@@ -45,7 +45,9 @@ if ( ! empty( $cms["config"]["template.mod.php"]["disabled"] ) ) {
         cms_add_function( "api", "cms_template_load_settings", 5 );
         cms_add_function( "api", "cms_template_api" );
     }
-    cms_add_function( "template", "cms_template_template" );
+    // Вызов функции cms_template_template сделаем пораньше,
+    // чтобы в других модулях не нужно было ставить 20
+    cms_add_function( "template", "cms_template_template", 5 );
     cms_add_function( "echo", "cms_template_echo" );
     cms_add_function( "write", "cms_template_write" );
 
@@ -67,23 +69,22 @@ function cms_template_admin() {
         cms_save_config();
         cms_clear_cache();
         header( "Location: {$cms['config']['admin.mod.php']['admin_url']}" );
-        exit;
+        return;
     }
     if ( ! empty( $_POST["save_template_scripts"] ) ) {
         $cms["config"]["template.mod.php"]["scripts"] = $_POST["scripts"];
         cms_save_config();
         cms_clear_cache();
         header( "Location: {$cms['config']['admin.mod.php']['admin_url']}" );
-        exit;
+        return;
     }
 
     // Create menu item
     if ( empty( $cms["config"]["template.mod.php"]["menu"]["template"] ) ) {
         $cms["config"]["template.mod.php"]["menu"]["template"] = array(
-            "title"    => "Шаблоны",
+            "title"    => "module_name",
             "sort"     => 70,
-            "class"    => "",
-            "section"  => "Настройки",
+            "section"  => "settings",
         );
         cms_save_config();
     }
@@ -102,22 +103,22 @@ function cms_template_admin() {
     }
 
     cms_template_load_settings();
-    $template_files_title = "<div class=title>" . __( "Редактируемые файлы этого шаблона" ) . "</div>";
+    $template_files_title = "<div class=title>" . __( "editable_files" ) . "</div>";
     $template_files = "";
     foreach( $cms["templates"][ $cms["config"]["template.mod.php"]["template"] ]["files"] as $file ) {
         $template_files .= "<div class=file>{$file}</div>";
     }
     if ( empty( $template_files ) ) {
-        $template_files = "<div class=no-files>" . __( "Нет файлов для редактирования" ) . "</div>";
+        $template_files = "<div class=no-files>" . __( "no_editable_files" ) . "</div>";
     }
     
-    $tr_title   = __( "Справка" );
-    $tr_p1      = __( "Вы можете создать свою тему или выбрать из существующих." );
-    $tr_current = __( "Текущий шаблон" );
-    $tr_save    = __( "Сохранить" );
-    $tr_upl     = __( "Установить шаблон" );
-    $tr_blanks  = __( "Заготовки" );
-    $tr_disable_write_to_disk  = __( "Отключить кэш" );
+    $tr_title   = __( "help" );
+    $tr_p1      = __( "help_p1" );
+    $tr_current = __( "current_template" );
+    $tr_save    = __( "save" );
+    $tr_upl     = __( "install_template" );
+    $tr_blanks  = __( "blanks" );
+    $tr_disable_write_to_disk  = __( "disable_cache" );
     $help_file = "/{$cms['config']['template.mod.php']['template']}/instruction.{$cms['config']['locale']}.html";
     if ( file_exists( $cms["cms_dir"] . $help_file ) ) {
         $help = "<p><a target=_blank href='{$help_file}'>{$tr_blanks}</a></p>";
@@ -154,7 +155,7 @@ function cms_template_admin() {
         <div>{$tr_title}</div>
         {$help}
         <p>{$tr_p1}</p>
-        <p><a href='https://coffee-cms.ru/shablony' target=_blank>https://coffee-cms.ru/shablony</a></p>
+        <p><a href='" . __( "templates_link" ) . "' target=_blank>" . __( "templates_link" ) . "</a></p>
     </div>
     <div class=template-files>
         {$template_files_title}
@@ -180,17 +181,16 @@ function cms_template_admin() {
     // Create menu item
     if ( empty( $cms["config"]["template.mod.php"]["menu"]["counters"] ) ) {
         $cms["config"]["template.mod.php"]["menu"]["counters"] = array(
-            "title"    => "Счетчики",
+            "title"    => "counters",
             "sort"     => 80,
-            "class"    => "",
-            "section"  => "Настройки",
+            "section"  => "settings",
         );
         cms_save_config();
     }
 
-    $tr_title = __( "Скрипты и стили в подвале сайта" );
+    $tr_title = __( "footer" );
     $content  = htmlspecialchars( $cms["config"]["template.mod.php"]["scripts"] );
-    $tr_save  = __( "Сохранить" );
+    $tr_save  = __( "save" );
     $page = "
 <form method=post>
     <div>{$tr_title}</div>
@@ -222,11 +222,12 @@ function cms_template_api() {
 
             case "clear_cache":
                 cms_clear_cache();
-                exit( json_encode( array(
-                    "info_text"  => __( "Кэш очищен" ),
+                echo( json_encode( array(
+                    "info_text"  => __( "cache_cleared" ),
                     "info_class" => "info-success",
                     "info_time"  => 5000,
                 ) ) );
+                return;
             break;
 
             case "get_template_file":
@@ -236,30 +237,32 @@ function cms_template_api() {
                 } else {
                     $ok = "false";
                 }
-                exit( json_encode( array(
+                echo( json_encode( array(
                     "ok"   => $ok,
                     "file" => $file,
                 ) ) );
+                return;
             break;
 
             case "save_template_file":
                 $file = file_put_contents( $cms["site_dir"] . "/" . $_POST["file"], $_POST["content"] );
                 if ( $file !== false ) {
                     $ok    = "true";
-                    $msg   = __( "Сохранено" );
+                    $msg   = __( "saved" );
                     $class = "info-success";
                 } else {
                     $ok    = "false";
-                    $msg   = __( "Ошибка сохранения" );
+                    $msg   = __( "save_error" );
                     $class = "info-error";
                 }
                 cms_clear_cache();
-                exit( json_encode( array(
+                echo( json_encode( array(
                     "ok"         => $ok,
                     "info_text"  => $msg,
                     "info_class" => $class,
                     "info_time"  => 5000,
                 ) ) );
+                return;
             break;
 
             case "install_template":
@@ -269,7 +272,7 @@ function cms_template_api() {
                 foreach ( $_FILES["myfile"]["name"] as $n => $name ) {
                     if ( $_FILES["myfile"]["error"][$n] ) {
                         $success = false;
-                        $text = str_replace( "xxx", $name, __( "Ошибка загрузки xxx" ) );
+                        $text = str_replace( "xxx", $name, __( "upload_error_xxx" ) );
                         break;
                     } else {
                         // Unpack Template
@@ -278,27 +281,29 @@ function cms_template_api() {
                         if ( $zip->open( $_FILES["myfile"]["tmp_name"][$n] ) === TRUE ) {
                             $zip->extractTo( $cms["site_dir"] );
                             $zip->close();
-                            $text = __( "Успешная установка" );
+                            $text = __( "install_success" );
                         } else {
                             $success = false;
-                            $text = str_replace( "xxx", $name, __( "Не могу распаковать xxx" ) );
+                            $text = str_replace( "xxx", $name, __( "cant_unzip_xxx" ) );
                             break;
                         }
                     }
                 }
 
                 if ( $success ) {
-                    exit( json_encode( array(
+                    echo( json_encode( array(
                         "info_text"  => $text,
                         "info_class" => "info-success",
                         "info_time"  => 5000,
                     ) ) );
+                    return;
                 } else {
-                    exit( json_encode( array(
+                    echo( json_encode( array(
                         "info_text"  => $text,
                         "info_class" => "info-error",
                         "info_time"  => 10000,
                     ) ) );
+                    return;
                 }
             break;
 
@@ -339,16 +344,16 @@ function cms_template_echo() {
             $mime = "";
         }
         header( "Content-Type: {$mime}" );
-        header( "{$_SERVER['SERVER_PROTOCOL']} 200 OK"); // fix server 404
+        header( "{$_SERVER['SERVER_PROTOCOL']} 200 OK" ); // fix server 404
         cms_readfile( $cms["output"]["from"], false );
     } elseif ( $cms["status"] === "200" ) {
-        header( "{$_SERVER['SERVER_PROTOCOL']} 200 OK"); // fix server 404
+        header( "{$_SERVER['SERVER_PROTOCOL']} 200 OK" ); // fix server 404
         echo $cms["output"];
     } elseif ( is_admin() ) {
-        header( "{$_SERVER['SERVER_PROTOCOL']} 404 Not Found");
+        header( "{$_SERVER['SERVER_PROTOCOL']} 404 Not Found" );
         echo $cms["output"];
     } else {
-        header( "{$_SERVER['SERVER_PROTOCOL']} 404 Not Found");
+        header( "{$_SERVER['SERVER_PROTOCOL']} 404 Not Found" );
         echo $cms["output"]; // fix empty page
     }
 }
@@ -430,7 +435,7 @@ function cms_clear_cache() {
 
     // search all pages in database
     if ( ! empty( $cms["base"] ) ) {
-        if ( $res = mysqli_query( $cms["base"], "SELECT url FROM pages" ) ) {
+        if ( $res = mysqli_query( $cms["base"], "SELECT `url` FROM `pages`" ) ) {
             while ( $page = mysqli_fetch_assoc( $res ) ) {
                 $file = $cms["site_dir"] . $page["url"];
                 if ( substr( $file, -1 ) === "/" ) {
@@ -445,8 +450,11 @@ function cms_clear_cache() {
                 // Add dirs to remove queue
                 $dir = $page["url"];
                 while ( $dir && $dir != "/" && $dir != "\\" ) {
-                    $dirs[] = $cms["site_dir"] .  $dir;
-                    $dir    = dirname( $dir );
+                    $new_dir = $cms["site_dir"] .  $dir;
+                    if ( ! in_array( $new_dir, $dirs ) ) {
+                        $dirs[] = $new_dir;
+                    }
+                    $dir = dirname( $dir );
                 }
             }
         }

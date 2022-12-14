@@ -53,8 +53,7 @@ array (
 
 function cms_save_config() {
     global $cms;
-    @$r = file_put_contents( $cms["config_file"], '<?php
-$cms["config"] = ' . var_export( $cms["config"], true) . ";\n", LOCK_EX );
+    $r = file_put_contents( $cms["config_file"], '<?php $cms["config"] = ' . var_export( $cms["config"], true) . ";\n", LOCK_EX );
     return $r;
 }
 
@@ -523,15 +522,12 @@ function cms_readfile( $file, $headers = true ) {
 
 function __( $string, $module = "" ) {
     global $cms;
-    if ( ! isset( $cms["config"] ) ) {
-        error_log( 'Not set $cms["config"]' );
-        return $string;
-    }
 
     // Определяем вызвавший файл
+    $backtrace = debug_backtrace();
+    $real_file = pathinfo( $backtrace[0]["file"], PATHINFO_BASENAME );
     if ( $module === "" ) {
-        $backtrace = debug_backtrace();
-        $module = pathinfo( $backtrace[0]["file"], PATHINFO_BASENAME );
+        $module = $real_file;
         // Для шаблона admin
         if ( $module === "html.php" ) {
             $module = "admin.mod.php";
@@ -555,12 +551,11 @@ function __( $string, $module = "" ) {
         // Чтобы узнать какие переводы отсутствуют, нужно включить отладку в confog.php
         //     $cms["config"]["debug"] = true;
         // Результаты буду в файле .cms/debug.log.php
-        // Если известна локаль модуля и она не совпадает с текущей локалью цмс
-        // То должен быть перевод
-        if ( ! empty( $cms["config"]["debug"] ) && isset( $cms["modules"][$module]["locale"] ) && $cms["config"]["locale"] !== $cms["modules"][$module]["locale"] ) {
-            if ( empty( $cms["debug"]["translate"][$string] ) ) {
-                $cms["debug"]["translate"][$string] = "Нет перевода для [{$module}] \"{$string}\" на {$cms["config"]["locale"]}";
-            }
+        if ( ! empty( $cms["config"]["debug"] ) && empty( $cms["debug"]["translate"][$string] ) ) {
+            $line = $backtrace[0]["line"];
+            $t = "translate to {$cms["config"]["locale"]}";
+            $f = "{$real_file}:{$line}";
+            $cms["debug"][$t][$f] = $string;
         }
         return $string;
     }

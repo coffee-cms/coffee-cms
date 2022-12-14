@@ -1,14 +1,14 @@
 <?php
 
 $cms["modules"]["update.mod.php"] = array(
-    "name"        => __( "Обновления" ),
-    "description" => __( "Модуль обновления" ),
-    "version"     => "22.10.1",
-    "locale"      => "ru_RU.UTF-8",
+    "name"        => __( "module_name" ),
+    "description" => __( "module_description" ),
+    "version"     => "22.12.1",
     "files"       => array(
         ".cms/mod/update.mod.php",
         ".cms/css/update.css",
         ".cms/js/update.js",
+        ".cms/lang/ru_RU.UTF-8/update.mod.php",
         ".cms/lang/en_US.UTF-8/update.mod.php",
         ".cms/lang/uk_UA.UTF-8/update.mod.php",
     ),
@@ -43,21 +43,21 @@ function cms_update_admin() {
     $del_hide    = " class=hidden";
     foreach( glob( "{$cms['site_dir']}/revert_to_*.php" ) as $file ) {
         $file = preg_replace( "/.*\//", "", $file );
-        $backup_link = "<p>" . __( "URL восстановления:" ) . " {$cms["url"]["scheme"]}://{$cms["url"]["host"]}{$cms['base_path']}{$file}</p>";
+        $backup_link = "<p>" . __( "recovery_url" ) . " {$cms['url']['scheme']}://{$cms['url']['host']}{$cms['base_path']}{$file}</p>";
         $del_hide    = "";
     }
 
     if ( empty( $cms["config"]["update.mod.php"]["update"]["last_version"] ) ) {
-        $last_version = __( "Неизвестно" );
+        $last_version = __( "unknown" );
     } else {
         $last_version = $cms["config"]["update.mod.php"]["update"]["last_version"];
         if ( $cms["modules"]["update.mod.php"]["compat"] !== $cms["config"]["update.mod.php"]["update"]["compat"] ) {
-            $last_version .= ". " . __( "Несовместимая версия. Посетите" ) . " <a href='https://coffee-cms.ru/' target=_blank>https://coffee-cms.ru/</a>";
+            $last_version .= ". " . __( "incompatible_v" ) . " <a href='https://coffee-cms.ru/' target=_blank>https://coffee-cms.ru/</a>";
         }
     }
 
     if ( empty( $cms["config"]["update.mod.php"]["last_check"] ) ) {
-        $last_check = __( "Никогда" );
+        $last_check = __( "never" );
     } else {
         $last_check = date( "d F Y H:i:s", $cms["config"]["update.mod.php"]["last_check"] );
         $last_check = strtr( $last_check, $cms["tr_mon"] );
@@ -65,33 +65,33 @@ function cms_update_admin() {
 
     $page = "
 <div class=backup-window>
-    <div>" . __( "Резервная копия файлов CMS" ) . "</div>
+    <div>" . __( "backup" ) . "</div>
     <div class=buttons>
-        <button data-fn=create_backup>" . __( "Создать" ) . "</button>
-        <button data-fn=remove_backup{$del_hide}>" . __( "Удалить" ) . "</button>
+        <button data-fn=create_backup>" . __( "create" ) . "</button>
+        <button data-fn=remove_backup{$del_hide}>" . __( "remove" ) . "</button>
     </div>
     {$backup_link}
 </div>
 
 <div class=update-window>
-    <div>" . __( "Обновления" ) . "</div>
+    <div>" . __( "update" ) . "</div>
     <div class=check-answer>
-        <p>" . __( "Текущая версия:" ) . " {$cms['modules']['update.mod.php']['version']}</p>
-        <p>" . __( "Последняя версия:" ) . " {$last_version}</p>
-        <p>" . __( "Проверялось:" ) . " {$last_check}</p>
+        <p>" . __( "current_v" ) . " {$cms['modules']['update.mod.php']['version']}</p>
+        <p>" . __( "last_v" ) . " {$last_version}</p>
+        <p>" . __( "checked" ) . " {$last_check}</p>
     </div>
     <div class=buttons>
-        <button data-fn=cms_check_update>" . __( "Проверить" ) . "</button>
-        <button data-fn=cms_update>" . __( "Обновить" ) . "</button>
-        <button data-show-dev>" . __( "Дополнительно" ) . "</button>
+        <button data-fn=cms_check_update>" . __( "check" ) . "</button>
+        <button data-fn=cms_update>" . __( "update" ) . "</button>
+        <button data-show-dev>" . __( "extra" ) . "</button>
     </div>
 </div>
 
 <div class='dev-window developers_only'>
-    <div>" . __( "Кнопки разработчиков" ) . "</div>
+    <div>" . __( "dev_buttons" ) . "</div>
     <div class=buttons>
-        <button data-fn=create_zip style='display:none'>" . __( "Создать Zip" ) . "</button>
-        <button data-fn=cms_check_dev_update>" . __( "Проверить Dev" ) . "</button>
+        <button data-fn=create_zip style='display:none'>" . __( "create_zip" ) . "</button>
+        <button data-fn=cms_check_dev_update>" . __( "check_dev" ) . "</button>
     </div>
 </div>
 ";
@@ -99,10 +99,9 @@ function cms_update_admin() {
     // Create menu item if not exists
     if ( empty( $cms["config"]["update.mod.php"]["menu"]["update"] ) ) {
         $cms["config"]["update.mod.php"]["menu"]["update"] = array(
-            "title"    => "Обновления",
+            "title"    => "module_name",
             "sort"     => 20,
-            "class"    => "",
-            "section"  => "Настройки",
+            "section"  => "settings",
         );
         cms_save_config();
     }
@@ -163,16 +162,23 @@ function cms_update_create_filelist() {
         "{$cms['site_dir']}/.cms/css/sitemap.css",
         "{$cms['site_dir']}/.cms/css/template.css",
         "{$cms['site_dir']}/.cms/css/update.css",
-        "{$cms['site_dir']}/.cms/css/admin.dark.dark.css",
-        "{$cms['site_dir']}/.cms/css/admin.light.default.css",
+        "{$cms['site_dir']}/.cms/css/admin.dark.css",
+        "{$cms['site_dir']}/.cms/css/admin.light.css",
         "{$cms['site_dir']}/.cms/filelist.php",
         "{$cms['site_dir']}/.cms/img",
         "{$cms['site_dir']}/.cms/js/admin.js",
         "{$cms['site_dir']}/.cms/js/menu.js",
         "{$cms['site_dir']}/.cms/js/pages.js",
+        "{$cms['site_dir']}/.cms/js/sitemap.js",
         "{$cms['site_dir']}/.cms/js/template.js",
         "{$cms['site_dir']}/.cms/js/update.js",
         "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/admin.mod.php",
+        "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/base.mod.php",
+        "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/menu.mod.php",
+        "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/pages.mod.php",
+        "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/sitemap.mod.php",
+        "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/template.mod.php",
+        "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/update.mod.php",
         "{$cms['site_dir']}/.cms/lang/ru_RU.UTF-8/translit.php",
         "{$cms['site_dir']}/.cms/lang/en_US.UTF-8/admin.mod.php",
         "{$cms['site_dir']}/.cms/lang/en_US.UTF-8/base.mod.php",
@@ -226,7 +232,7 @@ function cms_update_create_filelist() {
                 "size" => $size,
             );
         } else {
-            $logs .= "<p>" . __( "Файл или каталог не существует" ) . " '{$cur}'</p>";
+            $logs .= "<p>" . __( "file_or_dir_not_exists" ) . " '{$cur}'</p>";
         }
     }
 
@@ -241,7 +247,7 @@ function cms_update_create_filelist() {
         '$list = ' . var_export( $list, true ) . ";\n"
     );
 
-    $logs .= "<p>".__( "Файлы:" )." " . count( $list ) . "</p>";
+    $logs .= "<p>".__( "files" )." " . count( $list ) . "</p>";
 
     return $logs;
     
@@ -252,10 +258,11 @@ function cms_update_create_backup() {
     global $cms;
 
     if ( $_SERVER["SERVER_NAME"] === "dev.coffee-cms.ru" ) {
-        exit( json_encode( array(
+        echo( json_encode( array(
             "ok"     => "false",
-            "answer" => "<p>Нельзя делать на dev.coffee-cms.ru</p>",
+            "answer" => "<p>Cannot be done on dev.coffee-cms.ru</p>",
         ) ) );
+        return;
     }
 
     require( "{$cms['cms_dir']}/filelist.php" ); // create $list variable
@@ -288,28 +295,29 @@ function cms_update_create_backup() {
 
     if ( ! $success ) {
 
-        exit( json_encode( array(
+        echo( json_encode( array(
             "ok"     => "false",
-            "answer" => "<p>" . __( "Ошибка создания бекапа" ) . " {$from}</p>",
+            "answer" => "<p>" . __( "backup_error" ) . " {$from}</p>",
         ) ) );
+        return;
 
     } else {
         $fn = "revert_to_{$cms['modules']['update.mod.php']['version']}_" . date( "YmdHis" ) . ".php";
-        $w = file_put_contents( "{$cms["site_dir"]}/{$fn}", "
+        $w = file_put_contents( "{$cms['site_dir']}/{$fn}", "
 <?php
 require( '{$cms["site_dir"]}/.old/.cms/filelist.php' );
 \$oldlist = \$list;
 
 require( '{$cms["cms_dir"]}/filelist.php' );
 foreach( \$list as \$fn => \$file ) {
-    \$from = \"{$cms["site_dir"]}/{\$fn}\";
+    \$from = \"{$cms['site_dir']}/{\$fn}\";
     unlink( \$from );
 }
 
 \$success = true;
 foreach( \$oldlist as \$fn => \$file ) {
-    \$from = \"{$cms["site_dir"]}/.old/{\$fn}\";
-    \$to   = \"{$cms["site_dir"]}/{\$fn}\";
+    \$from = \"{$cms['site_dir']}/.old/{\$fn}\";
+    \$to   = \"{$cms['site_dir']}/{\$fn}\";
     \$dir  = preg_replace( '/\/[^\/]+$/u', '', \$to );
      if ( ! is_dir( \$dir ) ) {
         mkdir( \$dir, 0777, true );
@@ -346,15 +354,17 @@ function recurse_rm( \$src ) /* bool */ {
         $url = $cms["url"]["scheme"] . "://" . $cms["url"]["host"] . $cms["base_path"] . $fn;
 
         if ( $w > 0 ) {
-            exit( json_encode( array(
+            echo( json_encode( array(
                 "ok"     => "true",
-                "answer" => "<p>" . __( "Скопируйте и сохраните ссылку восстановления. Если обновление прошло неуспешно перейдите по скопированной ссылке, CMS восстановится." ) . " " . $url . "</p>",
+                "answer" => "<p>" . __( "help1" ) . " " . $url . "</p>",
             ) ) );
+            return;
         } else {
-            exit( json_encode( array(
+            echo( json_encode( array(
                 "ok"     => "false",
-                "answer" => "<p>" . __( "Ошибка создания файла:" ) . " {$url}</p>",
+                "answer" => "<p>" . __( "error_creating" ) . " {$url}</p>",
             ) ) );
+            return;
         }
 
     }
@@ -373,29 +383,32 @@ function cms_update_check( $url ) {
     $dt = $t - $cms["config"]["update.mod.php"]["last_check"];
     if ( $dt < 10 * 60 ) {
         $n = ceil( ( 10 * 60 - $dt ) / 60 );
-        $msg = __( "Попробуйте через xxx мин" );
+        $msg = __( "try_later" );
         $msg = str_replace( "xxx", $n, $msg );
-        exit( json_encode( array(
+        echo( json_encode( array(
             "info_text"  => $msg,
             "info_class" => "info-error",
             "info_time"  => 5000,
         ) ) );
+        return;
     }
 
     if ( ! $update = file_get_contents( $url ) ) {
-        exit( json_encode( array(
-            "info_text"  => __( "Не могу скачать файл" ) . " " . $url,
+        echo( json_encode( array(
+            "info_text"  => __( "cant_get" ) . " " . $url,
             "info_class" => "info-error",
             "info_time"  => 5000,
         ) ) );
+        return;
     }
 
     if ( ! $update = json_decode( $update, true ) ) {
-        exit( json_encode( array(
-            "info_text"  => __( "Ошибка файла JSON" ) . " " . $url,
+        echo( json_encode( array(
+            "info_text"  => __( "json_error" ) . " " . $url,
             "info_class" => "info-error",
             "info_time"  => 5000,
         ) ) );
+        return;
     }
 
     $cms["config"]["update.mod.php"]["last_check"] = $t;
@@ -408,19 +421,20 @@ function cms_update_check( $url ) {
     $last_version = $cms["config"]["update.mod.php"]["update"]["last_version"];
 
     if ( $cms["modules"]["update.mod.php"]["compat"] !== $cms["config"]["update.mod.php"]["update"]["compat"] ) {
-        $last_version .= ". " . __( "Несовместимая версия. Посетите" ) . " <a href='https://coffee-cms.ru/' target=_blank>https://coffee-cms.ru/</a>";
+        $last_version .= ". " . __( "incompatible_v" ) . " <a href='" . __( "new_v_link" ) . "' target=_blank>" . __( "new_v_link" ) . "</a>";
     }
 
-    $update_info  = "<p>" . __( "Текущая версия:" ) . " {$cms['modules']['update.mod.php']['version']}</p>";
-    $update_info .= "<p>" . __( "Последняя версия:" ) . " {$last_version}</p>";
-    $update_info .= "<p>" . __( "Проверялось:" ) . " {$last_check}</p>";
+    $update_info  = "<p>" . __( "current_v" ) . " {$cms['modules']['update.mod.php']['version']}</p>";
+    $update_info .= "<p>" . __( "last_v" ) . " {$last_version}</p>";
+    $update_info .= "<p>" . __( "checked" ) . " {$last_check}</p>";
 
-    exit( json_encode( array(
-        "info_text"  => __( "OK" ),
+    echo( json_encode( array(
+        "info_text"  => __( "ok" ),
         "info_class" => "info-success",
         "info_time"  => 5000,
         "answer"     => $update_info,
     ) ) );
+    return;
 
 }
 
@@ -428,63 +442,69 @@ function cms_update_cms_update() {
     global $cms;
 
     if ( empty( $cms["config"]["update.mod.php"]["update"] ) ) {
-        exit( json_encode( array(
-            "info_text"  => __( "Пожалуйста, проверьте обновления" ),
+        echo( json_encode( array(
+            "info_text"  => __( "check_updates" ),
             "info_class" => "info-error",
             "info_time"  => 5000,
         ) ) );
+        return;
     }
 
     $update = $cms["config"]["update.mod.php"]["update"];
 
     if ( $update["compat"] !== $cms["modules"]["update.mod.php"]["compat"] ) {
-        exit( json_encode( array(
-            "info_text"  => __( "Обновление невозможно. Установите новую версию вручную." ),
+        echo( json_encode( array(
+            "info_text"  => __( "impossible" ),
             "info_class" => "info-error",
             "info_time"  => 5000,
         ) ) );
+        return;
     }
 
     // Check Current Version
     $fl = "{$cms['cms_dir']}/filelist.php";
     if ( ! file_exists( $fl ) ) {
-        exit( json_encode( array(
-            "info_text"  => __( "Отсутствует список файлов" ) . " " . $fl . " " . __LINE__,
+        echo( json_encode( array(
+            "info_text"  => __( "file_list_missing" ) . " " . $fl . " " . __LINE__,
             "info_class" => "info-error",
             "info_time"  => 5000,
         ) ) );
+        return;
     }
     require( $fl );
     foreach( $list as $fn => $file ) {
         $f = $cms["site_dir"] . "/" . $fn;
         if ( ! file_exists( $f ) ) {
-            exit( json_encode( array(
-                "info_text"  => __( "Отсутствует файл:" ) . " " . $f . " " . __LINE__,
+            echo( json_encode( array(
+                "info_text"  => __( "file_not_exists" ) . " " . $f . " " . __LINE__,
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
         $sha1 = sha1_file( $f );
         $size = filesize( $f );
         if ( ! empty( $file["sha1"] ) ) {
             if ( $file["sha1"] !== $sha1 ) {
                 if ( ! in_array( $fn, $allow_change ) ) {
-                    exit( json_encode( array(
-                        "info_text"  => __( "Файл изменен:" ) . " " . $f . " " . __LINE__,
+                    echo( json_encode( array(
+                        "info_text"  => __( "file_changed" ) . " " . $f . " " . __LINE__,
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
+                    return;
                 }
             }
         }
         if ( ! empty( $file["size"] ) ) {
             if ( $file["size"] !== $size ) {
                 if ( ! in_array( $fn, $allow_change ) ) {
-                    exit( json_encode( array(
-                        "info_text"  => __( "Файл изменен:" ) . " " . $f . " " . __LINE__,
+                    echo( json_encode( array(
+                        "info_text"  => __( "file_changed" ) . " " . $f . " " . __LINE__,
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
+                    return;
                 }
             }
         }
@@ -500,11 +520,12 @@ function cms_update_cms_update() {
     }
 
     if ( ! $rights ) {
-        exit( json_encode( array(
-            "info_text"  => __( "Ошибка обновления при проверке прав на текущие файлы. Пожалуйста, проверьте права файлов." ) . " " . $from,
+        echo( json_encode( array(
+            "info_text"  => __( "update_error_rights" ) . " " . $from,
             "info_class" => "info-error",
             "info_time"  => 5000,
         ) ) );
+        return;
     }
 
     if ( $update["last_version"] > $cms["modules"]["update.mod.php"]["version"] ) {
@@ -517,42 +538,46 @@ function cms_update_cms_update() {
         $dt = $t - $cms["config"]["update.mod.php"]["last_update"];
         if ( $dt < 10 * 60 ) {
             $n = ceil( ( 10 * 60 - $dt ) / 60 );
-            $msg = __( "Попробуйте через xxx мин" );
+            $msg = __( "try_later" );
             $msg = str_replace( "xxx", $n, $msg );
-            exit( json_encode( array(
+            echo( json_encode( array(
                 "info_text"  => $msg,
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
 
         // Download New Version
         if ( ! $content = file_get_contents( $update["download"] ) ) {
-            exit( json_encode( array(
-                "info_text"  => __( "Ошибка скачивания" ),
+            echo( json_encode( array(
+                "info_text"  => __( "download_error" ),
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
         $tmp = $cms["site_dir"] . "/.tmp";
         if ( is_dir( $tmp ) ) {
             recurse_rm( $tmp );
         }
         if ( ! mkdir( $tmp ) ) {
-            exit( json_encode( array(
-                "info_text"  => __( "Не могу создать tmp папку" ) . " " . $tmp,
+            echo( json_encode( array(
+                "info_text"  => __( "cant_create_tmp_dir" ) . " " . $tmp,
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
         $fn = preg_replace( "/.*\//", "", $update["download"] );
         $file = $tmp . "/" . $fn;
         if ( ! file_put_contents( $file, $content ) ) {
-            exit( json_encode( array(
-                "info_text"  => __( "Не могу записать файл" ) . " " . $file,
+            echo( json_encode( array(
+                "info_text"  => __( "cant_write_file" ) . " " . $file,
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
 
         // Unpack New Version
@@ -562,51 +587,56 @@ function cms_update_cms_update() {
             $zip->extractTo( $tmp );
             $zip->close();
         } else {
-            exit( json_encode( array(
-                "info_text"  => __( "Не могу разархивировать" ) . " " . $file,
+            echo( json_encode( array(
+                "info_text"  => __( "cant_unzip" ) . " " . $file,
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
 
         // Check New Version
         $fl = "{$tmp}/.cms/filelist.php";
         if ( ! file_exists( $fl ) ) {
-            exit( json_encode( array(
-                "info_text"  => __( "Отсутствует список файлов" ) . " " . $fl . " " . __LINE__,
+            echo( json_encode( array(
+                "info_text"  => __( "file_list_missing" ) . " " . $fl . " " . __LINE__,
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
         $oldlist = $list;
         require( $fl );
         foreach( $list as $fn => $file ) {
             $f = $tmp . "/" . $fn;
             if ( ! file_exists( $f ) ) {
-                exit( json_encode( array(
-                    "info_text"  => __( "Отсутствует файл:" ) . " " . $f . " " . __LINE__,
+                echo( json_encode( array(
+                    "info_text"  => __( "file_not_exists" ) . " " . $f . " " . __LINE__,
                     "info_class" => "info-error",
                     "info_time"  => 5000,
                 ) ) );
+                return;
             }
             $sha1 = sha1_file( $f );
             $size = filesize( $f );
             if ( ! empty( $file["sha1"] ) ) {
                 if ( $file["sha1"] !== $sha1 ) {
-                    exit( json_encode( array(
-                        "info_text"  => __( "Файл изменен:" ) . " " . $f . " " . __LINE__,
+                    echo( json_encode( array(
+                        "info_text"  => __( "file_changed" ) . " " . $f . " " . __LINE__,
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
+                    return;
                 }
             }
             if ( ! empty( $file["size"] ) ) {
                 if ( $file["size"] !== $size ) {
-                    exit( json_encode( array(
-                        "info_text"  => __( "Файл изменен:" ) . " " . $f . " " . __LINE__,
+                    echo( json_encode( array(
+                        "info_text"  => __( "file_changed" ) . " " . $f . " " . __LINE__,
                         "info_class" => "info-error",
                         "info_time"  => 5000,
                     ) ) );
+                    return;
                 }
             }
         }
@@ -632,8 +662,10 @@ function cms_update_cms_update() {
         // Перемещение новой версии в текущую
         $moved = true;
         foreach( $list as $fn => $file ) {
-            if ( in_array( $fn, $allow_change ) and
-            sha1_file( $cms["site_dir"] . "/" . $fn ) !== $oldlist[$fn]["sha1"] ) {
+            $oldfile = $cms["site_dir"] . "/" . $fn;
+            if ( is_file( $oldfile ) and
+            in_array( $fn, $allow_change ) and
+            sha1_file( $oldfile ) !== $oldlist[$fn]["sha1"] ) {
                 // Если файл в списке разрешенных на изменение
                 // и sha1 не совпадает, то оставляем его не тронутым
             } else {
@@ -649,11 +681,12 @@ function cms_update_cms_update() {
         }
 
         if ( ! $moved ) {
-            exit( json_encode( array(
-                "info_text"  => __( "Ошибка обновления при перемещении новых файлов. Пожалуйста, проверьте права файлов." ),
+            echo( json_encode( array(
+                "info_text"  => __( "update_error_move" ),
                 "info_class" => "info-error",
                 "info_time"  => 5000,
             ) ) );
+            return;
         }
 
         recurse_rm( $tmp );
@@ -662,7 +695,7 @@ function cms_update_cms_update() {
         // Не будем обращать внимания на результат запроса,
         // ведь если идет многократное обновление из dev-ветки,
         // то скорее всего будут ошибки его выполнения.
-        $update_sql = "{$cms["cms_dir"]}/update.sql";
+        $update_sql = "{$cms['cms_dir']}/update.sql";
         $q = "";
         if ( file_exists( $update_sql ) ) {
             $q = file_get_contents( $update_sql );
@@ -675,27 +708,31 @@ function cms_update_cms_update() {
         }
 
         $cms["config"]["update.mod.php"]["last_update"] = time();
+
         cms_save_config();
 
         cms_clear_cache();
 
-        exit( json_encode( array(
-            "info_text"  => __( "Успешное обновление." ),
+        echo( json_encode( array(
+            "info_text"  => __( "successfull_update" ),
             "info_class" => "info-success",
             "info_time"  => 5000,
             "reload"     => true,
         ) ) );
+        return;
     } else {
 
-        exit( json_encode( array(
-            "info_text"  => __( "Уже обновлено" ),
+        echo( json_encode( array(
+            "info_text"  => __( "already_updated" ),
             "info_class" => "info-success",
             "info_time"  => 5000,
         ) ) );
+        return;
 
     }
 
 }
+
 
 function cms_update_remove_backup() {
     global $cms;
@@ -706,9 +743,9 @@ function cms_update_remove_backup() {
     $old = $cms["site_dir"] . "/.old";
     if ( file_exists( $old ) ) {
         if ( recurse_rm( $old ) ) {
-            $logs .= "<p>" . __( "Удалено" ) . " {$old}</p>";
+            $logs .= "<p>" . __( "removed" ) . " {$old}</p>";
         } else {
-            $logs .= "<p>" . __( "Не могу удалить" ) . " {$old}</p>";
+            $logs .= "<p>" . __( "cant_remove" ) . " {$old}</p>";
             $ok = false;
         }
     }
@@ -716,38 +753,40 @@ function cms_update_remove_backup() {
     $tmp = $cms["site_dir"] . "/.tmp";
     if ( file_exists( $tmp ) ) {
         if ( recurse_rm( $tmp ) ) {
-            $logs .= "<p>" . __( "Удалено" ) . " {$tmp}</p>";
+            $logs .= "<p>" . __( "removed" ) . " {$tmp}</p>";
         } else {
-            $logs .= "<p>" . __( "Не могу удалить" ) . " {$tmp}</p>";
+            $logs .= "<p>" . __( "cant_remove" ) . " {$tmp}</p>";
             $ok = false;
         }
     }
     
     foreach( glob( "{$cms['site_dir']}/revert_to_*.php" ) as $file ) {
         if ( unlink( $file ) ) {
-            $logs .= "<p>" . __( "Удалено" ) . " {$file}</p>";
+            $logs .= "<p>" . __( "removed" ) . " {$file}</p>";
         } else {
-            $logs .= "<p>" . __( "Не могу удалить" ) . " {$file}</p>";
+            $logs .= "<p>" . __( "cant_remove" ) . " {$file}</p>";
             $ok = false;
         }
     }
 
     if ( $ok ) {
-        exit( json_encode( array(
-            "info_text"  => __( "Удалено" ),
+        echo( json_encode( array(
+            "info_text"  => __( "removed" ),
             "info_class" => "info-success",
             "info_time"  => 5000,
             "answer"     => $logs,
             "ok"         => $ok ? "true" : "false",
         ) ) );
+        return;
     } else {
-        exit( json_encode( array(
-            "info_text"  => __( "Есть ошибки" ),
+        echo( json_encode( array(
+            "info_text"  => __( "have_errors" ),
             "info_class" => "info-error",
             "info_time"  => 5000,
             "answer"     => $logs,
             "ok"         => $ok ? "true" : "false",
         ) ) );
+        return;
     }
     
 }
@@ -767,9 +806,10 @@ function cms_update_create_zip() {
     $zipname = "{$dir}/{$name}";
 
     if ( $zip->open( $zipname, ZipArchive::CREATE ) !== true ) {
-        exit( json_encode( array(
+        echo( json_encode( array(
             "answer" => __( "Не могу создать" ) . " {$zipname}",
         ) ) );
+        return;
     }
 
     foreach( $list as $fn => $file ) {
@@ -785,7 +825,8 @@ function cms_update_create_zip() {
         "download"     => $url
     ) ) );
 
-    exit( json_encode( array(
-        "answer"     => $files . "<p>" . __( "Создан архив" ) . ": <a href='{$url}'>{$url}</a></p>",
+    echo( json_encode( array(
+        "answer"     => $files . "<p>" . __( "archive_created" ) . ": <a href='{$url}'>{$url}</a></p>",
     ) ) );
+    return;
 }

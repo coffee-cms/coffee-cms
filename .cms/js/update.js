@@ -1,5 +1,3 @@
-"use strict";
-
 document.addEventListener( "DOMContentLoaded", function( event ) {
 
     document.querySelectorAll( "[data-fn]" ).forEach( function( button ) {
